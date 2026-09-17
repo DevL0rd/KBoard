@@ -1,4 +1,4 @@
-add_library(KBoardConfig SHARED settingsbridge.cpp settingsbridge.h)
+add_library(KBoardConfig SHARED settingsbridge.cpp settingsbridge.h kboardpaths.cpp kboardpaths.h)
 kconfig_add_kcfg_files(KBoardConfig GENERATE_MOC kboardsettings.kcfgc)
 target_include_directories(KBoardConfig PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(KBoardConfig PUBLIC Qt::Core Qt::Gui Qt::Qml KF6::ConfigCore KF6::ConfigGui)
