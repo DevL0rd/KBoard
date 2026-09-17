@@ -120,7 +120,8 @@ PanelWindow {
         target: InputContext
 
         function onActivated() {
-            window.present()
+            if (Settings.showOnFocus)
+                window.present()
         }
 
         function onDeactivated() {

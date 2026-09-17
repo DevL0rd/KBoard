@@ -114,6 +114,7 @@
     </group>
     <group name="Behavior">
         <entry name="hideOnSwipeDown" type="Bool"><default>true</default></entry>
+        <entry name="showOnFocus" type="Bool"><default>true</default></entry>
         <entry name="appRules" type="StringList"><default></default></entry>
     </group>
 </kcfg>
