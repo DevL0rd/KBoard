@@ -60,6 +60,24 @@ private Q_SLOTS:
         const QVariantMap map = catalog.models().first().toVariantMap();
         QCOMPARE(map.value(QStringLiteral("sizeMb")).toLongLong(), 339);
         QVERIFY(map.value(QStringLiteral("recommended")).toBool());
+        QCOMPARE(map.value(QStringLiteral("languages")).toStringList(), catalog.models().first().languages);
+    }
+
+    void everyModelExposesLanguagesAndSpeed()
+    {
+        QString error;
+        const ModelCatalog catalog = ModelCatalog::fromJson(bundled(), &error);
+        QVERIFY(!catalog.speedReference().isEmpty());
+        for (const ModelEntry &entry : catalog.models()) {
+            const QVariantMap map = entry.toVariantMap();
+            const QStringList languages = map.value(QStringLiteral("languages")).toStringList();
+            QVERIFY2(languages.size() >= 25, qPrintable(entry.id));
+            QVERIFY2(languages.contains(QStringLiteral("en")), qPrintable(entry.id));
+            const double speed = map.value(QStringLiteral("speed")).toDouble();
+            QVERIFY2(speed > 0.0 && speed <= 1.0, qPrintable(entry.id));
+            QVERIFY2(map.value(QStringLiteral("realTimeFactorCpu")).toDouble() > 0.0, qPrintable(entry.id));
+            QVERIFY2(map.value(QStringLiteral("realTimeFactorGpu")).toDouble() > 0.0, qPrintable(entry.id));
+        }
     }
 
     void rejectsBrokenCatalogues_data()
@@ -72,6 +90,7 @@ private Q_SLOTS:
         QTest::newRow("plain http") << QStringLiteral("url") << QStringLiteral("http://example.com/x.bin") << QStringLiteral("https");
         QTest::newRow("bad hash") << QStringLiteral("sha256") << QStringLiteral("abc") << QStringLiteral("sha256");
         QTest::newRow("path in file") << QStringLiteral("file") << QStringLiteral("../x.bin") << QStringLiteral("file name");
+        QTest::newRow("impossible speed") << QStringLiteral("speed") << QStringLiteral("2") << QStringLiteral("speed hint");
         QTest::newRow("unknown language set") << QStringLiteral("languageSet") << QStringLiteral("klingon")
                                               << QStringLiteral("language set");
     }
@@ -84,6 +103,12 @@ private Q_SLOTS:
         QJsonObject root = bundledObject();
         if (field == u"defaultModel") {
             root.insert(field, value);
+        } else if (field == u"speed") {
+            QJsonArray models = root.value(u"models").toArray();
+            QJsonObject first = models.first().toObject();
+            first.insert(field, value.toDouble());
+            models.replace(0, first);
+            root.insert(QStringLiteral("models"), models);
         } else {
             QJsonArray models = root.value(u"models").toArray();
             QJsonObject first = models.first().toObject();

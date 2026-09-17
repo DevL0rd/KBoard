@@ -27,6 +27,9 @@ ModelEntry entryFromJson(const QJsonObject &object)
     entry.sizeBytes = object.value(u"sizeBytes").toInteger();
     entry.recommended = object.value(u"recommended").toBool();
     entry.languageSet = object.value(u"languageSet").toString();
+    entry.speed = object.value(u"speed").toDouble();
+    entry.realTimeFactorCpu = object.value(u"realTimeFactorCpu").toDouble();
+    entry.realTimeFactorGpu = object.value(u"realTimeFactorGpu").toDouble();
     return entry;
 }
 
@@ -48,6 +51,12 @@ QString validationError(const ModelEntry &entry)
     }
     if (entry.sizeBytes <= 0) {
         return QStringLiteral("model %1 has no size").arg(entry.id);
+    }
+    if (entry.engine != u"silero-vad" && (entry.speed <= 0.0 || entry.speed > 1.0)) {
+        return QStringLiteral("model %1 needs a speed hint between 0 and 1").arg(entry.id);
+    }
+    if (entry.engine != u"silero-vad" && (entry.realTimeFactorCpu <= 0.0 || entry.realTimeFactorGpu <= 0.0)) {
+        return QStringLiteral("model %1 needs measured real-time factors").arg(entry.id);
     }
     if (!entry.sha256.isEmpty() && !sha.match(entry.sha256).hasMatch()) {
         return QStringLiteral("model %1 has an invalid sha256").arg(entry.id);
@@ -78,6 +87,9 @@ QVariantMap ModelEntry::toVariantMap() const
         {QStringLiteral("sizeBytes"), sizeBytes},
         {QStringLiteral("sizeMb"), qRound64(double(sizeBytes) / (1024.0 * 1024.0))},
         {QStringLiteral("recommended"), recommended},
+        {QStringLiteral("speed"), speed},
+        {QStringLiteral("realTimeFactorCpu"), realTimeFactorCpu},
+        {QStringLiteral("realTimeFactorGpu"), realTimeFactorGpu},
     };
 }
 
@@ -115,6 +127,16 @@ QString ModelCatalog::parseVad(const QJsonObject &vad)
     return problem;
 }
 
+void ModelCatalog::setSpeedReference(const QString &reference)
+{
+    m_speedReference = reference;
+}
+
+QString ModelCatalog::speedReference() const
+{
+    return m_speedReference;
+}
+
 QString ModelCatalog::parseDefault(const QString &id)
 {
     m_defaultModelId = id;
@@ -141,6 +163,7 @@ ModelCatalog ModelCatalog::fromJson(const QByteArray &json, QString *error)
         problem = catalog.parseVad(root.value(u"vad").toObject());
     }
     if (problem.isEmpty()) {
+        catalog.setSpeedReference(root.value(u"speedReference").toString());
         problem = catalog.parseDefault(root.value(u"defaultModel").toString());
     }
     if (!problem.isEmpty()) {

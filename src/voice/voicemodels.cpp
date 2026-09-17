@@ -42,6 +42,11 @@ QString VoiceModels::catalogError() const
     return m_catalogError;
 }
 
+QString VoiceModels::speedReference() const
+{
+    return m_catalog.speedReference();
+}
+
 const ModelEntry *VoiceModels::current() const
 {
     return find(KBoardSettings::voiceModel());

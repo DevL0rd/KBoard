@@ -22,6 +22,9 @@ struct ModelEntry
     QString languageSet;
     QStringList languages;
     qint64 sizeBytes = 0;
+    double speed = 0.0;
+    double realTimeFactorCpu = 0.0;
+    double realTimeFactorGpu = 0.0;
     bool recommended = false;
 
     bool isValid() const;
@@ -40,6 +43,7 @@ public:
     const QList<ModelEntry> &models() const;
     const ModelEntry &vad() const;
     QString defaultModelId() const;
+    QString speedReference() const;
     const ModelEntry *find(const QString &id) const;
 
     static QString pathFor(const ModelEntry &entry, const QString &directory);
@@ -49,8 +53,10 @@ private:
     QString parseModels(const QJsonArray &models, const QJsonObject &languageSets);
     QString parseVad(const QJsonObject &vad);
     QString parseDefault(const QString &id);
+    void setSpeedReference(const QString &reference);
 
     QList<ModelEntry> m_models;
     ModelEntry m_vad;
     QString m_defaultModelId;
+    QString m_speedReference;
 };

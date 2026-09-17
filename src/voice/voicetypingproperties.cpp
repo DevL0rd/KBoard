@@ -42,6 +42,11 @@ QVariantList VoiceTyping::models() const
     return m_models->list(m_engine->loadedPath());
 }
 
+QString VoiceTyping::speedReference() const
+{
+    return m_models->speedReference();
+}
+
 QString VoiceTyping::modelId() const
 {
     return KBoardSettings::voiceModel();

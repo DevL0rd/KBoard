@@ -26,6 +26,7 @@ class VoiceTyping : public QObject
     Q_PROPERTY(QString committedText READ committedText NOTIFY committedTextChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(QVariantList models READ models NOTIFY modelsChanged)
+    Q_PROPERTY(QString speedReference READ speedReference CONSTANT)
     Q_PROPERTY(QString modelId READ modelId NOTIFY modelChanged)
     Q_PROPERTY(QString modelName READ modelName NOTIFY modelChanged)
     Q_PROPERTY(QString modelVariant READ modelVariant NOTIFY modelChanged)
@@ -56,6 +57,7 @@ public:
     QString committedText() const;
     QString errorString() const;
     QVariantList models() const;
+    QString speedReference() const;
     QString modelId() const;
     QString modelName() const;
     QString modelVariant() const;

@@ -16,6 +16,7 @@ public:
     explicit VoiceModels(QObject *parent = nullptr);
 
     QString catalogError() const;
+    QString speedReference() const;
     const ModelEntry *current() const;
     const ModelEntry *find(const QString &id) const;
     bool isReady(const ModelEntry &entry) const;

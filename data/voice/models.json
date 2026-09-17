@@ -1,5 +1,6 @@
 {
   "defaultModel": "parakeet-tdt-0.6b-v3-q4_0",
+  "speedReference": "Approximate. Best of three runs transcribing a 30 second clip on an Intel Core i9-13980HX (8 threads) and an NVIDIA RTX 4090 Laptop GPU (CUDA). 1.0 is about a hundred times faster than real time, 0.0 is real time.",
   "languageSets": {
     "parakeet-v3": ["bg", "cs", "da", "de", "el", "en", "es", "et", "fi", "fr", "hr", "hu", "it", "lt", "lv", "mt", "nl", "pl", "pt", "ro", "ru", "sk", "sl", "sv", "uk"],
     "whisper": ["en", "zh", "de", "es", "ru", "ko", "fr", "ja", "pt", "tr", "pl", "ca", "nl", "ar", "sv", "it", "id", "hi", "fi", "vi", "he", "uk", "el", "ms", "cs", "ro", "da", "hu", "ta", "no", "th", "ur", "hr", "bg", "lt", "la", "mi", "ml", "cy", "sk", "te", "fa", "lv", "bn", "sr", "az", "sl", "kn", "et", "mk", "br", "eu", "is", "hy", "ne", "mn", "bs", "kk", "sq", "sw", "gl", "mr", "pa", "si", "km", "sn", "yo", "so", "af", "oc", "ka", "be", "tg", "sd", "gu", "am", "yi", "lo", "uz", "fo", "ht", "ps", "tk", "nn", "mt", "sa", "lb", "my", "bo", "tl", "mg", "as", "tt", "haw", "ln", "ha", "ba", "jw", "su", "yue"]
@@ -18,7 +19,10 @@
       "tier": "default",
       "description": "Fast and accurate on any computer, with punctuation built in",
       "license": "CC-BY-4.0",
-      "languageSet": "parakeet-v3"
+      "languageSet": "parakeet-v3",
+      "realTimeFactorCpu": 0.0494,
+      "realTimeFactorGpu": 0.003,
+      "speed": 0.65
     },
     {
       "id": "parakeet-tdt-0.6b-v3-q8_0",
@@ -33,7 +37,10 @@
       "tier": "quality",
       "description": "Highest Parakeet accuracy, best with a graphics card",
       "license": "CC-BY-4.0",
-      "languageSet": "parakeet-v3"
+      "languageSet": "parakeet-v3",
+      "realTimeFactorCpu": 0.0573,
+      "realTimeFactorGpu": 0.0029,
+      "speed": 0.62
     },
     {
       "id": "whisper-base-q5_1",
@@ -48,7 +55,10 @@
       "tier": "light",
       "description": "Smallest download for older computers, 99 languages",
       "license": "MIT",
-      "languageSet": "whisper"
+      "languageSet": "whisper",
+      "realTimeFactorCpu": 0.0472,
+      "realTimeFactorGpu": 0.0044,
+      "speed": 0.66
     },
     {
       "id": "whisper-small-q5_1",
@@ -63,7 +73,10 @@
       "tier": "light",
       "description": "Better accuracy than Base, still light, 99 languages",
       "license": "MIT",
-      "languageSet": "whisper"
+      "languageSet": "whisper",
+      "realTimeFactorCpu": 0.1554,
+      "realTimeFactorGpu": 0.0075,
+      "speed": 0.4
     },
     {
       "id": "whisper-large-v3-turbo-q5_0",
@@ -78,7 +91,10 @@
       "tier": "languages",
       "description": "Best for languages Parakeet does not cover, best with a graphics card",
       "license": "MIT",
-      "languageSet": "whisper"
+      "languageSet": "whisper",
+      "realTimeFactorCpu": 0.7157,
+      "realTimeFactorGpu": 0.0079,
+      "speed": 0.07
     }
   ],
   "vad": {
