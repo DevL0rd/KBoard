@@ -1,0 +1,25 @@
+{
+  "threshold": 0,
+  "minTokens": 60,
+  "minLines": 6,
+  "reporters": [
+    "console"
+  ],
+  "format": [
+    "cpp",
+    "python",
+    "bash",
+    "javascript"
+  ],
+  "ignore": [
+    "**/build/**",
+    "**/build-*/**",
+    "**/tests/data/**",
+    "**/*.kdl",
+    "**/node_modules/**",
+    "**/data/**",
+    "**/shared/common/**"
+  ],
+  "absolute": false,
+  "gitignore": true
+}
