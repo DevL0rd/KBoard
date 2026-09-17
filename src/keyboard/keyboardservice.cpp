@@ -10,7 +10,39 @@
 
 KeyboardService::KeyboardService(QObject *parent)
     : QObject(parent)
-{ }
+{
+    m_gestureRelease.setSingleShot(true);
+    m_gestureRelease.setInterval(400);
+    connect(&m_gestureRelease, &QTimer::timeout, this, [this] {
+        m_gestureActive = false;
+        Q_EMIT gestureActiveChanged();
+    });
+    watchGestures();
+}
+
+void KeyboardService::watchGestures()
+{
+    QDBusConnection::sessionBus().connect(QStringLiteral("org.kde.Konveyor"), QStringLiteral("/Konveyor"),
+        QStringLiteral("org.kde.Konveyor"), QStringLiteral("MultiTouchChanged"), this, SLOT(handleMultiTouch(bool)));
+}
+
+void KeyboardService::handleMultiTouch(bool active)
+{
+    m_gestureRelease.stop();
+    if (active) {
+        if (!m_gestureActive) {
+            m_gestureActive = true;
+            Q_EMIT gestureActiveChanged();
+        }
+        return;
+    }
+    m_gestureRelease.start();
+}
+
+bool KeyboardService::gestureActive() const
+{
+    return m_gestureActive;
+}
 
 KeyboardService *KeyboardService::instance()
 {

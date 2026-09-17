@@ -123,7 +123,7 @@ PanelWindow {
         target: InputContext
 
         function onActivated() {
-            if (Settings.enabled && Settings.showOnFocus)
+            if (Settings.enabled && Settings.showOnFocus && !KeyboardService.gestureActive)
                 window.present()
         }
 
