@@ -27,7 +27,6 @@
   <a href="#get-started"><b>Get started</b></a> ·
   <a href="#see-it-work"><b>See it work</b></a> ·
   <a href="#settings"><b>Settings</b></a> ·
-  <a href="#widget"><b>The widget</b></a> ·
   <a href="#command-line"><b>Command line</b></a> ·
   <a href="#privacy"><b>Privacy</b></a> ·
   <a href="#faq"><b>Questions</b></a> ·
@@ -50,7 +49,7 @@ cd KBoard
 ./install.sh
 ```
 
-That's it. The installer builds KBoard into your home folder, tells KWin to use it as the on-screen keyboard (remembering the one you had), downloads the voice typing model, installs the panel widget and restarts your panel. Tap any text field and the keyboard comes up. The only time it asks for your password is to register the update hook on pacman systems.
+That's it. The installer builds KBoard into your home folder, tells KWin to use it as the on-screen keyboard (remembering the one you had), downloads the voice typing model and restarts your panel. Tap any text field and the keyboard comes up. The only time it asks for your password is to register the update hook on pacman systems.
 
 > [!TIP]
 > Add **KBoard** to your panel from **Add Widgets** to show and hide the keyboard by hand, and open **KBoard Settings** from your app launcher to make it yours.
@@ -66,7 +65,7 @@ That's it. The installer builds KBoard into your home folder, tells KWin to use 
   </tr>
   <tr>
     <td>🧹 <b>Remove</b></td>
-    <td>Run <code>./uninstall.sh</code>. It gives the on-screen keyboard back to whatever KWin used before, removes the keyboard, the settings app, the widget and the update hook, and keeps your settings, learned words, clipboard pins and downloaded models.</td>
+    <td>Run <code>./uninstall.sh</code>. It gives the on-screen keyboard back to whatever KWin used before, removes the keyboard, the settings app and the update hook, and keeps your settings, learned words, clipboard pins and downloaded models.</td>
   </tr>
   <tr>
     <td>🖥️ <b>Needs</b></td>
@@ -273,8 +272,8 @@ That's it. The installer builds KBoard into your home folder, tells KWin to use 
       Swipe down on the keyboard to hide it, or use the hide key. KWin moves the window above the keyboard while it's up and puts it back when it goes.
     </td>
     <td valign="top">
-      <h4>🐣 It replaces the old widget</h4>
-      If you had Konveyor's Keyboard Toggle in your panel, the installer swaps it for the KBoard widget in the same spot.
+      <h4>🐣 It takes over cleanly</h4>
+      The installer remembers the keyboard KWin used before, and uninstalling gives it straight back.
     </td>
   </tr>
 </table>
@@ -328,33 +327,6 @@ That's it. The installer builds KBoard into your home folder, tells KWin to use 
 
 ---
 
-<a id="widget"></a>
-
-## 🧩 The widget
-
-<table>
-  <tr>
-    <td width="36%" valign="middle" align="center"><img alt="The KBoard panel button" src="docs/media/panel.png" width="300"></td>
-    <td valign="middle">
-      The panel button shows and hides the keyboard with a click, and lights up while it's showing. Middle-click opens voice typing, or whatever panel you pick in the widget's settings. Press and hold for the quick actions.
-    </td>
-  </tr>
-</table>
-
-<table>
-  <tr>
-    <td width="50%"><img alt="The widget popup with quick actions" src="docs/media/widget.png"></td>
-    <td valign="middle">
-      The popup tells you whether the keyboard is showing, hidden, or not in use at all, and takes you straight to <b>Emoji</b>, <b>GIFs</b>, <b>Clipboard</b>, <b>Voice</b>, <b>Edit</b> or the settings app.
-      <br><br>
-      If KWin is set to use another on-screen keyboard, the popup says so and offers a <b>Use KBoard</b> button that switches it over for you.
-    </td>
-  </tr>
-</table>
-
-<p align="right"><a href="#top">back to top ⬆</a></p>
-
----
 
 <a id="command-line"></a>
 
@@ -406,7 +378,7 @@ Settings live in `~/.config/kboardrc`. Learned words, clipboard pins, emoji rece
 <details>
 <summary><b>Does it work in X11 apps?</b></summary>
 <br>
-Wayland apps tell KWin when a text field has focus, so the keyboard comes up on its own. Older X11 apps running through XWayland don't, so open the keyboard yourself from the panel widget, the controller chord or D-Bus, and it types into the app through KWin. Suggestions that read the text around your cursor have nothing to read in those apps.
+Wayland apps tell KWin when a text field has focus, so the keyboard comes up on its own. Older X11 apps running through XWayland don't, so open the keyboard yourself with the controller chord or D-Bus, and it types into the app through KWin. Suggestions that read the text around your cursor have nothing to read in those apps.
 </details>
 
 <details>

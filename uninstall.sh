@@ -12,6 +12,7 @@ echo "Removing KBoard..."
 
 unregister_system_updates
 kpackagetool6 -t Plasma/Applet -r org.devl0rd.kboard >/dev/null 2>&1 || true
+kpackagetool6 -t Plasma/Applet -r dev.devl0rd.keyboardtoggle >/dev/null 2>&1 || true
 
 if [[ -f "$MANIFEST" ]]; then
     while IFS= read -r installed || [[ -n $installed ]]; do

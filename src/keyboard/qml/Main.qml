@@ -27,6 +27,8 @@ PanelWindow {
         return found
     }
 
+    property double lastAppSwitch: 0
+
     function present() {
         if (keyboard.rules.neverShow) {
             KeyboardService.Hide()
@@ -118,7 +120,7 @@ PanelWindow {
         target: InputContext
 
         function onActivated() {
-            if (Settings.showOnFocus)
+            if (Settings.showOnFocus && Date.now() - window.lastAppSwitch > 1200)
                 window.present()
         }
 
@@ -129,6 +131,10 @@ PanelWindow {
 
     Connections {
         target: KeyboardService
+
+        function onActiveAppChanged() {
+            window.lastAppSwitch = Date.now()
+        }
 
         function onShowRequested() {
             window.present()

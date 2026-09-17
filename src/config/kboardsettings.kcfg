@@ -23,6 +23,7 @@
         <entry name="showKeyHints" type="Bool"><default>true</default></entry>
         <entry name="showNumberRow" type="Bool"><default>true</default></entry>
         <entry name="showDesktopRow" type="Bool"><default>false</default></entry>
+        <entry name="fullKeyboard" type="Bool"><default>true</default></entry>
         <entry name="splitMode" type="Enum">
             <choices><choice name="Auto"/><choice name="Always"/><choice name="Never"/></choices>
             <default>Auto</default>

@@ -86,7 +86,7 @@ jobs:
             ./install.sh
             ```
 
-            The installer makes KBoard your on-screen keyboard right away and adds the KBoard widget. On pacman systems it rebuilds itself after Qt upgrades.
+            The installer makes KBoard your on-screen keyboard right away. On pacman systems it rebuilds itself after Qt upgrades.
 
             Updating from an older version is the same command: `./install.sh`. To remove it, run `./uninstall.sh`; your previous keyboard comes back.
 

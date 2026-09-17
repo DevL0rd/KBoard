@@ -1,104 +1,483 @@
 {
-    "kind": "rows",
-    "rows": {
-        "numbers": {
-            "keys": [
-                {"label": "1", "shiftLabel": "!", "longPress": ["¹", "½", "⅓", "¼", "⅛"]},
-                {"label": "2", "shiftLabel": "@", "longPress": ["²", "⅔"]},
-                {"label": "3", "shiftLabel": "#", "longPress": ["³", "¾", "⅜"]},
-                {"label": "4", "shiftLabel": "$", "longPress": ["⁴", "⅘"]},
-                {"label": "5", "shiftLabel": "%", "longPress": ["⅝", "⅚"]},
-                {"label": "6", "shiftLabel": "^", "longPress": ["⅞"]},
-                {"label": "7", "shiftLabel": "&", "longPress": ["⅞"]},
-                {"label": "8", "shiftLabel": "*", "longPress": []},
-                {"label": "9", "shiftLabel": "(", "longPress": []},
-                {"label": "0", "shiftLabel": ")", "longPress": ["ⁿ", "∅"]}
-            ],
-            "height": 0.8,
-            "glide": false
+  "kind": "rows",
+  "rows": {
+    "numbers": {
+      "keys": [
+        {
+          "label": "1",
+          "shiftLabel": "!",
+          "longPress": [
+            "¹",
+            "½",
+            "⅓",
+            "¼",
+            "⅛"
+          ]
         },
-        "desktop": {
-            "keys": [
-                {"type": "key", "label": "Esc", "key": "esc"},
-                {"type": "key", "label": "Tab", "key": "tab", "icon": "tab"},
-                {"type": "modifier", "label": "Ctrl", "modifier": "ctrl"},
-                {"type": "modifier", "label": "Alt", "modifier": "alt"},
-                {"type": "modifier", "label": "Super", "modifier": "super", "icon": "super"},
-                {"type": "arrow", "label": "←", "key": "left", "icon": "left"},
-                {"type": "arrow", "label": "↓", "key": "down", "icon": "down"},
-                {"type": "arrow", "label": "↑", "key": "up", "icon": "up"},
-                {"type": "arrow", "label": "→", "key": "right", "icon": "right"},
-                {"type": "key", "label": "Home", "key": "home"},
-                {"type": "key", "label": "End", "key": "end"},
-                {"type": "key", "label": "PgUp", "key": "pageup"},
-                {"type": "key", "label": "PgDn", "key": "pagedown"},
-                {"type": "fn", "label": "Fn"}
-            ],
-            "height": 0.72,
-            "special": true
+        {
+          "label": "2",
+          "shiftLabel": "@",
+          "longPress": [
+            "²",
+            "⅔"
+          ]
         },
-        "function": {
-            "keys": [
-                {"type": "fn", "label": "Fn"},
-                {"type": "key", "label": "F1", "key": "f1"},
-                {"type": "key", "label": "F2", "key": "f2"},
-                {"type": "key", "label": "F3", "key": "f3"},
-                {"type": "key", "label": "F4", "key": "f4"},
-                {"type": "key", "label": "F5", "key": "f5"},
-                {"type": "key", "label": "F6", "key": "f6"},
-                {"type": "key", "label": "F7", "key": "f7"},
-                {"type": "key", "label": "F8", "key": "f8"},
-                {"type": "key", "label": "F9", "key": "f9"},
-                {"type": "key", "label": "F10", "key": "f10"},
-                {"type": "key", "label": "F11", "key": "f11"},
-                {"type": "key", "label": "F12", "key": "f12"},
-                {"type": "key", "label": "Del", "key": "delete"}
-            ],
-            "height": 0.72,
-            "special": true
+        {
+          "label": "3",
+          "shiftLabel": "#",
+          "longPress": [
+            "³",
+            "¾",
+            "⅜"
+          ]
         },
-        "bottom": {
-            "keys": [
-                {"type": "symbols", "label": "?123", "page": "symbols", "width": 1.5},
-                {"type": "char", "label": ",", "hint": "☺", "longPress": [{"label": "☺", "action": "panel:emoji"}, ";", ":"]},
-                {"type": "globe", "label": "", "when": "multipleLayouts"},
-                {"type": "emoji", "label": "", "when": "singleLayout"},
-                {"type": "space", "label": " ", "grow": true},
-                {"type": "char", "label": ".", "hint": "…", "longPress": [",", "?", "!", "'", "\"", ":", ";", "-", "/", "@", "&", "(", ")", "#", "%", "…"]},
-                {"type": "enter", "width": 1.5, "longPress": [{"label": "↵", "action": "newline"}, {"label": "⏎", "action": "enter"}]}
-            ]
+        {
+          "label": "4",
+          "shiftLabel": "$",
+          "longPress": [
+            "⁴",
+            "⅘"
+          ]
         },
-        "bottom-email": {
-            "keys": [
-                {"type": "symbols", "label": "?123", "page": "symbols", "width": 1.5},
-                {"type": "char", "label": "@", "longPress": ["_", "-", "+"]},
-                {"type": "globe", "label": "", "when": "multipleLayouts"},
-                {"type": "space", "label": " ", "grow": true},
-                {"type": "char", "label": ".", "longPress": ["-", "_", "+"]},
-                {"type": "char", "label": ".com", "width": 1.25, "longPress": [".org", ".net", ".edu", ".io", ".de", ".co.uk"]},
-                {"type": "enter", "width": 1.5}
-            ]
+        {
+          "label": "5",
+          "shiftLabel": "%",
+          "longPress": [
+            "⅝",
+            "⅚"
+          ]
         },
-        "bottom-url": {
-            "keys": [
-                {"type": "symbols", "label": "?123", "page": "symbols", "width": 1.5},
-                {"type": "char", "label": "/", "longPress": [":", "-", "_", "~"]},
-                {"type": "globe", "label": "", "when": "multipleLayouts"},
-                {"type": "space", "label": " ", "grow": true},
-                {"type": "char", "label": ".", "longPress": ["-", "_", "?", "=", "&", "#"]},
-                {"type": "char", "label": ".com", "width": 1.25, "longPress": [".org", ".net", ".edu", ".io", ".de", ".co.uk", "https://", "www."]},
-                {"type": "enter", "width": 1.5}
-            ]
+        {
+          "label": "6",
+          "shiftLabel": "^",
+          "longPress": [
+            "⅞"
+          ]
         },
-        "bottom-symbols": {
-            "keys": [
-                {"type": "letters", "label": "ABC", "width": 1.5},
-                {"type": "char", "label": ","},
-                {"type": "symbols", "label": "1234", "page": "numpad"},
-                {"type": "space", "label": " ", "grow": true},
-                {"type": "char", "label": ".", "longPress": [",", "?", "!", "'", "\"", ":", ";", "-", "/", "@", "&", "(", ")", "#", "%", "…"]},
-                {"type": "enter", "width": 1.5}
-            ]
+        {
+          "label": "7",
+          "shiftLabel": "&",
+          "longPress": [
+            "⅞"
+          ]
+        },
+        {
+          "label": "8",
+          "shiftLabel": "*",
+          "longPress": []
+        },
+        {
+          "label": "9",
+          "shiftLabel": "(",
+          "longPress": []
+        },
+        {
+          "label": "0",
+          "shiftLabel": ")",
+          "longPress": [
+            "ⁿ",
+            "∅"
+          ]
         }
+      ],
+      "height": 0.8,
+      "glide": false
+    },
+    "desktop": {
+      "keys": [
+        {
+          "type": "fn",
+          "label": "Fn"
+        },
+        {
+          "type": "key",
+          "label": "Esc",
+          "key": "esc"
+        },
+        {
+          "type": "key",
+          "label": "Tab",
+          "key": "tab",
+          "icon": "tab"
+        },
+        {
+          "type": "modifier",
+          "label": "Ctrl",
+          "modifier": "ctrl"
+        },
+        {
+          "type": "modifier",
+          "label": "Alt",
+          "modifier": "alt"
+        },
+        {
+          "type": "modifier",
+          "label": "Super",
+          "modifier": "super",
+          "icon": "super"
+        },
+        {
+          "type": "arrow",
+          "label": "←",
+          "key": "left",
+          "icon": "left"
+        },
+        {
+          "type": "arrow",
+          "label": "↓",
+          "key": "down",
+          "icon": "down"
+        },
+        {
+          "type": "arrow",
+          "label": "↑",
+          "key": "up",
+          "icon": "up"
+        },
+        {
+          "type": "arrow",
+          "label": "→",
+          "key": "right",
+          "icon": "right"
+        },
+        {
+          "type": "key",
+          "label": "Home",
+          "key": "home"
+        },
+        {
+          "type": "key",
+          "label": "End",
+          "key": "end"
+        },
+        {
+          "type": "key",
+          "label": "PgUp",
+          "key": "pageup"
+        },
+        {
+          "type": "key",
+          "label": "PgDn",
+          "key": "pagedown"
+        }
+      ],
+      "height": 0.72,
+      "special": true
+    },
+    "function": {
+      "keys": [
+        {
+          "type": "fn",
+          "label": "Fn"
+        },
+        {
+          "type": "key",
+          "label": "F1",
+          "key": "f1"
+        },
+        {
+          "type": "key",
+          "label": "F2",
+          "key": "f2"
+        },
+        {
+          "type": "key",
+          "label": "F3",
+          "key": "f3"
+        },
+        {
+          "type": "key",
+          "label": "F4",
+          "key": "f4"
+        },
+        {
+          "type": "key",
+          "label": "F5",
+          "key": "f5"
+        },
+        {
+          "type": "key",
+          "label": "F6",
+          "key": "f6"
+        },
+        {
+          "type": "key",
+          "label": "F7",
+          "key": "f7"
+        },
+        {
+          "type": "key",
+          "label": "F8",
+          "key": "f8"
+        },
+        {
+          "type": "key",
+          "label": "F9",
+          "key": "f9"
+        },
+        {
+          "type": "key",
+          "label": "F10",
+          "key": "f10"
+        },
+        {
+          "type": "key",
+          "label": "F11",
+          "key": "f11"
+        },
+        {
+          "type": "key",
+          "label": "F12",
+          "key": "f12"
+        },
+        {
+          "type": "key",
+          "label": "Del",
+          "key": "delete"
+        }
+      ],
+      "height": 0.72,
+      "special": true
+    },
+    "bottom": {
+      "keys": [
+        {
+          "type": "symbols",
+          "label": "?123",
+          "page": "symbols",
+          "width": 1.5
+        },
+        {
+          "type": "char",
+          "label": ",",
+          "hint": "☺",
+          "longPress": [
+            {
+              "label": "☺",
+              "action": "panel:emoji"
+            },
+            ";",
+            ":"
+          ]
+        },
+        {
+          "type": "globe",
+          "label": "",
+          "when": "multipleLayouts"
+        },
+        {
+          "type": "emoji",
+          "label": "",
+          "when": "singleLayout"
+        },
+        {
+          "type": "space",
+          "label": " ",
+          "grow": true
+        },
+        {
+          "type": "char",
+          "label": ".",
+          "hint": "…",
+          "longPress": [
+            ",",
+            "?",
+            "!",
+            "'",
+            "\"",
+            ":",
+            ";",
+            "-",
+            "/",
+            "@",
+            "&",
+            "(",
+            ")",
+            "#",
+            "%",
+            "…"
+          ]
+        },
+        {
+          "type": "enter",
+          "width": 1.5,
+          "longPress": [
+            {
+              "label": "↵",
+              "action": "newline"
+            },
+            {
+              "label": "⏎",
+              "action": "enter"
+            }
+          ]
+        }
+      ]
+    },
+    "bottom-email": {
+      "keys": [
+        {
+          "type": "symbols",
+          "label": "?123",
+          "page": "symbols",
+          "width": 1.5
+        },
+        {
+          "type": "char",
+          "label": "@",
+          "longPress": [
+            "_",
+            "-",
+            "+"
+          ]
+        },
+        {
+          "type": "globe",
+          "label": "",
+          "when": "multipleLayouts"
+        },
+        {
+          "type": "space",
+          "label": " ",
+          "grow": true
+        },
+        {
+          "type": "char",
+          "label": ".",
+          "longPress": [
+            "-",
+            "_",
+            "+"
+          ]
+        },
+        {
+          "type": "char",
+          "label": ".com",
+          "width": 1.25,
+          "longPress": [
+            ".org",
+            ".net",
+            ".edu",
+            ".io",
+            ".de",
+            ".co.uk"
+          ]
+        },
+        {
+          "type": "enter",
+          "width": 1.5
+        }
+      ]
+    },
+    "bottom-url": {
+      "keys": [
+        {
+          "type": "symbols",
+          "label": "?123",
+          "page": "symbols",
+          "width": 1.5
+        },
+        {
+          "type": "char",
+          "label": "/",
+          "longPress": [
+            ":",
+            "-",
+            "_",
+            "~"
+          ]
+        },
+        {
+          "type": "globe",
+          "label": "",
+          "when": "multipleLayouts"
+        },
+        {
+          "type": "space",
+          "label": " ",
+          "grow": true
+        },
+        {
+          "type": "char",
+          "label": ".",
+          "longPress": [
+            "-",
+            "_",
+            "?",
+            "=",
+            "&",
+            "#"
+          ]
+        },
+        {
+          "type": "char",
+          "label": ".com",
+          "width": 1.25,
+          "longPress": [
+            ".org",
+            ".net",
+            ".edu",
+            ".io",
+            ".de",
+            ".co.uk",
+            "https://",
+            "www."
+          ]
+        },
+        {
+          "type": "enter",
+          "width": 1.5
+        }
+      ]
+    },
+    "bottom-symbols": {
+      "keys": [
+        {
+          "type": "letters",
+          "label": "ABC",
+          "width": 1.5
+        },
+        {
+          "type": "char",
+          "label": ","
+        },
+        {
+          "type": "symbols",
+          "label": "1234",
+          "page": "numpad"
+        },
+        {
+          "type": "space",
+          "label": " ",
+          "grow": true
+        },
+        {
+          "type": "char",
+          "label": ".",
+          "longPress": [
+            ",",
+            "?",
+            "!",
+            "'",
+            "\"",
+            ":",
+            ";",
+            "-",
+            "/",
+            "@",
+            "&",
+            "(",
+            ")",
+            "#",
+            "%",
+            "…"
+          ]
+        },
+        {
+          "type": "enter",
+          "width": 1.5
+        }
+      ]
     }
+  }
 }

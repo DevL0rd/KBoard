@@ -12,7 +12,7 @@ Item {
     property real baseHeight: 320
     property real screenHeight: 1080
     property string panel: "keys"
-    property bool fullKeyboard: false
+    property bool fullKeyboard: Settings.fullKeyboard
     property real slide: 0
     property real splitAmount: splitShown ? 1 : 0
     property bool shown: true
@@ -96,8 +96,10 @@ Item {
     }
 
     function requestTool(name) {
-        if (name === "full")
-            fullKeyboard = !fullKeyboard
+        if (name === "full") {
+            Settings.fullKeyboard = !Settings.fullKeyboard
+            SettingsWatcher.save()
+        }
         else if (name === "settings")
             settingsRequested()
         else if (name === "hide")

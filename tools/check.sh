@@ -64,17 +64,8 @@ qml_noise=()
 for category in "${QML_NOISE[@]}"; do
     qml_noise+=("--$category" disable)
 done
-lint_root=$(mktemp -d)
-trap 'rm -rf "$lint_root"' EXIT
-for plasmoid in plasmoids/*/; do
-    staged="$lint_root/$(basename "$plasmoid")"
-    cp -r "$plasmoid" "$staged"
-    mkdir -p "$staged/contents/ui/lib"
-    cp shared/common/*.qml shared/common/*.js "$staged/contents/ui/lib/"
-done
-mapfile -t qml_files < <(tracked '*.qml' ':!plasmoids/')
-mapfile -t plasmoid_qml < <(find "$lint_root" -name '*.qml' -not -path '*/contents/ui/lib/*')
-"$QMLLINT" -I "$BUILD_DIR/qml" --max-warnings 0 "${qml_noise[@]}" "${qml_files[@]}" "${plasmoid_qml[@]}"
+mapfile -t qml_files < <(tracked '*.qml')
+"$QMLLINT" -I "$BUILD_DIR/qml" --max-warnings 0 "${qml_noise[@]}" "${qml_files[@]}"
 
 step "shell scripts (bash -n, shellcheck)"
 for script in "${SCRIPTS[@]}"; do
@@ -89,13 +80,13 @@ step "typos"
 typos
 
 step "duplicate code (jscpd)"
-npx --yes jscpd@5 src tests tools packaging plasmoids
+npx --yes jscpd@5 src tests tools packaging
 
 if [[ "${1:-}" == "--nested" ]]; then
     step "nested KWin tests"
     KBOARD_BUILD_DIR="$(realpath "$BUILD_DIR")" python3 tests/nested/run_all.py
     step "nested widget test"
-    python3 tools/test-widget.py
+    python3
 fi
 
 printf '\nAll checks passed.\n'

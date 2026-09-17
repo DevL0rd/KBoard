@@ -68,7 +68,6 @@ BUILD_DIR="${KBOARD_BUILD_DIR:-$REPO_DIR/build}"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/kboard"
 STAMP="$CONFIG_DIR/installed-revision"
 MANIFEST="$CONFIG_DIR/install-manifest"
-PLASMOID="$REPO_DIR/plasmoids/org.devl0rd.kboard"
 VOICE_MODEL="parakeet-tdt-0.6b-v3-q4_0"
 
 mkdir -p "$CONFIG_DIR"
@@ -116,18 +115,9 @@ if ! command -v kboard-voice-model >/dev/null 2>&1; then
 fi
 kboard-voice-model "$VOICE_MODEL"
 
-mkdir -p "$PLASMOID/contents/ui/lib"
-cp "$REPO_DIR/shared/common/"*.qml "$REPO_DIR/shared/common/"*.js "$PLASMOID/contents/ui/lib/"
-if kpackagetool6 -t Plasma/Applet -u "$PLASMOID" >/dev/null 2>&1; then
-    echo "Upgraded KBoard Plasma applet"
-else
-    kpackagetool6 -t Plasma/Applet -i "$PLASMOID" >/dev/null
-    echo "Installed KBoard Plasma applet"
-fi
-
 if $SYSTEM_UPDATE; then
     if $REBUILT; then
-        notify_updated "KBoard is up to date. Restart Plasma or log out and back in to load the updated widget."
+        notify_updated "KBoard is up to date."
     else
         rm -f "$UPDATE_PENDING"
     fi
@@ -136,7 +126,7 @@ fi
 register_system_updates "$REPO_DIR" "$AUR"
 
 echo
-echo "Installed. Tap a text field to type, or add 'KBoard' from Plasma's Add Widgets menu."
+echo "Installed. Touch a text field to type."
 echo "Settings: kboard-settings"
 echo "Logs: journalctl --user -u plasma-kwin_wayland.service -f"
 echo "Restarting Plasma..."
