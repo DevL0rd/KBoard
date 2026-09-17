@@ -19,6 +19,7 @@ Item {
     property var tools: [
         { name: "emoji", glyph: "emoji" },
         { name: "full", icon: "input-keyboard" },
+        { name: "split", icon: "view-split-left-right" },
         { name: "gif", text: "GIF" },
         { name: "clipboard", icon: "edit-paste" },
         { name: "voice", icon: "audio-input-microphone" },

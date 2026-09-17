@@ -98,7 +98,11 @@ Item {
     }
 
     function requestTool(name) {
-        if (name === "full") {
+        if (name === "split") {
+            Settings.splitMode = splitShown ? 2 : 1
+            SettingsWatcher.save()
+        }
+        else if (name === "full") {
             Settings.fullKeyboard = !Settings.fullKeyboard
             fullForced = Settings.fullKeyboard
             SettingsWatcher.save()
