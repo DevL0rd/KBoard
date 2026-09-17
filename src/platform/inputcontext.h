@@ -35,7 +35,8 @@ class InputContext : public QObject
     Q_PROPERTY(QString preedit READ preedit NOTIFY preeditChanged)
 
 public:
-    enum ContentHint {
+    enum ContentHint
+    {
         content_hint_none = 0x0,
         content_hint_default = 0x7,
         content_hint_password = 0xc0,
@@ -52,7 +53,8 @@ public:
     };
     Q_ENUM(ContentHint)
 
-    enum ContentPurpose {
+    enum ContentPurpose
+    {
         content_purpose_normal = 0,
         content_purpose_alpha = 1,
         content_purpose_digits = 2,
@@ -69,7 +71,8 @@ public:
     };
     Q_ENUM(ContentPurpose)
 
-    enum Modifier {
+    enum Modifier
+    {
         ShiftModifier = 0x1,
         LockModifier = 0x2,
         ControlModifier = 0x4,

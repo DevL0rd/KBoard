@@ -18,8 +18,7 @@
 
 InputMethod::InputMethod()
     : QWaylandClientExtensionTemplate<InputMethod>(1)
-{
-}
+{ }
 
 InputMethod::~InputMethod() = default;
 
@@ -42,16 +41,16 @@ void InputMethod::setCurrentContext(InputMethodContext *context)
     m_current.reset(context);
     Q_EMIT activityChanged(m_current.use_count());
 
-    if (m_current)
+    if (m_current) {
         Q_EMIT activate();
-    else
+    } else {
         Q_EMIT deactivate();
+    }
 }
 
 InputMethodContext::InputMethodContext(struct ::zwp_input_method_context_v1 *id)
     : QtWayland::zwp_input_method_context_v1(id)
-{
-}
+{ }
 
 InputMethodContext::~InputMethodContext() = default;
 
@@ -86,9 +85,7 @@ void InputMethodContext::zwp_input_method_context_v1_surrounding_text(const QStr
     Q_EMIT surroundingTextChanged(text, cursor, anchor);
 }
 
-void InputMethodContext::zwp_input_method_context_v1_invoke_action(uint32_t, uint32_t)
-{
-}
+void InputMethodContext::zwp_input_method_context_v1_invoke_action(uint32_t, uint32_t) { }
 
 std::shared_ptr<Keyboard> InputMethodContext::keyboard()
 {
@@ -109,9 +106,7 @@ Keyboard::Keyboard(::wl_keyboard *keyboard, InputMethodContext *parent)
     mXkbContext.reset(xkb_context_new(XKB_CONTEXT_NO_FLAGS));
 }
 
-Keyboard::~Keyboard()
-{
-}
+Keyboard::~Keyboard() { }
 
 void Keyboard::keyboard_keymap(uint32_t format, int32_t fd, uint32_t size)
 {
@@ -133,10 +128,11 @@ void Keyboard::keyboard_keymap(uint32_t format, int32_t fd, uint32_t size)
     munmap(map_str, size);
     close(fd);
 
-    if (mXkbKeymap)
+    if (mXkbKeymap) {
         mXkbState.reset(xkb_state_new(mXkbKeymap.get()));
-    else
+    } else {
         mXkbState.reset(nullptr);
+    }
 }
 
 void Keyboard::keyboard_key(uint32_t serial, uint32_t time, uint32_t key, uint32_t state)

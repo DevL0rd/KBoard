@@ -13,12 +13,9 @@ QT_BEGIN_NAMESPACE
 QWaylandInputPanelShellIntegration::QWaylandInputPanelShellIntegration()
     : QWaylandShellIntegrationTemplate<QWaylandInputPanelShellIntegration>(1)
 
-{
-}
+{ }
 
-QWaylandInputPanelShellIntegration::~QWaylandInputPanelShellIntegration()
-{
-}
+QWaylandInputPanelShellIntegration::~QWaylandInputPanelShellIntegration() { }
 
 QtWaylandClient::QWaylandShellSurface *QWaylandInputPanelShellIntegration::createShellSurface(QtWaylandClient::QWaylandWindow *window)
 {

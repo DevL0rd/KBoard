@@ -16,7 +16,8 @@ class InputPanelRole : public QObject
     QML_UNCREATABLE("InputPanelRole is an enum container and cannot be instantiated.")
 
 public:
-    enum Role {
+    enum Role
+    {
         Keyboard = 0,
         OverlayPanel = 1,
     };

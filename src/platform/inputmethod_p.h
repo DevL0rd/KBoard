@@ -27,15 +27,9 @@ public:
     explicit InputMethod();
     ~InputMethod() override;
 
-    std::shared_ptr<InputMethodContext> current() const
-    {
-        return m_current;
-    }
+    std::shared_ptr<InputMethodContext> current() const { return m_current; }
 
-    bool isActive() const
-    {
-        return bool(m_current);
-    }
+    bool isActive() const { return bool(m_current); }
 
 Q_SIGNALS:
     void activate();

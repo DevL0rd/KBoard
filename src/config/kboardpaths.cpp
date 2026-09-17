@@ -5,8 +5,7 @@
 
 KBoardPaths::KBoardPaths(QObject *parent)
     : QObject(parent)
-{
-}
+{ }
 
 QString KBoardPaths::dataDirectory()
 {
