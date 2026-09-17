@@ -105,7 +105,6 @@ Item {
 
     onPanelChanged: {
         if (shown)
-            KeySound.play(panel === "keys" ? "close" : "open")
     }
 
     height: expandedHeight + headroom

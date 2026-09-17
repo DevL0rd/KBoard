@@ -37,7 +37,6 @@ PanelWindow {
         shown = true
         keyboard.slide = 1
         window.visible = true
-        KeySound.play("open")
         slideIn.restart()
     }
 
@@ -46,7 +45,6 @@ PanelWindow {
             return
         shown = false
         keyboard.panel = "keys"
-        KeySound.play("close")
         slideOut.restart()
     }
 
