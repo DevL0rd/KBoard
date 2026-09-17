@@ -1,5 +1,5 @@
 [files]
-extend-exclude = ["build/", "build-*/", "*.svg", "data/emoji/emoji.json"]
+extend-exclude = ["build/", "build-*/", "*.svg", "data/emoji/emoji.json", "data/dictionaries/", "tests/typing/"]
 
 [default.extend-words]
 INVOKABLE = "INVOKABLE"
@@ -7,3 +7,5 @@ asai = "asai"
 calculat = "calculat"
 conver = "conver"
 targetted = "targetted"
+ba = "ba"
+fo = "fo"

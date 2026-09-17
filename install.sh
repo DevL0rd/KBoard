@@ -114,12 +114,7 @@ if ! command -v kboard-voice-model >/dev/null 2>&1; then
     echo "The build did not install kboard-voice-model into $BIN_DIR."
     exit 1
 fi
-if kboard-voice-model has "$VOICE_MODEL"; then
-    echo "Voice model $VOICE_MODEL is already downloaded."
-else
-    echo "Downloading voice model $VOICE_MODEL..."
-    kboard-voice-model download "$VOICE_MODEL"
-fi
+kboard-voice-model "$VOICE_MODEL"
 
 mkdir -p "$PLASMOID/contents/ui/lib"
 cp "$REPO_DIR/shared/common/"*.qml "$REPO_DIR/shared/common/"*.js "$PLASMOID/contents/ui/lib/"

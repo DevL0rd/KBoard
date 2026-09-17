@@ -47,8 +47,7 @@ exit 0
 EOF
     shim kboard-voice-model <<'EOF'
 models="$HOME/.local/share/kboard/models"
-[[ $1 == has ]] && { [[ -f $models/$2 ]]; exit; }
-mkdir -p "$models" && touch "$models/$2"
+mkdir -p "$models" && touch "$models/$1"
 EOF
 }
 

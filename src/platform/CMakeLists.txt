@@ -6,6 +6,8 @@ ecm_add_qtwayland_client_protocol(KBoardPlatform PROTOCOL "${Wayland_DATADIR}/wa
 target_sources(KBoardPlatform PRIVATE
     inputcontext.cpp
     inputcontext.h
+    keycodes.cpp
+    keycodes.h
     inputmethod.cpp
     inputmethod_p.h
     inputpanelintegration.cpp

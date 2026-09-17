@@ -21,5 +21,8 @@
     "**/shared/common/**"
   ],
   "absolute": false,
-  "gitignore": true
+  "gitignore": true,
+  "ignorePattern": [
+    "SPDX-[A-Za-z-]+:.*"
+  ]
 }
