@@ -1,0 +1,44 @@
+{
+    "id": "numpad",
+    "kind": "page",
+    "name": "123",
+    "columns": 5,
+    "rows": [
+        {
+            "keys": [
+                {"label": "+", "special": true},
+                {"label": "1"},
+                {"label": "2"},
+                {"label": "3"},
+                {"label": "%", "special": true}
+            ]
+        },
+        {
+            "keys": [
+                {"label": "-", "special": true},
+                {"label": "4"},
+                {"label": "5"},
+                {"label": "6"},
+                {"type": "space", "label": " "}
+            ]
+        },
+        {
+            "keys": [
+                {"label": "*", "special": true},
+                {"label": "7"},
+                {"label": "8"},
+                {"label": "9"},
+                {"type": "backspace"}
+            ]
+        },
+        {
+            "keys": [
+                {"type": "letters", "label": "ABC"},
+                {"label": ",", "special": true},
+                {"label": "0"},
+                {"label": ".", "special": true, "longPress": [",", ":", "/"]},
+                {"type": "enter"}
+            ]
+        }
+    ]
+}

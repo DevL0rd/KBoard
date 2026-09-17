@@ -1,0 +1,2 @@
+MISSPELLED = "teh"
+PREFIX = "hel"

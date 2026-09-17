@@ -1,3 +1,4 @@
+#include "activeapp.h"
 #include "keyboardservice.h"
 #include "settingsbridge.h"
 
@@ -21,7 +22,8 @@ int main(int argc, char **argv)
     QGuiApplication application(argc, argv);
     KLocalizedString::setApplicationDomain("kboard");
 
-    KAboutData about(QStringLiteral("kboard"), i18n("KBoard"), QStringLiteral(KBOARD_VERSION_STRING), i18n("On-screen keyboard for Plasma"), KAboutLicense::GPL_V3);
+    KAboutData about(QStringLiteral("kboard"), i18n("KBoard"), QStringLiteral(KBOARD_VERSION_STRING), i18n("On-screen keyboard for Plasma"),
+        KAboutLicense::GPL_V3);
     about.addAuthor(QStringLiteral("DevL0rd"), QString(), QStringLiteral("dmhzmxn@gmail.com"));
     about.setDesktopFileName(QStringLiteral("org.devl0rd.kboard"));
     KAboutData::setApplicationData(about);
@@ -38,6 +40,9 @@ int main(int argc, char **argv)
     bus.registerObject(QStringLiteral("/KBoard"), KeyboardService::instance(), QDBusConnection::ExportScriptableContents);
     bus.registerService(QStringLiteral("org.devl0rd.KBoard"));
 
+    ActiveAppWatcher activeApp;
+    activeApp.start();
+
     QQmlApplicationEngine engine;
     const QString buildQml = QStringLiteral(KBOARD_QML_BUILD_DIR);
     if (QDir(buildQml).exists() && qEnvironmentVariableIsSet("KBOARD_USE_BUILD_TREE")) {
@@ -46,9 +51,8 @@ int main(int argc, char **argv)
         engine.addImportPath(QStringLiteral(KBOARD_QML_INSTALL_DIR));
     }
     KLocalization::setupLocalizedContext(&engine);
-    QObject::connect(&engine, &QQmlApplicationEngine::objectCreationFailed, &application, [] {
-        QCoreApplication::exit(1);
-    }, Qt::QueuedConnection);
+    QObject::connect(
+        &engine, &QQmlApplicationEngine::objectCreationFailed, &application, [] { QCoreApplication::exit(1); }, Qt::QueuedConnection);
     engine.loadFromModule("org.devl0rd.kboard", "Main");
     return application.exec();
 }

@@ -3,12 +3,12 @@
 #include <QDBusConnection>
 #include <QDBusMessage>
 #include <QDBusPendingCall>
+#include <QDBusVariant>
 #include <QProcess>
 
 KeyboardService::KeyboardService(QObject *parent)
     : QObject(parent)
-{
-}
+{ }
 
 KeyboardService *KeyboardService::instance()
 {
@@ -52,9 +52,24 @@ void KeyboardService::setPanel(const QString &panel)
     Q_EMIT PanelChanged(panel);
 }
 
+namespace
+{
+QDBusMessage virtualKeyboardCall(const QString &interface, const QString &method)
+{
+    return QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualKeyboard"), interface, method);
+}
+}
+
 void KeyboardService::forceActivate()
 {
-    auto message = QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualKeyboard"), QStringLiteral("org.kde.kwin.VirtualKeyboard"), QStringLiteral("forceActivate"));
+    QDBusConnection::sessionBus().asyncCall(
+        virtualKeyboardCall(QStringLiteral("org.kde.kwin.VirtualKeyboard"), QStringLiteral("forceActivate")));
+}
+
+void KeyboardService::deactivate()
+{
+    QDBusMessage message = virtualKeyboardCall(QStringLiteral("org.freedesktop.DBus.Properties"), QStringLiteral("Set"));
+    message << QStringLiteral("org.kde.kwin.VirtualKeyboard") << QStringLiteral("active") << QVariant::fromValue(QDBusVariant(false));
     QDBusConnection::sessionBus().asyncCall(message);
 }
 
@@ -66,6 +81,7 @@ void KeyboardService::Show()
 
 void KeyboardService::Hide()
 {
+    deactivate();
     Q_EMIT hideRequested();
 }
 
@@ -102,5 +118,25 @@ void KeyboardService::OpenSettings(const QString &page)
     if (!page.isEmpty()) {
         arguments << QStringLiteral("--page") << page;
     }
-    QProcess::startDetached(QStringLiteral("kboard-settings"), arguments);
+    QProcess::startDetached(QStringLiteral(KBOARD_SETTINGS_BINARY), arguments);
+}
+
+QString KeyboardService::KeyMap()
+{
+    Q_EMIT keyMapRequested();
+    return m_keyMap;
+}
+
+QString KeyboardService::activeApp() const
+{
+    return m_activeApp;
+}
+
+void KeyboardService::SetActiveApp(const QString &application)
+{
+    if (application == m_activeApp) {
+        return;
+    }
+    m_activeApp = application;
+    Q_EMIT activeAppChanged();
 }

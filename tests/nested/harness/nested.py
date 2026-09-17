@@ -1,4 +1,5 @@
 import os
+import shlex
 import shutil
 import signal
 import subprocess
@@ -14,7 +15,7 @@ def build_dir():
 
 
 class NestedSession:
-    def __init__(self, width=1920, height=1080, extra_kwinrc="", kboardrc="", xwayland=False, output_count=1):
+    def __init__(self, width=1920, height=1080, extra_kwinrc="", kboardrc="", xwayland=False, output_count=1, kdeglobals=""):
         self.width = width
         self.height = height
         self.output_count = output_count
@@ -35,6 +36,7 @@ class NestedSession:
             {extra_kwinrc}
             """))
         (self.config_home / "kboardrc").write_text(kboardrc)
+        (self.config_home / "kdeglobals").write_text(kdeglobals)
         self.proc = None
         self.log_path = self.root / "kwin.log"
 
@@ -45,6 +47,7 @@ class NestedSession:
         env["XDG_DATA_HOME"] = str(self.data_home)
         env["XDG_STATE_HOME"] = str(self.state_home)
         env["KBOARD_USE_BUILD_TREE"] = "1"
+        env["XDG_CURRENT_DESKTOP"] = "KDE"
         env["KWIN_SCREENSHOT_NO_PERMISSION_CHECKS"] = "1"
         env["KWIN_WAYLAND_NO_PERMISSION_CHECKS"] = "1"
         env["QT_LOGGING_RULES"] = "kwin_*.debug=false"
@@ -95,10 +98,11 @@ def run_runner(runner, timeout=120, client="text-client.qml", keep=False, **sess
     return run_script(script, timeout, keep=keep, **session)
 
 
-def run_script(script, timeout, keep=False, **session_args):
+def run_script(script, timeout, keep=False, env=None, **session_args):
     session = NestedSession(**session_args)
     report = session.root / "report.txt"
-    session.start(f'export KBOARD_REPORT="{report}"\nexport KBOARD_KWIN_LOG="{session.log_path}"\nexport KBOARD_TEST_ROOT="{session.root}"\n' + script)
+    exports = "".join(f"export {name}={shlex.quote(value)}\n" for name, value in (env or {}).items())
+    session.start(f'export KBOARD_REPORT="{report}"\nexport KBOARD_KWIN_LOG="{session.log_path}"\nexport KBOARD_TEST_ROOT="{session.root}"\n' + exports + script)
     try:
         session.wait(timeout=timeout)
     except Exception as error:

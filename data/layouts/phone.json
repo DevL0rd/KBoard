@@ -1,0 +1,44 @@
+{
+    "id": "phone",
+    "kind": "page",
+    "name": "Phone",
+    "columns": 5,
+    "rows": [
+        {
+            "keys": [
+                {"label": "+", "special": true, "longPress": ["(", ")"]},
+                {"label": "1"},
+                {"label": "2", "sublabel": "ABC"},
+                {"label": "3", "sublabel": "DEF"},
+                {"label": "-", "special": true}
+            ]
+        },
+        {
+            "keys": [
+                {"label": ",", "special": true, "sublabel": "pause"},
+                {"label": "4", "sublabel": "GHI"},
+                {"label": "5", "sublabel": "JKL"},
+                {"label": "6", "sublabel": "MNO"},
+                {"type": "space", "label": " "}
+            ]
+        },
+        {
+            "keys": [
+                {"label": ";", "special": true, "sublabel": "wait"},
+                {"label": "7", "sublabel": "PQRS"},
+                {"label": "8", "sublabel": "TUV"},
+                {"label": "9", "sublabel": "WXYZ"},
+                {"type": "backspace"}
+            ]
+        },
+        {
+            "keys": [
+                {"label": "*", "special": true, "longPress": ["#"]},
+                {"label": "#", "special": true},
+                {"label": "0", "sublabel": "+", "longPress": ["+"]},
+                {"label": ".", "special": true},
+                {"type": "enter"}
+            ]
+        }
+    ]
+}

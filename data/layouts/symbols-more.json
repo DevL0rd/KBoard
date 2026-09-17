@@ -1,0 +1,50 @@
+{
+    "id": "symbols-more",
+    "kind": "page",
+    "name": "=\\<",
+    "columns": 10,
+    "rows": [
+        {
+            "keys": [
+                {"label": "~"},
+                {"label": "`"},
+                {"label": "|"},
+                {"label": "•"},
+                {"label": "√"},
+                {"label": "π"},
+                {"label": "÷"},
+                {"label": "×"},
+                {"label": "¶"},
+                {"label": "∆"}
+            ]
+        },
+        {
+            "keys": [
+                {"label": "£"},
+                {"label": "¢"},
+                {"label": "€"},
+                {"label": "¥"},
+                {"label": "^"},
+                {"label": "°"},
+                {"label": "="},
+                {"label": "{"},
+                {"label": "}"},
+                {"label": "\\"}
+            ]
+        },
+        {
+            "keys": [
+                {"type": "symbols", "label": "?123", "page": "symbols", "width": 1.5},
+                {"label": "%"},
+                {"label": "©"},
+                {"label": "®"},
+                {"label": "™"},
+                {"label": "✓"},
+                {"label": "["},
+                {"label": "]"},
+                {"type": "backspace", "width": 1.5}
+            ]
+        },
+        {"include": "bottom-symbols"}
+    ]
+}

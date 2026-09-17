@@ -68,13 +68,36 @@ static void touch_gesture(struct wl_display *display, int fingers, double x, dou
     touch_frame(display);
 }
 
+static void run_script(struct wl_display *display)
+{
+    char command[16];
+    int id = 0;
+    double x = 0;
+    double y = 0;
+    while (scanf("%15s", command) == 1) {
+        if (strcmp(command, "down") == 0 && scanf("%d %lf %lf", &id, &x, &y) == 3) {
+            org_kde_kwin_fake_input_touch_down(fake, id, wl_fixed_from_double(x), wl_fixed_from_double(y));
+        } else if (strcmp(command, "move") == 0 && scanf("%d %lf %lf", &id, &x, &y) == 3) {
+            org_kde_kwin_fake_input_touch_motion(fake, id, wl_fixed_from_double(x), wl_fixed_from_double(y));
+        } else if (strcmp(command, "up") == 0 && scanf("%d", &id) == 1) {
+            org_kde_kwin_fake_input_touch_up(fake, id);
+        } else if (strcmp(command, "frame") == 0) {
+            org_kde_kwin_fake_input_touch_frame(fake);
+            wl_display_roundtrip(display);
+        } else if (strcmp(command, "sleep") == 0 && scanf("%d", &id) == 1) {
+            usleep((useconds_t)id * 1000);
+        }
+    }
+}
+
 int main(int argc, char **argv)
 {
-    if (argc < 4) {
-        fprintf(stderr, "usage: fakepointer move|click X Y | touch FINGERS X Y DX DY R0 R1 HOLD_MS STEPS\n");
+    if (argc < 4 && !(argc == 2 && strcmp(argv[1], "script") == 0)) {
+        fprintf(stderr, "usage: fakepointer move|click X Y | touch FINGERS X Y DX DY R0 R1 HOLD_MS STEPS | script\n");
         return 2;
     }
     const int touch = strcmp(argv[1], "touch") == 0;
+    const int script = strcmp(argv[1], "script") == 0;
     if (touch && argc < 11) {
         fprintf(stderr, "usage: fakepointer touch FINGERS X Y DX DY R0 R1 HOLD_MS STEPS\n");
         return 2;
@@ -92,6 +115,11 @@ int main(int argc, char **argv)
         return 1;
     }
     org_kde_kwin_fake_input_authenticate(fake, "kboard-tests", "nested input");
+    if (script) {
+        run_script(display);
+        wl_display_disconnect(display);
+        return 0;
+    }
     if (touch) {
         const int fingers = atoi(argv[2]);
         if (fingers < 1 || fingers > 10) {

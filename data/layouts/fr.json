@@ -1,0 +1,54 @@
+{
+    "id": "fr",
+    "kind": "letters",
+    "name": "Français",
+    "shortName": "FR",
+    "language": "fr_FR",
+    "locale": "fr_FR",
+    "currency": "€",
+    "columns": 10,
+    "letters": [
+        {
+            "keys": [
+                {"label": "a", "hint": "1", "longPress": ["1", "à", "á", "â", "ä", "æ", "ã", "å", "ā"]},
+                {"label": "z", "hint": "2", "longPress": ["2", "ž", "ź", "ż"]},
+                {"label": "e", "hint": "3", "longPress": ["3", "è", "é", "ê", "ë", "ē", "ė", "ę"]},
+                {"label": "r", "hint": "4", "longPress": ["4", "ř"]},
+                {"label": "t", "hint": "5", "longPress": ["5", "ť", "þ"]},
+                {"label": "y", "hint": "6", "longPress": ["6", "ÿ", "ý"]},
+                {"label": "u", "hint": "7", "longPress": ["7", "û", "ü", "ù", "ú", "ū"]},
+                {"label": "i", "hint": "8", "longPress": ["8", "î", "ï", "í", "ī", "į", "ì"]},
+                {"label": "o", "hint": "9", "longPress": ["9", "ô", "ö", "ò", "ó", "œ", "ø", "ō", "õ"]},
+                {"label": "p", "hint": "0", "longPress": ["0"]}
+            ]
+        },
+        {
+            "keys": [
+                {"label": "q", "hint": "@", "longPress": ["@"]},
+                {"label": "s", "hint": "#", "longPress": ["#", "ß", "ś", "š", "ş"]},
+                {"label": "d", "hint": "$", "longPress": ["$", "ď", "ð"]},
+                {"label": "f", "hint": "%", "longPress": ["%"]},
+                {"label": "g", "hint": "&", "longPress": ["&", "ğ"]},
+                {"label": "h", "hint": "-", "longPress": ["-"]},
+                {"label": "j", "hint": "+", "longPress": ["+"]},
+                {"label": "k", "hint": "(", "longPress": ["("]},
+                {"label": "l", "hint": ")", "longPress": [")", "ł"]},
+                {"label": "m"}
+            ]
+        },
+        {
+            "keys": [
+                {"type": "shift", "width": 1.5},
+                {"label": "w", "hint": "*", "longPress": ["*"]},
+                {"label": "x", "hint": "\"", "longPress": ["\""]},
+                {"label": "c", "hint": "'", "longPress": ["'", "ç", "ć", "č"]},
+                {"label": "v", "hint": ":", "longPress": [":"]},
+                {"label": "b", "hint": ";", "longPress": [";"]},
+                {"label": "n", "hint": "!", "longPress": ["!", "ñ", "ń", "ň"]},
+                {"label": "'", "longPress": ["‘", "’", "«", "»"]},
+                {"type": "backspace", "width": 1.5}
+            ]
+        },
+        {"include": "bottom"}
+    ]
+}

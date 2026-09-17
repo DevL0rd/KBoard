@@ -1,0 +1,53 @@
+{
+    "id": "us",
+    "kind": "letters",
+    "name": "English (US)",
+    "shortName": "EN",
+    "language": "en_US",
+    "locale": "en_US",
+    "currency": "$",
+    "columns": 10,
+    "letters": [
+        {
+            "keys": [
+                {"label": "q", "hint": "1", "longPress": ["1"]},
+                {"label": "w", "hint": "2", "longPress": ["2"]},
+                {"label": "e", "hint": "3", "longPress": ["3", "è", "é", "ê", "ë", "ē", "ė", "ę"]},
+                {"label": "r", "hint": "4", "longPress": ["4", "ř"]},
+                {"label": "t", "hint": "5", "longPress": ["5", "ť", "þ"]},
+                {"label": "y", "hint": "6", "longPress": ["6", "ÿ", "ý"]},
+                {"label": "u", "hint": "7", "longPress": ["7", "û", "ü", "ù", "ú", "ū"]},
+                {"label": "i", "hint": "8", "longPress": ["8", "î", "ï", "í", "ī", "į", "ì"]},
+                {"label": "o", "hint": "9", "longPress": ["9", "ô", "ö", "ò", "ó", "œ", "ø", "ō", "õ"]},
+                {"label": "p", "hint": "0", "longPress": ["0"]}
+            ]
+        },
+        {
+            "keys": [
+                {"label": "a", "hint": "@", "longPress": ["@", "à", "á", "â", "ä", "æ", "ã", "å", "ā"]},
+                {"label": "s", "hint": "#", "longPress": ["#", "ß", "ś", "š", "ş"]},
+                {"label": "d", "hint": "$", "longPress": ["$", "ď", "ð"]},
+                {"label": "f", "hint": "%", "longPress": ["%"]},
+                {"label": "g", "hint": "&", "longPress": ["&", "ğ"]},
+                {"label": "h", "hint": "-", "longPress": ["-"]},
+                {"label": "j", "hint": "+", "longPress": ["+"]},
+                {"label": "k", "hint": "(", "longPress": ["("]},
+                {"label": "l", "hint": ")", "longPress": [")", "ł"]}
+            ]
+        },
+        {
+            "keys": [
+                {"type": "shift", "width": 1.5},
+                {"label": "z", "hint": "*", "longPress": ["*", "ž", "ź", "ż"]},
+                {"label": "x", "hint": "\"", "longPress": ["\""]},
+                {"label": "c", "hint": "'", "longPress": ["'", "ç", "ć", "č"]},
+                {"label": "v", "hint": ":", "longPress": [":"]},
+                {"label": "b", "hint": ";", "longPress": [";"]},
+                {"label": "n", "hint": "!", "longPress": ["!", "ñ", "ń", "ň"]},
+                {"label": "m", "hint": "?", "longPress": ["?"]},
+                {"type": "backspace", "width": 1.5}
+            ]
+        },
+        {"include": "bottom"}
+    ]
+}

@@ -1,0 +1,50 @@
+{
+    "id": "symbols",
+    "kind": "page",
+    "name": "?123",
+    "columns": 10,
+    "rows": [
+        {
+            "keys": [
+                {"label": "1", "longPress": ["¹", "½", "⅓", "¼", "⅛"]},
+                {"label": "2", "longPress": ["²", "⅔"]},
+                {"label": "3", "longPress": ["³", "¾", "⅜"]},
+                {"label": "4", "longPress": ["⁴", "⅘"]},
+                {"label": "5", "longPress": ["⅝", "⅚"]},
+                {"label": "6", "longPress": []},
+                {"label": "7", "longPress": ["⅞"]},
+                {"label": "8", "longPress": []},
+                {"label": "9", "longPress": []},
+                {"label": "0", "longPress": ["ⁿ", "∅"]}
+            ]
+        },
+        {
+            "keys": [
+                {"label": "@"},
+                {"label": "#", "longPress": ["№"]},
+                {"label": "{currency}", "longPress": ["$", "€", "£", "¢", "¥", "₹", "₽", "₩"]},
+                {"label": "_"},
+                {"label": "&"},
+                {"label": "-", "longPress": ["–", "—", "·"]},
+                {"label": "+", "longPress": ["±"]},
+                {"label": "(", "longPress": ["<", "{", "["]},
+                {"label": ")", "longPress": [">", "}", "]"]},
+                {"label": "/", "longPress": ["\\"]}
+            ]
+        },
+        {
+            "keys": [
+                {"type": "symbols", "label": "=\\<", "page": "symbols-more", "width": 1.5},
+                {"label": "*", "longPress": ["†", "‡", "★"]},
+                {"label": "\"", "longPress": ["„", "“", "”", "«", "»"]},
+                {"label": "'", "longPress": ["‚", "‘", "’", "‹", "›"]},
+                {"label": ":"},
+                {"label": ";"},
+                {"label": "!", "longPress": ["¡"]},
+                {"label": "?", "longPress": ["¿", "‽"]},
+                {"type": "backspace", "width": 1.5}
+            ]
+        },
+        {"include": "bottom-symbols"}
+    ]
+}

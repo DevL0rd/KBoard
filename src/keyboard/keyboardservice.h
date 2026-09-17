@@ -12,6 +12,8 @@ class KeyboardService : public QObject
 
     Q_PROPERTY(bool visible READ isVisible WRITE setVisible NOTIFY visibleChanged)
     Q_PROPERTY(QString panel READ panel WRITE setPanel NOTIFY panelChanged)
+    Q_PROPERTY(QString keyMap MEMBER m_keyMap)
+    Q_PROPERTY(QString activeApp READ activeApp NOTIFY activeAppChanged)
 
 public:
     static KeyboardService *instance();
@@ -20,6 +22,7 @@ public:
     bool isVisible() const;
     void setVisible(bool visible);
     QString panel() const;
+    QString activeApp() const;
     void setPanel(const QString &panel);
 
 public Q_SLOTS:
@@ -30,19 +33,26 @@ public Q_SLOTS:
     Q_SCRIPTABLE bool IsVisible() const;
     Q_SCRIPTABLE QString CurrentPanel() const;
     Q_SCRIPTABLE void OpenSettings(const QString &page);
+    Q_SCRIPTABLE QString KeyMap();
+    Q_SCRIPTABLE void SetActiveApp(const QString &application);
 
 Q_SIGNALS:
     Q_SCRIPTABLE void VisibleChanged(bool visible);
     Q_SCRIPTABLE void PanelChanged(const QString &panel);
     void visibleChanged();
     void panelChanged();
+    void activeAppChanged();
     void showRequested();
     void hideRequested();
+    void keyMapRequested();
 
 private:
     explicit KeyboardService(QObject *parent = nullptr);
     void forceActivate();
+    void deactivate();
 
     bool m_visible = false;
     QString m_panel = QStringLiteral("keys");
+    QString m_keyMap;
+    QString m_activeApp;
 };

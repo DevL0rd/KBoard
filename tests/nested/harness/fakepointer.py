@@ -33,3 +33,10 @@ def touch(fingers, x, y, dx=0, dy=0, radius=0, end_radius=None, hold_ms=0, steps
     end = radius if end_radius is None else end_radius
     subprocess.run([binary(), "touch", *(str(value) for value in (fingers, x, y, dx, dy, radius, end, hold_ms, steps))], check=True)
     time.sleep(1.0)
+
+
+PRIMER = ["down 9 1 1", "frame", "up 9", "frame", "sleep 150"]
+
+
+def script(lines):
+    subprocess.run([binary(), "script"], input="\n".join(PRIMER + lines) + "\n", text=True, check=True)
