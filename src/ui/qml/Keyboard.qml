@@ -103,10 +103,6 @@ Item {
             panel = panel === name ? "keys" : name
     }
 
-    onPanelChanged: {
-        if (shown)
-    }
-
     height: expandedHeight + headroom
 
     Behavior on splitAmount {
