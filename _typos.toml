@@ -1,5 +1,5 @@
 [files]
-extend-exclude = ["build/", "build-*/", "*.svg"]
+extend-exclude = ["build/", "build-*/", "*.svg", "data/emoji/emoji.json"]
 
 [default.extend-words]
 INVOKABLE = "INVOKABLE"
