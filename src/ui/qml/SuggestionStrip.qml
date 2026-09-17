@@ -18,6 +18,7 @@ Item {
     property bool swipeToHide: true
     property var tools: [
         { name: "emoji", glyph: "emoji" },
+        { name: "full", icon: "input-keyboard" },
         { name: "gif", text: "GIF" },
         { name: "clipboard", icon: "edit-paste" },
         { name: "voice", icon: "audio-input-microphone" },

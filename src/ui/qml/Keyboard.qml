@@ -12,6 +12,7 @@ Item {
     property real baseHeight: 320
     property real screenHeight: 1080
     property string panel: "keys"
+    property bool fullKeyboard: false
     property real slide: 0
     property real splitAmount: splitShown ? 1 : 0
     property bool shown: true
@@ -95,7 +96,9 @@ Item {
     }
 
     function requestTool(name) {
-        if (name === "settings")
+        if (name === "full")
+            fullKeyboard = !fullKeyboard
+        else if (name === "settings")
             settingsRequested()
         else if (name === "hide")
             hideRequested()
@@ -170,7 +173,9 @@ Item {
                 anchors.leftMargin: Theme.gap / 2
                 anchors.rightMargin: Theme.gap / 2
                 anchors.bottomMargin: Theme.gap / 2
-                desktopRow: Settings.showDesktopRow || appRules.desktopRow || typing.field.terminal
+                numberRow: Settings.showNumberRow || keyboard.fullKeyboard
+                functionRow: keyboard.fullKeyboard
+                desktopRow: Settings.showDesktopRow || keyboard.fullKeyboard || appRules.desktopRow || typing.field.terminal
                 split: keyboard.splitAmount > 0
                 splitGap: Math.max(0, (keyboard.width - keyboard.splitHalf * 2) * keyboard.splitAmount)
                 onActionKey: (action, key) => keyboard.handleAction(action)
