@@ -1,0 +1,33 @@
+{
+  "result": true,
+  "data": {
+    "locale": "en_US",
+    "categories": [
+      {
+        "category": "smile",
+        "query": "smile",
+        "preview_url": "https://static.klipy.com/ii/e293a233a303a98e471f78d04e13a1b0/a5/fd/NnGoLmO8.gif"
+      },
+      {
+        "category": "aww",
+        "query": "aww",
+        "preview_url": "https://static.klipy.com/ii/925f17378dd1893b674a723c07535afe/1c/24/Oizp49sT.gif"
+      },
+      {
+        "category": "high five",
+        "query": "high five",
+        "preview_url": "https://static.klipy.com/ii/925f17378dd1893b674a723c07535afe/d9/e6/rtepipfC.gif"
+      },
+      {
+        "category": "good morning",
+        "query": "good morning",
+        "preview_url": "https://static.klipy.com/ii/ce286d05b8e1a47cd4f32b0e1b6dec0e/a6/f3/SEmLt8aA.gif"
+      },
+      {
+        "category": "good night",
+        "query": "good night",
+        "preview_url": "https://static.klipy.com/ii/f87f46a2c5aeaeed4c68910815f73eaf/af/77/35MgTkW5.gif"
+      }
+    ]
+  }
+}
