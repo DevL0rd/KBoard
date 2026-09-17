@@ -34,6 +34,8 @@ public Q_SLOTS:
     Q_SCRIPTABLE QString CurrentPanel() const;
     Q_SCRIPTABLE void OpenSettings(const QString &page);
     Q_SCRIPTABLE void SetEnabled(bool enabled);
+    Q_SCRIPTABLE void Enable();
+    Q_SCRIPTABLE void Disable();
     Q_SCRIPTABLE bool IsEnabled() const;
     Q_SCRIPTABLE void Deactivate();
     Q_SCRIPTABLE QString KeyMap();

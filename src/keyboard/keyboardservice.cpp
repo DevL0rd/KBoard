@@ -95,6 +95,16 @@ void KeyboardService::SetEnabled(bool enabled)
     }
 }
 
+void KeyboardService::Enable()
+{
+    SetEnabled(true);
+}
+
+void KeyboardService::Disable()
+{
+    SetEnabled(false);
+}
+
 bool KeyboardService::IsEnabled() const
 {
     return KBoardSettings::enabled();

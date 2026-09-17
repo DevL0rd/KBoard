@@ -115,10 +115,13 @@ if ! command -v kboard-voice-model >/dev/null 2>&1; then
 fi
 kboard-voice-model "$VOICE_MODEL"
 
-if kpackagetool6 -t Plasma/Applet -u "$REPO_DIR/plasmoids/org.devl0rd.kboard" >/dev/null 2>&1; then
+PLASMOID="$REPO_DIR/plasmoids/org.devl0rd.kboard"
+mkdir -p "$PLASMOID/contents/ui/lib"
+cp "$REPO_DIR/shared/common/"*.qml "$REPO_DIR/shared/common/"*.js "$PLASMOID/contents/ui/lib/"
+if kpackagetool6 -t Plasma/Applet -u "$PLASMOID" >/dev/null 2>&1; then
     echo "Upgraded KBoard Plasma applet"
 else
-    kpackagetool6 -t Plasma/Applet -i "$REPO_DIR/plasmoids/org.devl0rd.kboard" >/dev/null
+    kpackagetool6 -t Plasma/Applet -i "$PLASMOID" >/dev/null
     echo "Installed KBoard Plasma applet"
 fi
 

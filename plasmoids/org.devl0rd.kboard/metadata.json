@@ -2,13 +2,10 @@
     "KPlugin": {
         "Id": "org.devl0rd.kboard",
         "Name": "KBoard",
-        "Description": "Turns the on-screen keyboard on and off",
+        "Description": "Show and hide the KBoard on-screen keyboard and jump straight to emoji, GIFs, clipboard or voice typing",
         "Icon": "input-keyboard-virtual",
         "Authors": [
-            {
-                "Name": "DevL0rd",
-                "Email": "dmhzmxn@gmail.com"
-            }
+            { "Name": "DevL0rd", "Email": "dmhzmxn@gmail.com" }
         ],
         "Category": "Utilities",
         "License": "GPL-3.0-only",
