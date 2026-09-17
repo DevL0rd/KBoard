@@ -134,5 +134,5 @@ private:
     InputMethod *m_inputMethod;
     std::shared_ptr<InputMethodContext> m_context;
     QString m_preedit;
-    uint32_t m_time = 0;
+    QString m_language;
 };

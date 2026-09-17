@@ -157,7 +157,10 @@ void InputContext::attach()
     }
     connect(m_context.get(), &InputMethodContext::surroundingTextChanged, this, &InputContext::surroundingTextChanged);
     connect(m_context.get(), &InputMethodContext::contentTypeChanged, this, &InputContext::contentTypeChanged);
-    connect(m_context.get(), &InputMethodContext::preferredLanguageChanged, this, &InputContext::preferredLanguageChanged);
+    connect(m_context.get(), &InputMethodContext::preferredLanguageChanged, this, [this](const QString &language) {
+        m_language = language;
+        Q_EMIT preferredLanguageChanged();
+    });
     connect(m_context.get(), &InputMethodContext::reset, this, [this] {
         m_preedit.clear();
         Q_EMIT preeditChanged();
@@ -228,7 +231,7 @@ bool InputContext::isSensitive() const
 
 QString InputContext::preferredLanguage() const
 {
-    return QString();
+    return m_language;
 }
 
 QString InputContext::preedit() const
