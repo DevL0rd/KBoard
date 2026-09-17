@@ -1,0 +1,7 @@
+{
+    "id": "mechanical",
+    "name": "Mechanical",
+    "description": "Thocky switches with a bottom-out and a faint spring ping",
+    "order": 1,
+    "license": "CC0-1.0"
+}

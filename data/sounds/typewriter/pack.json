@@ -1,0 +1,7 @@
+{
+    "id": "typewriter",
+    "name": "Typewriter",
+    "description": "Type bars striking the platen, with a carriage bell on enter",
+    "order": 2,
+    "license": "CC0-1.0"
+}

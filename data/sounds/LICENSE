@@ -1,0 +1,13 @@
+The sound packs in this directory (every *.wav and pack.json file under
+soft/, mechanical/, typewriter/, bubble/ and glass/) are dedicated to the
+public domain under Creative Commons CC0 1.0 Universal.
+
+https://creativecommons.org/publicdomain/zero/1.0/legalcode
+
+To the extent possible under law, the KBoard authors have waived all
+copyright and related or neighboring rights to these sounds. You can copy,
+modify, distribute and use them, even for commercial purposes, without
+asking permission.
+
+The generator script generate.py is part of KBoard and may also be used
+under CC0 1.0.
