@@ -6,7 +6,7 @@ namespace
 {
 KConfigSkeletonItem *itemNamed(const QString &name)
 {
-    return KBoardSettings::self()->findItem(name.left(1).toUpper() + name.mid(1));
+    return KBoardSettings::self()->findItem(name);
 }
 }
 

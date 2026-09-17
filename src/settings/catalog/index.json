@@ -1,0 +1,848 @@
+{
+    "pages": [
+        {
+            "id": "look",
+            "type": "LookPage",
+            "title": "Look",
+            "icon": "preferences-desktop-color",
+            "description": "Height, key style, corners, transparency and accent colour"
+        },
+        {
+            "id": "layout",
+            "type": "LayoutPage",
+            "title": "Layout & Languages",
+            "icon": "preferences-desktop-locale",
+            "description": "Keyboard layouts, extra rows and splitting on wide screens"
+        },
+        {
+            "id": "typing",
+            "type": "TypingPage",
+            "title": "Typing",
+            "icon": "tools-check-spelling",
+            "description": "Suggestions, autocorrect, capitals, punctuation and text shortcuts"
+        },
+        {
+            "id": "glide",
+            "type": "GlidePage",
+            "title": "Glide & Gestures",
+            "icon": "draw-freehand",
+            "description": "Swipe across letters to type, move the cursor and delete words"
+        },
+        {
+            "id": "press",
+            "type": "PressPage",
+            "title": "Press Feel & Long Press",
+            "icon": "input-touchscreen",
+            "description": "Key press animation, pop-ups, accents and key repeat timing"
+        },
+        {
+            "id": "sound",
+            "type": "SoundPage",
+            "title": "Sound & Haptics",
+            "icon": "audio-volume-high",
+            "description": "Key sounds, volume and vibration"
+        },
+        {
+            "id": "emoji",
+            "type": "EmojiPage",
+            "title": "Emoji & GIFs",
+            "icon": "face-smile",
+            "description": "Skin tone, GIF safety filter and how GIFs are inserted"
+        },
+        {
+            "id": "clipboard",
+            "type": "ClipboardPage",
+            "title": "Clipboard",
+            "icon": "edit-paste",
+            "description": "Clipboard history, how long items stay and the paste chip"
+        },
+        {
+            "id": "voice",
+            "type": "VoicePage",
+            "title": "Voice Typing",
+            "icon": "audio-input-microphone",
+            "description": "Speech models, processing device, mic test and voice commands"
+        },
+        {
+            "id": "controller",
+            "type": "ControllerPage",
+            "title": "Controller",
+            "icon": "input-gamepad",
+            "description": "Type with a game controller, button actions and rumble"
+        },
+        {
+            "id": "visibility",
+            "type": "VisibilityPage",
+            "title": "When It Shows",
+            "icon": "view-visible",
+            "description": "When the keyboard opens, per-app rules and hiding it"
+        },
+        {
+            "id": "privacy",
+            "type": "PrivacyPage",
+            "title": "Privacy",
+            "icon": "security-high",
+            "description": "Learned words, clipboard history and voice data"
+        },
+        {
+            "id": "about",
+            "type": "AboutPage",
+            "title": "About",
+            "icon": "help-about",
+            "description": "Version, credits and licences"
+        }
+    ],
+    "entries": [
+        {
+            "page": "look",
+            "section": "Size",
+            "label": "Height in landscape",
+            "settings": [
+                "heightLandscape"
+            ],
+            "keywords": "size tall big small landscape wide screen percent"
+        },
+        {
+            "page": "look",
+            "section": "Size",
+            "label": "Height in portrait",
+            "settings": [
+                "heightPortrait"
+            ],
+            "keywords": "size tall big small portrait phone tablet rotated percent"
+        },
+        {
+            "page": "look",
+            "section": "Keys",
+            "label": "Key style",
+            "settings": [
+                "keyStyle"
+            ],
+            "keywords": "flat bordered raised glass keycaps outline shadow appearance theme"
+        },
+        {
+            "page": "look",
+            "section": "Keys",
+            "label": "Corner roundness",
+            "settings": [
+                "keyRadius"
+            ],
+            "keywords": "radius rounded corners square keys"
+        },
+        {
+            "page": "look",
+            "section": "Keys",
+            "label": "Space between keys",
+            "settings": [
+                "keyGap"
+            ],
+            "keywords": "gap spacing padding margin keys"
+        },
+        {
+            "page": "look",
+            "section": "Keys",
+            "label": "Label size",
+            "settings": [
+                "labelScale"
+            ],
+            "keywords": "font text letters bigger smaller scale"
+        },
+        {
+            "page": "look",
+            "section": "Background",
+            "label": "Blur behind the keyboard",
+            "settings": [
+                "blurEnabled"
+            ],
+            "keywords": "blur frosted glass transparency background"
+        },
+        {
+            "page": "look",
+            "section": "Background",
+            "label": "Background opacity",
+            "settings": [
+                "backgroundOpacity"
+            ],
+            "keywords": "transparent see-through tint alpha background"
+        },
+        {
+            "page": "look",
+            "section": "Colour",
+            "label": "Accent colour",
+            "settings": [
+                "accentMode"
+            ],
+            "keywords": "accent color highlight system theme dark light"
+        },
+        {
+            "page": "look",
+            "section": "Colour",
+            "label": "Custom accent",
+            "settings": [
+                "accentColor"
+            ],
+            "keywords": "accent color custom picker highlight"
+        },
+        {
+            "page": "look",
+            "section": "Motion",
+            "label": "Animations",
+            "settings": [
+                "animationsEnabled"
+            ],
+            "keywords": "animation motion effects reduce disable"
+        },
+        {
+            "page": "look",
+            "section": "Motion",
+            "label": "Animation speed",
+            "settings": [
+                "animationSpeed"
+            ],
+            "keywords": "animation speed faster slower duration motion"
+        },
+        {
+            "page": "layout",
+            "section": "Layouts",
+            "label": "Your layouts",
+            "settings": [
+                "layouts",
+                "activeLayout"
+            ],
+            "keywords": "language layout qwerty azerty qwertz dvorak colemak add remove reorder globe switch active"
+        },
+        {
+            "page": "layout",
+            "section": "Extra rows",
+            "label": "Number row",
+            "settings": [
+                "showNumberRow"
+            ],
+            "keywords": "numbers digits row top"
+        },
+        {
+            "page": "layout",
+            "section": "Extra rows",
+            "label": "Desktop row",
+            "settings": [
+                "showDesktopRow"
+            ],
+            "keywords": "ctrl alt esc tab arrows terminal modifier row"
+        },
+        {
+            "page": "layout",
+            "section": "Split keyboard",
+            "label": "Split into thumb halves",
+            "settings": [
+                "splitMode"
+            ],
+            "keywords": "split halves wide ultrawide tablet thumbs landscape"
+        },
+        {
+            "page": "layout",
+            "section": "Split keyboard",
+            "label": "Width of each half",
+            "settings": [
+                "splitHalfWidth"
+            ],
+            "keywords": "split half width size"
+        },
+        {
+            "page": "typing",
+            "section": "Suggestions",
+            "label": "Show suggestions",
+            "settings": [
+                "suggestions"
+            ],
+            "keywords": "suggestion strip word prediction candidates"
+        },
+        {
+            "page": "typing",
+            "section": "Suggestions",
+            "label": "Predict the next word",
+            "settings": [
+                "nextWordPrediction"
+            ],
+            "keywords": "next word prediction suggestions"
+        },
+        {
+            "page": "typing",
+            "section": "Suggestions",
+            "label": "Suggest emoji",
+            "settings": [
+                "emojiSuggestions"
+            ],
+            "keywords": "emoji suggestions smiley"
+        },
+        {
+            "page": "typing",
+            "section": "Corrections",
+            "label": "Autocorrect",
+            "settings": [
+                "autocorrect"
+            ],
+            "keywords": "autocorrect spelling typo fix correction strength"
+        },
+        {
+            "page": "typing",
+            "section": "Capitals and punctuation",
+            "label": "Capitalise sentences",
+            "settings": [
+                "autoCapitalize"
+            ],
+            "keywords": "capital letters shift auto capitalization uppercase"
+        },
+        {
+            "page": "typing",
+            "section": "Capitals and punctuation",
+            "label": "Double space for a full stop",
+            "settings": [
+                "doubleSpacePeriod"
+            ],
+            "keywords": "period full stop double space"
+        },
+        {
+            "page": "typing",
+            "section": "Capitals and punctuation",
+            "label": "Smart punctuation",
+            "settings": [
+                "smartPunctuation"
+            ],
+            "keywords": "quotes curly punctuation spaces"
+        },
+        {
+            "page": "typing",
+            "section": "Capitals and punctuation",
+            "label": "Close brackets and quotes",
+            "settings": [
+                "autoPairBrackets"
+            ],
+            "keywords": "brackets parentheses quotes pair auto close"
+        },
+        {
+            "page": "typing",
+            "section": "Text shortcuts",
+            "label": "Text shortcuts",
+            "settings": [
+                "textExpansions"
+            ],
+            "keywords": "expansion abbreviation snippet replace phrase omw brb"
+        },
+        {
+            "page": "glide",
+            "section": "Glide typing",
+            "label": "Glide typing",
+            "settings": [
+                "glideTyping"
+            ],
+            "keywords": "swipe typing gesture typing slide shape writing"
+        },
+        {
+            "page": "glide",
+            "section": "Glide typing",
+            "label": "Show the glide trail",
+            "settings": [
+                "glideTrail"
+            ],
+            "keywords": "trail line path swipe"
+        },
+        {
+            "page": "glide",
+            "section": "Gestures",
+            "label": "Move the cursor with the space bar",
+            "settings": [
+                "spaceCursorSwipe"
+            ],
+            "keywords": "space bar swipe cursor move trackpad arrows"
+        },
+        {
+            "page": "glide",
+            "section": "Gestures",
+            "label": "Delete words by sliding from backspace",
+            "settings": [
+                "backspaceSwipeDelete"
+            ],
+            "keywords": "backspace swipe delete words select"
+        },
+        {
+            "page": "press",
+            "section": "Tapping",
+            "label": "Pop-up above pressed keys",
+            "settings": [
+                "keyPopup"
+            ],
+            "keywords": "popup preview bubble magnify letter"
+        },
+        {
+            "page": "press",
+            "section": "Tapping",
+            "label": "Ripple on touch",
+            "settings": [
+                "ripple"
+            ],
+            "keywords": "ripple wave touch feedback animation"
+        },
+        {
+            "page": "press",
+            "section": "Long press",
+            "label": "Long-press delay",
+            "settings": [
+                "longPressDelay"
+            ],
+            "keywords": "long press hold delay accents symbols timing"
+        },
+        {
+            "page": "press",
+            "section": "Long press",
+            "label": "Show symbol hints on keys",
+            "settings": [
+                "showKeyHints"
+            ],
+            "keywords": "hints secondary symbols corner labels long press"
+        },
+        {
+            "page": "press",
+            "section": "Key repeat",
+            "label": "Repeat delay",
+            "settings": [
+                "keyRepeatDelay"
+            ],
+            "keywords": "key repeat hold backspace delay"
+        },
+        {
+            "page": "press",
+            "section": "Key repeat",
+            "label": "Repeat interval",
+            "settings": [
+                "keyRepeatInterval"
+            ],
+            "keywords": "key repeat rate speed interval"
+        },
+        {
+            "page": "sound",
+            "section": "Sound",
+            "label": "Key sounds",
+            "settings": [
+                "soundEnabled"
+            ],
+            "keywords": "sound audio click mute silent"
+        },
+        {
+            "page": "sound",
+            "section": "Sound",
+            "label": "Sound pack",
+            "settings": [
+                "soundPack"
+            ],
+            "keywords": "sound pack soft mechanical typewriter bubble glass audition preview"
+        },
+        {
+            "page": "sound",
+            "section": "Sound",
+            "label": "Volume",
+            "settings": [
+                "soundVolume"
+            ],
+            "keywords": "sound volume loud quiet"
+        },
+        {
+            "page": "sound",
+            "section": "Sound",
+            "label": "Natural variation",
+            "settings": [
+                "soundVariation"
+            ],
+            "keywords": "sound pitch variation random natural"
+        },
+        {
+            "page": "sound",
+            "section": "Haptics",
+            "label": "Vibrate on key press",
+            "settings": [
+                "haptics"
+            ],
+            "keywords": "haptics vibration buzz feedback"
+        },
+        {
+            "page": "emoji",
+            "section": "Emoji",
+            "label": "Default skin tone",
+            "settings": [
+                "skinTone"
+            ],
+            "keywords": "emoji skin tone color hands people"
+        },
+        {
+            "page": "emoji",
+            "section": "Emoji",
+            "label": "Recent emoji to keep",
+            "settings": [
+                "emojiRecentsLimit"
+            ],
+            "keywords": "emoji recents history recently used"
+        },
+        {
+            "page": "emoji",
+            "section": "GIFs",
+            "label": "GIF provider",
+            "settings": [],
+            "keywords": "gif klipy api key attribution provider status"
+        },
+        {
+            "page": "emoji",
+            "section": "GIFs",
+            "label": "GIF search",
+            "settings": [
+                "gifEnabled"
+            ],
+            "keywords": "gif search panel animated"
+        },
+        {
+            "page": "emoji",
+            "section": "GIFs",
+            "label": "Safety filter",
+            "settings": [
+                "gifContentFilter"
+            ],
+            "keywords": "gif content filter safe search rating nsfw"
+        },
+        {
+            "page": "emoji",
+            "section": "GIFs",
+            "label": "Insert GIFs as",
+            "settings": [
+                "gifInsertMode"
+            ],
+            "keywords": "gif insert paste image link url"
+        },
+        {
+            "page": "emoji",
+            "section": "GIFs",
+            "label": "Play GIFs in the panel",
+            "settings": [
+                "gifAutoplay"
+            ],
+            "keywords": "gif autoplay animate data"
+        },
+        {
+            "page": "emoji",
+            "section": "GIFs",
+            "label": "GIF cache size",
+            "settings": [
+                "gifCacheSizeMb"
+            ],
+            "keywords": "gif cache disk storage megabytes"
+        },
+        {
+            "page": "clipboard",
+            "section": "History",
+            "label": "Clipboard history",
+            "settings": [
+                "clipboardEnabled"
+            ],
+            "keywords": "clipboard history copy paste"
+        },
+        {
+            "page": "clipboard",
+            "section": "History",
+            "label": "Pause history",
+            "settings": [
+                "clipboardPaused"
+            ],
+            "keywords": "clipboard pause stop recording"
+        },
+        {
+            "page": "clipboard",
+            "section": "History",
+            "label": "Keep items for",
+            "settings": [
+                "clipboardExpiryMinutes"
+            ],
+            "keywords": "clipboard expiry retention time minutes delete"
+        },
+        {
+            "page": "clipboard",
+            "section": "History",
+            "label": "Most items to keep",
+            "settings": [
+                "clipboardMaxItems"
+            ],
+            "keywords": "clipboard maximum items limit count"
+        },
+        {
+            "page": "clipboard",
+            "section": "History",
+            "label": "Keep history after restart",
+            "settings": [
+                "clipboardPersist"
+            ],
+            "keywords": "clipboard persist save disk restart"
+        },
+        {
+            "page": "clipboard",
+            "section": "History",
+            "label": "Include Klipper history",
+            "settings": [
+                "clipboardImportKlipper"
+            ],
+            "keywords": "klipper plasma clipboard applet import"
+        },
+        {
+            "page": "clipboard",
+            "section": "Suggestions",
+            "label": "Paste chip for fresh copies",
+            "settings": [
+                "clipboardSuggestChip"
+            ],
+            "keywords": "clipboard chip suggestion paste recent copy"
+        },
+        {
+            "page": "voice",
+            "section": "Voice typing",
+            "label": "Voice typing",
+            "settings": [
+                "voiceEnabled"
+            ],
+            "keywords": "voice dictation speech microphone speak"
+        },
+        {
+            "page": "voice",
+            "section": "Voice typing",
+            "label": "Language",
+            "settings": [
+                "voiceLanguage"
+            ],
+            "keywords": "voice language detect automatic"
+        },
+        {
+            "page": "voice",
+            "section": "Voice typing",
+            "label": "Voice commands",
+            "settings": [
+                "voiceCommands"
+            ],
+            "keywords": "voice commands new line period comma delete that"
+        },
+        {
+            "page": "voice",
+            "section": "Voice typing",
+            "label": "Stop when you stop talking",
+            "settings": [
+                "voiceAutoStop"
+            ],
+            "keywords": "voice auto stop silence end"
+        },
+        {
+            "page": "voice",
+            "section": "Voice typing",
+            "label": "Pause that ends a sentence",
+            "settings": [
+                "voiceEndSilenceMs"
+            ],
+            "keywords": "voice silence pause timeout end of speech"
+        },
+        {
+            "page": "voice",
+            "section": "Speech model",
+            "label": "Speech model",
+            "settings": [
+                "voiceModel"
+            ],
+            "keywords": "voice model parakeet whisper download delete size accuracy speed"
+        },
+        {
+            "page": "voice",
+            "section": "Hardware",
+            "label": "Processing device",
+            "settings": [
+                "voiceDevice"
+            ],
+            "keywords": "voice gpu cuda vulkan cpu device backend"
+        },
+        {
+            "page": "voice",
+            "section": "Hardware",
+            "label": "Microphone",
+            "settings": [
+                "voiceMicrophone"
+            ],
+            "keywords": "voice microphone input device"
+        },
+        {
+            "page": "voice",
+            "section": "Hardware",
+            "label": "Free memory after",
+            "settings": [
+                "voiceUnloadMinutes"
+            ],
+            "keywords": "voice unload memory vram idle"
+        },
+        {
+            "page": "voice",
+            "section": "Try it",
+            "label": "Microphone test",
+            "settings": [],
+            "keywords": "voice mic test try transcript level"
+        },
+        {
+            "page": "controller",
+            "section": "Controller",
+            "label": "Type with a controller",
+            "settings": [
+                "controllerEnabled"
+            ],
+            "keywords": "gamepad controller joystick xbox playstation steam deck"
+        },
+        {
+            "page": "controller",
+            "section": "Controller",
+            "label": "Connected controller",
+            "settings": [],
+            "keywords": "gamepad connected rumble test vibration"
+        },
+        {
+            "page": "controller",
+            "section": "Controller",
+            "label": "Open the keyboard with",
+            "settings": [
+                "controllerOpenChord"
+            ],
+            "keywords": "gamepad chord combination shortcut open buttons"
+        },
+        {
+            "page": "controller",
+            "section": "Controller",
+            "label": "Rumble",
+            "settings": [
+                "controllerRumble"
+            ],
+            "keywords": "gamepad rumble vibration force feedback"
+        },
+        {
+            "page": "controller",
+            "section": "Controller",
+            "label": "Radial typing with both sticks",
+            "settings": [
+                "controllerRadialMode"
+            ],
+            "keywords": "gamepad radial sticks ring typing"
+        },
+        {
+            "page": "controller",
+            "section": "Controller",
+            "label": "Keep controller input for the keyboard",
+            "settings": [
+                "controllerConsumeInput"
+            ],
+            "keywords": "gamepad consume block input games"
+        },
+        {
+            "page": "controller",
+            "section": "Controller",
+            "label": "Focus speed",
+            "settings": [
+                "controllerStickSpeed"
+            ],
+            "keywords": "gamepad stick speed repeat focus"
+        },
+        {
+            "page": "controller",
+            "section": "Controller",
+            "label": "Stick dead zone",
+            "settings": [
+                "controllerDeadzone"
+            ],
+            "keywords": "gamepad deadzone drift stick sensitivity"
+        },
+        {
+            "page": "controller",
+            "section": "Buttons",
+            "label": "Button actions",
+            "settings": [],
+            "keywords": "gamepad mapping buttons actions table"
+        },
+        {
+            "page": "visibility",
+            "section": "Opening",
+            "label": "Open the keyboard automatically",
+            "settings": [],
+            "keywords": "kwin virtual keyboard mode touch mouse never show automatically"
+        },
+        {
+            "page": "visibility",
+            "section": "Opening",
+            "label": "Virtual keyboard in use",
+            "settings": [],
+            "keywords": "kwin input method system settings selected"
+        },
+        {
+            "page": "visibility",
+            "section": "Hiding",
+            "label": "Swipe down to hide",
+            "settings": [
+                "hideOnSwipeDown"
+            ],
+            "keywords": "hide swipe down dismiss close"
+        },
+        {
+            "page": "visibility",
+            "section": "Apps",
+            "label": "App rules",
+            "settings": [
+                "appRules"
+            ],
+            "keywords": "per app rules applications exceptions never show desktop row"
+        },
+        {
+            "page": "privacy",
+            "section": "Learning",
+            "label": "Learn new words",
+            "settings": [
+                "learnWords"
+            ],
+            "keywords": "learn words personal dictionary privacy"
+        },
+        {
+            "page": "privacy",
+            "section": "Learning",
+            "label": "Learned words",
+            "settings": [],
+            "keywords": "learned words forget remove clear dictionary"
+        },
+        {
+            "page": "privacy",
+            "section": "Clipboard",
+            "label": "Clipboard history",
+            "settings": [],
+            "keywords": "clipboard clear history privacy"
+        },
+        {
+            "page": "privacy",
+            "section": "Voice",
+            "label": "Voice data",
+            "settings": [],
+            "keywords": "voice audio models privacy local storage"
+        },
+        {
+            "page": "about",
+            "section": "KBoard",
+            "label": "Version",
+            "settings": [],
+            "keywords": "version about qt frameworks"
+        },
+        {
+            "page": "about",
+            "section": "KBoard",
+            "label": "Links",
+            "settings": [],
+            "keywords": "source code bug report website github"
+        },
+        {
+            "page": "about",
+            "section": "Licences",
+            "label": "KBoard",
+            "settings": [],
+            "keywords": "licence license gpl third party notices credits"
+        }
+    ]
+}

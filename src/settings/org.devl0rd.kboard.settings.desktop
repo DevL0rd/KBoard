@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=KBoard Settings
+GenericName=On-Screen Keyboard Settings
+Comment=Configure the look, typing, sounds, voice and controller support of the KBoard on-screen keyboard
+Exec=kboard-settings %U
+Icon=input-keyboard-virtual
+Categories=Qt;KDE;Settings;Utility;
+Keywords=keyboard;virtual keyboard;on-screen keyboard;osk;touch;typing;glide;emoji;voice;controller;
+StartupNotify=true
+X-DBUS-StartupType=Unique
+SingleMainWindow=true
