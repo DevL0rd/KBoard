@@ -32,12 +32,14 @@ class KeySound : public QObject
     Q_PROPERTY(bool hapticsAvailable READ hapticsAvailable NOTIFY hapticsAvailableChanged)
 
 public:
-    enum class Output {
+    enum class Output
+    {
         Device,
         Offline,
     };
 
-    struct Variation {
+    struct Variation
+    {
         float pitch = 1.0f;
         float gain = 1.0f;
     };
@@ -73,7 +75,7 @@ public:
     static float volumeGain(double volume);
 
     const SoundPack *pack(const QString &id) const;
-    bool playKind(SoundKind kind, const SoundPack *pack, bool variation);
+    bool playKind(SoundKind kind, const SoundPack *soundPack, bool vary);
     std::vector<float> renderOffline(int frames, int channels = 1);
     SoundMixer &mixer();
 
@@ -118,6 +120,6 @@ private:
 
     Haptics *m_haptics = nullptr;
     QRandomGenerator m_random;
-    std::array<int, static_cast<size_t>(SoundKind::Count)> m_lastVariant{};
+    std::array<int, static_cast<size_t>(SoundKind::Count)> m_lastVariant {};
     int m_previewGeneration = 0;
 };

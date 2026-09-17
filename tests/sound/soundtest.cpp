@@ -23,10 +23,7 @@ class SoundTest : public QObject
     Q_OBJECT
 
 private:
-    static QString soundsDir()
-    {
-        return QStringLiteral(KBOARD_DATA_BUILD_DIR "/sounds");
-    }
+    static QString soundsDir() { return QStringLiteral(KBOARD_DATA_BUILD_DIR "/sounds"); }
 
     static float peak(const std::vector<float> &buffer)
     {
@@ -132,7 +129,9 @@ private Q_SLOTS:
         const QString path = dir.filePath(QStringLiteral("bad.wav"));
         QFile file(path);
         QVERIFY(file.open(QIODevice::WriteOnly));
-        QByteArray header("RIFF\x24\x00\x00\x00WAVEfmt \x10\x00\x00\x00\x01\x00\x01\x00\x44\xac\x00\x00\x88\x58\x01\x00\x02\x00\x10\x00data\x00\x00\x00\x00", 44);
+        QByteArray header("RIFF\x24\x00\x00\x00WAVEfmt "
+                          "\x10\x00\x00\x00\x01\x00\x01\x00\x44\xac\x00\x00\x88\x58\x01\x00\x02\x00\x10\x00data\x00\x00\x00\x00",
+            44);
         file.write(header);
         file.close();
         SoundSample sample;
@@ -233,7 +232,8 @@ private Q_SLOTS:
                 ++frames;
             } while (mixer.activeVoices() > 0 && frames < 100000);
             const double expected = sample.frames.size() / pitch;
-            QVERIFY2(std::abs(frames - expected) <= 2.0, qPrintable(QStringLiteral("pitch %1: %2 vs %3").arg(pitch).arg(frames).arg(expected)));
+            QVERIFY2(
+                std::abs(frames - expected) <= 2.0, qPrintable(QStringLiteral("pitch %1: %2 vs %3").arg(pitch).arg(frames).arg(expected)));
         }
     }
 
@@ -275,7 +275,7 @@ private Q_SLOTS:
                                             "    property string current: KeySound.currentPack\n"
                                             "    property bool open: KeySound.deviceOpen\n"
                                             "}\n"),
-                          QUrl());
+            QUrl());
         std::unique_ptr<QObject> object(component.create());
         QVERIFY2(object, qPrintable(component.errorString()));
         QVERIFY(object->property("packCount").toInt() >= 5);

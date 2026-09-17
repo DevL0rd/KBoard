@@ -12,8 +12,7 @@
 AudioOutput::AudioOutput(SoundMixer *mixer, int bufferFrames)
     : m_mixer(mixer)
     , m_bufferFrames(bufferFrames)
-{
-}
+{ }
 
 AudioOutput::~AudioOutput()
 {
@@ -35,7 +34,8 @@ void AudioOutput::open()
             m_sink->resume();
         }
         if (m_sink->state() == QtAudio::ActiveState || m_sink->state() == QtAudio::IdleState) {
-            Q_EMIT opened(m_deviceName, m_sink->format().sampleRate(), m_sink->format().channelCount(), static_cast<int>(m_sink->bufferFrameCount()));
+            Q_EMIT opened(
+                m_deviceName, m_sink->format().sampleRate(), m_sink->format().channelCount(), static_cast<int>(m_sink->bufferFrameCount()));
             return;
         }
         m_sink->stop();

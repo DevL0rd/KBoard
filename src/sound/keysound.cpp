@@ -11,20 +11,21 @@ namespace
 {
 Q_LOGGING_CATEGORY(lcSound, "kboard.sound")
 
-struct PreviewStep {
+struct PreviewStep
+{
     int atMs;
     SoundKind kind;
 };
 
 constexpr std::array previewSteps = {
-    PreviewStep{0, SoundKind::Key},
-    PreviewStep{125, SoundKind::Key},
-    PreviewStep{235, SoundKind::Key},
-    PreviewStep{380, SoundKind::Space},
-    PreviewStep{520, SoundKind::Key},
-    PreviewStep{640, SoundKind::Key},
-    PreviewStep{800, SoundKind::Backspace},
-    PreviewStep{980, SoundKind::Enter},
+    PreviewStep {0, SoundKind::Key},
+    PreviewStep {125, SoundKind::Key},
+    PreviewStep {235, SoundKind::Key},
+    PreviewStep {380, SoundKind::Space},
+    PreviewStep {520, SoundKind::Key},
+    PreviewStep {640, SoundKind::Key},
+    PreviewStep {800, SoundKind::Backspace},
+    PreviewStep {980, SoundKind::Enter},
 };
 
 bool isPress(SoundKind kind)
@@ -35,8 +36,7 @@ bool isPress(SoundKind kind)
 
 KeySound::KeySound(QObject *parent)
     : KeySound(Output::Device, KBoardPaths::dataFile(QStringLiteral("sounds")), parent)
-{
-}
+{ }
 
 KeySound::KeySound(Output output, const QString &soundsDirectory, QObject *parent)
     : QObject(parent)
@@ -107,12 +107,7 @@ KeySound::~KeySound()
     if (m_audio) {
         AudioOutput *audio = m_audio;
         m_audio = nullptr;
-        QMetaObject::invokeMethod(
-            audio,
-            [audio] {
-                delete audio;
-            },
-            Qt::BlockingQueuedConnection);
+        QMetaObject::invokeMethod(audio, [audio] { delete audio; }, Qt::BlockingQueuedConnection);
     }
     if (m_audioThread.isRunning()) {
         m_audioThread.quit();
@@ -169,9 +164,7 @@ KeySound::Variation KeySound::variation(bool enabled, QRandomGenerator &generato
     if (!enabled) {
         return {};
     }
-    const auto spread = [&generator](float range) {
-        return static_cast<float>(1.0 + (generator.generateDouble() * 2.0 - 1.0) * range);
-    };
+    const auto spread = [&generator](float range) { return static_cast<float>(1.0 + (generator.generateDouble() * 2.0 - 1.0) * range); };
     Variation result;
     result.pitch = spread(PitchRange);
     result.gain = spread(GainRange);
@@ -305,7 +298,7 @@ QVariantList KeySound::packs() const
 {
     QVariantList list;
     for (const auto &entry : m_packs) {
-        list.append(QVariantMap{
+        list.append(QVariantMap {
             {QStringLiteral("id"), entry->id},
             {QStringLiteral("name"), entry->name},
             {QStringLiteral("description"), entry->description},

@@ -59,9 +59,7 @@ void SoundMixer::startVoice(const Trigger &trigger)
         }
     }
     if (!target) {
-        target = &*std::min_element(m_voices.begin(), m_voices.end(), [](const Voice &a, const Voice &b) {
-            return a.serial < b.serial;
-        });
+        target = &*std::min_element(m_voices.begin(), m_voices.end(), [](const Voice &a, const Voice &b) { return a.serial < b.serial; });
     }
     target->data = trigger.data;
     target->length = trigger.length;
@@ -75,70 +73,77 @@ void SoundMixer::render(std::span<float> interleaved, int channels)
 {
     channels = std::max(channels, 1);
     const qsizetype frames = static_cast<qsizetype>(interleaved.size()) / channels;
-    const int rate = m_outputRate.load(std::memory_order_relaxed);
-    m_blockMs.store(frames * 1000.0 / rate, std::memory_order_relaxed);
+    m_blockMs.store(frames * 1000.0 / m_outputRate.load(std::memory_order_relaxed), std::memory_order_relaxed);
 
-    int head = m_head.load(std::memory_order_relaxed);
-    const int tail = m_tail.load(std::memory_order_acquire);
-    if (head != tail) {
-        const std::int64_t now = nowNs();
-        const std::int64_t streamStart = m_streamStartNs.load(std::memory_order_relaxed);
-        double delaySum = 0.0;
-        int count = 0;
-        while (head != tail) {
-            startVoice(m_queue[head]);
-            if (m_queue[head].stampNs >= streamStart) {
-                delaySum += (now - m_queue[head].stampNs) / 1.0e6;
-                ++count;
-            }
-            head = (head + 1) % QueueCapacity;
-        }
-        m_head.store(head, std::memory_order_release);
-        if (count > 0) {
-            const double previous = m_queueDelayMs.load(std::memory_order_relaxed);
-            const double sample = delaySum / count;
-            m_queueDelayMs.store(previous == 0.0 ? sample : previous * 0.8 + sample * 0.2, std::memory_order_relaxed);
-        }
-    }
-
+    drainQueue();
     std::fill(interleaved.begin(), interleaved.end(), 0.0f);
-
-    const float targetGain = m_masterGain.load(std::memory_order_relaxed);
-    const float gainStep = frames > 0 ? (targetGain - m_currentGain) / frames : 0.0f;
 
     int active = 0;
     for (Voice &voice : m_voices) {
-        if (!voice.data) {
-            continue;
-        }
-        for (qsizetype frame = 0; frame < frames; ++frame) {
-            const auto index = static_cast<qsizetype>(voice.position);
-            if (index + 1 >= voice.length) {
-                voice.data = nullptr;
-                break;
-            }
-            const float fraction = static_cast<float>(voice.position - index);
-            const float value = voice.data[index] + (voice.data[index + 1] - voice.data[index]) * fraction;
-            interleaved[frame * channels] += value * voice.gain;
-            voice.position += voice.step;
-        }
-        if (voice.data) {
+        if (voice.data && mixVoice(voice, interleaved, frames, channels)) {
             ++active;
         }
     }
-
-    float gain = m_currentGain;
-    for (qsizetype frame = 0; frame < frames; ++frame) {
-        gain += gainStep;
-        const float value = limit(interleaved[frame * channels] * gain);
-        for (int channel = 0; channel < channels; ++channel) {
-            interleaved[frame * channels + channel] = value;
-        }
-    }
-    m_currentGain = targetGain;
+    applyMasterGain(interleaved, frames, channels);
 
     m_activeVoices.store(active, std::memory_order_relaxed);
     m_renderedBlocks.fetch_add(1, std::memory_order_relaxed);
+}
+
+void SoundMixer::drainQueue()
+{
+    int head = m_head.load(std::memory_order_relaxed);
+    const int tail = m_tail.load(std::memory_order_acquire);
+    if (head == tail) {
+        return;
+    }
+    const std::int64_t now = nowNs();
+    const std::int64_t streamStart = m_streamStartNs.load(std::memory_order_relaxed);
+    double delaySum = 0.0;
+    int count = 0;
+    for (; head != tail; head = (head + 1) % QueueCapacity) {
+        const Trigger &pending = m_queue[head];
+        startVoice(pending);
+        if (pending.stampNs >= streamStart) {
+            delaySum += (now - pending.stampNs) / 1.0e6;
+            ++count;
+        }
+    }
+    m_head.store(head, std::memory_order_release);
+    if (count > 0) {
+        const double previous = m_queueDelayMs.load(std::memory_order_relaxed);
+        const double sample = delaySum / count;
+        m_queueDelayMs.store(previous == 0.0 ? sample : previous * 0.8 + sample * 0.2, std::memory_order_relaxed);
+    }
+}
+
+bool SoundMixer::mixVoice(Voice &voice, std::span<float> interleaved, qsizetype frames, int channels)
+{
+    for (qsizetype frame = 0; frame < frames; ++frame) {
+        const auto index = static_cast<qsizetype>(voice.position);
+        if (index + 1 >= voice.length) {
+            voice.data = nullptr;
+            return false;
+        }
+        const auto fraction = static_cast<float>(voice.position - static_cast<double>(index));
+        const float value = voice.data[index] + (voice.data[index + 1] - voice.data[index]) * fraction;
+        interleaved[frame * channels] += value * voice.gain;
+        voice.position += voice.step;
+    }
+    return true;
+}
+
+void SoundMixer::applyMasterGain(std::span<float> interleaved, qsizetype frames, int channels)
+{
+    const float targetGain = m_masterGain.load(std::memory_order_relaxed);
+    const float gainStep = frames > 0 ? (targetGain - m_currentGain) / static_cast<float>(frames) : 0.0f;
+    float gain = m_currentGain;
+    for (qsizetype frame = 0; frame < frames; ++frame) {
+        gain += gainStep;
+        const auto first = interleaved.begin() + frame * channels;
+        std::fill(first, first + channels, limit(*first * gain));
+    }
+    m_currentGain = targetGain;
 }
 
 void SoundMixer::markStreamStart()
@@ -151,19 +156,9 @@ void SoundMixer::setOutputRate(int rate)
     m_outputRate.store(rate, std::memory_order_relaxed);
 }
 
-int SoundMixer::outputRate() const
-{
-    return m_outputRate.load(std::memory_order_relaxed);
-}
-
 void SoundMixer::setMasterGain(float gain)
 {
     m_masterGain.store(gain, std::memory_order_relaxed);
-}
-
-float SoundMixer::masterGain() const
-{
-    return m_masterGain.load(std::memory_order_relaxed);
 }
 
 int SoundMixer::activeVoices() const

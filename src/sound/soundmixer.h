@@ -22,9 +22,7 @@ public:
 
     void markStreamStart();
     void setOutputRate(int rate);
-    int outputRate() const;
     void setMasterGain(float gain);
-    float masterGain() const;
 
     int activeVoices() const;
     double queueDelayMs() const;
@@ -32,7 +30,8 @@ public:
     quint64 renderedBlocks() const;
 
 private:
-    struct Trigger {
+    struct Trigger
+    {
         const float *data = nullptr;
         qsizetype length = 0;
         double step = 1.0;
@@ -40,7 +39,8 @@ private:
         std::int64_t stampNs = 0;
     };
 
-    struct Voice {
+    struct Voice
+    {
         const float *data = nullptr;
         qsizetype length = 0;
         double position = 0.0;
@@ -50,21 +50,24 @@ private:
     };
 
     void startVoice(const Trigger &trigger);
+    void drainQueue();
+    static bool mixVoice(Voice &voice, std::span<float> interleaved, qsizetype frames, int channels);
+    void applyMasterGain(std::span<float> interleaved, qsizetype frames, int channels);
 
     QMutex m_producerLock;
     std::array<Trigger, QueueCapacity> m_queue;
-    std::atomic<int> m_head{0};
-    std::atomic<int> m_tail{0};
+    std::atomic<int> m_head {0};
+    std::atomic<int> m_tail {0};
 
     std::array<Voice, MaxVoices> m_voices;
     std::uint64_t m_serial = 0;
     float m_currentGain = 0.0f;
 
-    std::atomic<std::int64_t> m_streamStartNs{0};
-    std::atomic<int> m_outputRate{48000};
-    std::atomic<float> m_masterGain{1.0f};
-    std::atomic<int> m_activeVoices{0};
-    std::atomic<double> m_queueDelayMs{0.0};
-    std::atomic<double> m_blockMs{0.0};
-    std::atomic<quint64> m_renderedBlocks{0};
+    std::atomic<std::int64_t> m_streamStartNs {0};
+    std::atomic<int> m_outputRate {48000};
+    std::atomic<float> m_masterGain {1.0f};
+    std::atomic<int> m_activeVoices {0};
+    std::atomic<double> m_queueDelayMs {0.0};
+    std::atomic<double> m_blockMs {0.0};
+    std::atomic<quint64> m_renderedBlocks {0};
 };

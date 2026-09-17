@@ -15,18 +15,16 @@ int main(int argc, char **argv)
     parser.addHelpOption();
     parser.addOption({QStringLiteral("pack"), QStringLiteral("Sound pack to use"), QStringLiteral("id"), QStringLiteral("soft")});
     parser.addOption({QStringLiteral("presses"), QStringLiteral("Number of key presses"), QStringLiteral("count"), QStringLiteral("40")});
-    parser.addOption({QStringLiteral("interval"), QStringLiteral("Milliseconds between presses"), QStringLiteral("ms"), QStringLiteral("90")});
+    parser.addOption(
+        {QStringLiteral("interval"), QStringLiteral("Milliseconds between presses"), QStringLiteral("ms"), QStringLiteral("90")});
     parser.addOption({QStringLiteral("preview"), QStringLiteral("Play the preview sequence of every pack")});
     parser.process(app);
 
     KeySound sound(KeySound::Output::Device, KBoardPaths::dataFile(QStringLiteral("sounds")));
     QTextStream out(stdout);
-    QObject::connect(&sound, &KeySound::deviceChanged, &app, [&] {
-        out << "device open=" << sound.deviceOpen() << " name=" << sound.deviceName() << Qt::endl;
-    });
-    QObject::connect(&sound, &KeySound::errorStringChanged, &app, [&] {
-        out << "error: " << sound.errorString() << Qt::endl;
-    });
+    QObject::connect(&sound, &KeySound::deviceChanged, &app,
+        [&] { out << "device open=" << sound.deviceOpen() << " name=" << sound.deviceName() << Qt::endl; });
+    QObject::connect(&sound, &KeySound::errorStringChanged, &app, [&] { out << "error: " << sound.errorString() << Qt::endl; });
     sound.setActive(true);
 
     if (parser.isSet(QStringLiteral("preview"))) {
@@ -48,7 +46,7 @@ int main(int argc, char **argv)
     auto timer = new QTimer(&app);
     int count = 0;
     QObject::connect(timer, &QTimer::timeout, &app, [&] {
-        static const QStringList kinds{QStringLiteral("key"), QStringLiteral("key"), QStringLiteral("key"), QStringLiteral("space")};
+        static const QStringList kinds {QStringLiteral("key"), QStringLiteral("key"), QStringLiteral("key"), QStringLiteral("space")};
         sound.play(kinds[count % kinds.size()]);
         if (++count >= presses) {
             timer->stop();
@@ -59,8 +57,6 @@ int main(int argc, char **argv)
             });
         }
     });
-    QTimer::singleShot(500, timer, [timer, interval] {
-        timer->start(interval);
-    });
+    QTimer::singleShot(500, timer, [timer, interval] { timer->start(interval); });
     return app.exec();
 }

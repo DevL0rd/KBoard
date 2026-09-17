@@ -12,7 +12,14 @@
 namespace
 {
 constexpr std::array<const char *, static_cast<size_t>(SoundKind::Count)> kindNames = {
-    "key", "space", "backspace", "enter", "modifier", "popup", "open", "close",
+    "key",
+    "space",
+    "backspace",
+    "enter",
+    "modifier",
+    "popup",
+    "open",
+    "close",
 };
 
 quint32 readU32(const char *data)
@@ -37,14 +44,9 @@ bool SoundPackLoader::kindFromString(const QString &name, SoundKind *kind)
     return false;
 }
 
-QString SoundPackLoader::kindName(SoundKind kind)
-{
-    return QString::fromLatin1(kindNames[static_cast<size_t>(kind)]);
-}
-
 QStringList SoundPackLoader::requiredFiles()
 {
-    QStringList files{QStringLiteral("pack.json"), QStringLiteral("key1.wav")};
+    QStringList files {QStringLiteral("pack.json"), QStringLiteral("key1.wav")};
     for (size_t i = 1; i < kindNames.size(); ++i) {
         files << QString::fromLatin1(kindNames[i]) + QStringLiteral(".wav");
     }
@@ -188,8 +190,7 @@ QList<std::shared_ptr<const SoundPack>> SoundPackLoader::loadAll(const QString &
             errors->append(error);
         }
     }
-    std::sort(packs.begin(), packs.end(), [](const auto &a, const auto &b) {
-        return a->order != b->order ? a->order < b->order : a->id < b->id;
-    });
+    std::sort(packs.begin(), packs.end(),
+        [](const auto &a, const auto &b) { return a->order != b->order ? a->order < b->order : a->id < b->id; });
     return packs;
 }
