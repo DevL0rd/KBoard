@@ -29,6 +29,13 @@ SettingsPage {
         }
 
         SwitchRow {
+            label: "Full keyboard on big screens"
+            description: "On wide screens, use the desktop layout with a number row and function keys"
+            iconName: "input-keyboard"
+            setting: "fullKeyboard"
+        }
+
+        SwitchRow {
             label: "Desktop row"
             description: "Esc, Tab, Ctrl, Alt and arrow keys for desktop apps and terminals"
             iconName: "utilities-terminal"

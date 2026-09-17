@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import org.devl0rd.kboard.config
 import QtQuick.Controls as QQC2
 import org.devl0rd.kboard.settings
 
@@ -9,6 +10,21 @@ SettingsPage {
 
     Section {
         title: "Opening"
+
+        SwitchRow {
+            label: "On-screen keyboard"
+            description: "Turn KBoard off to stop it opening at all, without changing your KWin setting"
+            iconName: "input-keyboard-virtual"
+            setting: "enabled"
+        }
+
+        SwitchRow {
+            label: "Open when you tap a text field"
+            description: "Show the keyboard as soon as a text field takes focus"
+            iconName: "edit-select-text"
+            setting: "showOnFocus"
+            enabled: Settings.enabled
+        }
 
         ShowModeCards {
             label: "Open the keyboard automatically"

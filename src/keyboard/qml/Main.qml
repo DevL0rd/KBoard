@@ -27,8 +27,6 @@ PanelWindow {
         return found
     }
 
-    property double lastAppSwitch: 0
-
     function present() {
         if (!Settings.enabled) {
             KeyboardService.Hide()
@@ -125,7 +123,7 @@ PanelWindow {
         target: InputContext
 
         function onActivated() {
-            if (Settings.enabled && Settings.showOnFocus && Date.now() - window.lastAppSwitch > 500)
+            if (Settings.enabled && Settings.showOnFocus)
                 window.present()
         }
 
@@ -149,7 +147,6 @@ PanelWindow {
         target: KeyboardService
 
         function onActiveAppChanged() {
-            window.lastAppSwitch = Date.now()
             if (Settings.enabled && keyboard.rules.alwaysShow)
                 KeyboardService.Show()
         }

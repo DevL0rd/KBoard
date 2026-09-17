@@ -2,6 +2,7 @@
 
 const rules = [
     { value: "never", label: "Never show the keyboard" },
+    { value: "always", label: "Always show the keyboard" },
     { value: "desktoprow", label: "Always show the desktop row" },
     { value: "nolearn", label: "Don't learn words" }
 ];

@@ -248,6 +248,15 @@
             "keywords": "split half width size"
         },
         {
+            "page": "layout",
+            "section": "Extra rows",
+            "label": "Full keyboard on big screens",
+            "settings": [
+                "fullKeyboard"
+            ],
+            "keywords": "full desktop keyboard function keys f1 number row wide screen"
+        },
+        {
             "page": "typing",
             "section": "Suggestions",
             "label": "Show suggestions",
@@ -774,6 +783,24 @@
             "label": "Virtual keyboard in use",
             "settings": [],
             "keywords": "kwin input method system settings selected"
+        },
+        {
+            "page": "visibility",
+            "section": "Opening",
+            "label": "On-screen keyboard",
+            "settings": [
+                "enabled"
+            ],
+            "keywords": "enable disable turn off keyboard master switch"
+        },
+        {
+            "page": "visibility",
+            "section": "Opening",
+            "label": "Open when you tap a text field",
+            "settings": [
+                "showOnFocus"
+            ],
+            "keywords": "focus automatically open show text field tap"
         },
         {
             "page": "visibility",
