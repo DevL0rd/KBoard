@@ -33,12 +33,16 @@ public Q_SLOTS:
     Q_SCRIPTABLE bool IsVisible() const;
     Q_SCRIPTABLE QString CurrentPanel() const;
     Q_SCRIPTABLE void OpenSettings(const QString &page);
+    Q_SCRIPTABLE void SetEnabled(bool enabled);
+    Q_SCRIPTABLE bool IsEnabled() const;
+    Q_SCRIPTABLE void Deactivate();
     Q_SCRIPTABLE QString KeyMap();
     Q_SCRIPTABLE void SetActiveApp(const QString &application);
 
 Q_SIGNALS:
     Q_SCRIPTABLE void VisibleChanged(bool visible);
     Q_SCRIPTABLE void PanelChanged(const QString &panel);
+    Q_SCRIPTABLE void EnabledChanged(bool enabled);
     void visibleChanged();
     void panelChanged();
     void activeAppChanged();

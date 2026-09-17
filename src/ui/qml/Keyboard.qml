@@ -12,7 +12,9 @@ Item {
     property real baseHeight: 320
     property real screenHeight: 1080
     property string panel: "keys"
-    property bool fullKeyboard: Settings.fullKeyboard
+    property bool fullForced: false
+    readonly property bool fullFits: (baseHeight - stripHeight) / 8 >= Kirigami.Units.gridUnit * 1.4
+    readonly property bool fullKeyboard: Settings.fullKeyboard && (fullFits || fullForced)
     property real slide: 0
     property real splitAmount: splitShown ? 1 : 0
     property bool shown: true
@@ -98,6 +100,7 @@ Item {
     function requestTool(name) {
         if (name === "full") {
             Settings.fullKeyboard = !Settings.fullKeyboard
+            fullForced = Settings.fullKeyboard
             SettingsWatcher.save()
         }
         else if (name === "settings")

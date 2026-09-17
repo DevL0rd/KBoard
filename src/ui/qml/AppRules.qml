@@ -18,6 +18,7 @@ QtObject {
         }).filter(entry => entry.appId !== "" && name.includes(entry.appId)).map(entry => entry.rule)
     }
 
+    readonly property bool alwaysShow: active.includes("always")
     readonly property bool neverShow: active.includes("never")
     readonly property bool desktopRow: active.includes("desktoprow")
     readonly property bool noLearn: active.includes("nolearn")

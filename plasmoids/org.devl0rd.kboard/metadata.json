@@ -1,0 +1,20 @@
+{
+    "KPlugin": {
+        "Id": "org.devl0rd.kboard",
+        "Name": "KBoard",
+        "Description": "Turns the on-screen keyboard on and off",
+        "Icon": "input-keyboard-virtual",
+        "Authors": [
+            {
+                "Name": "DevL0rd",
+                "Email": "dmhzmxn@gmail.com"
+            }
+        ],
+        "Category": "Utilities",
+        "License": "GPL-3.0-only",
+        "Version": "0.1.0",
+        "Website": "https://github.com/DevL0rd/KBoard"
+    },
+    "KPackageStructure": "Plasma/Applet",
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

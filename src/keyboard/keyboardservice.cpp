@@ -1,5 +1,7 @@
 #include "keyboardservice.h"
 
+#include "kboardsettings.h"
+
 #include <QDBusConnection>
 #include <QDBusMessage>
 #include <QDBusPendingCall>
@@ -71,6 +73,31 @@ void KeyboardService::deactivate()
     QDBusMessage message = virtualKeyboardCall(QStringLiteral("org.freedesktop.DBus.Properties"), QStringLiteral("Set"));
     message << QStringLiteral("org.kde.kwin.VirtualKeyboard") << QStringLiteral("active") << QVariant::fromValue(QDBusVariant(false));
     QDBusConnection::sessionBus().asyncCall(message);
+}
+
+void KeyboardService::Deactivate()
+{
+    deactivate();
+}
+
+void KeyboardService::SetEnabled(bool enabled)
+{
+    if (enabled == KBoardSettings::enabled()) {
+        return;
+    }
+    KBoardSettings::setEnabled(enabled);
+    KBoardSettings::self()->save();
+    Q_EMIT EnabledChanged(enabled);
+    if (enabled) {
+        Show();
+    } else {
+        Hide();
+    }
+}
+
+bool KeyboardService::IsEnabled() const
+{
+    return KBoardSettings::enabled();
 }
 
 void KeyboardService::Show()

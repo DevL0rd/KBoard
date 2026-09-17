@@ -116,6 +116,7 @@
     <group name="Behavior">
         <entry name="hideOnSwipeDown" type="Bool"><default>true</default></entry>
         <entry name="showOnFocus" type="Bool"><default>true</default></entry>
-        <entry name="appRules" type="StringList"><default></default></entry>
+        <entry name="enabled" type="Bool"><default>true</default></entry>
+        <entry name="appRules" type="StringList"><default>org.kde.konsole=always</default></entry>
     </group>
 </kcfg>

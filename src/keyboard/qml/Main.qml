@@ -45,6 +45,7 @@ PanelWindow {
     function dismiss() {
         if (!shown)
             return
+        KeyboardService.Deactivate()
         shown = false
         keyboard.panel = "keys"
         slideOut.restart()
@@ -120,7 +121,7 @@ PanelWindow {
         target: InputContext
 
         function onActivated() {
-            if (Settings.showOnFocus && Date.now() - window.lastAppSwitch > 1200)
+            if (Settings.enabled && Settings.showOnFocus && Date.now() - window.lastAppSwitch > 500)
                 window.present()
         }
 
@@ -130,10 +131,23 @@ PanelWindow {
     }
 
     Connections {
+        target: Settings
+
+        function onEnabledChanged() {
+            if (Settings.enabled)
+                window.present()
+            else
+                window.dismiss()
+        }
+    }
+
+    Connections {
         target: KeyboardService
 
         function onActiveAppChanged() {
             window.lastAppSwitch = Date.now()
+            if (Settings.enabled && keyboard.rules.alwaysShow)
+                KeyboardService.Show()
         }
 
         function onShowRequested() {
