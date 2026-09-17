@@ -6,7 +6,8 @@ import org.devl0rd.kboard.platform
 QtObject {
     readonly property int purpose: InputContext.contentPurpose
     readonly property bool sensitive: InputContext.sensitive
-    readonly property bool terminal: purpose === InputContext.ContentPurpose.content_purpose_terminal
+    property bool terminalApp: false
+    readonly property bool terminal: terminalApp || purpose === InputContext.ContentPurpose.content_purpose_terminal
     readonly property string variant: ({
         [InputContext.ContentPurpose.content_purpose_email]: "email",
         [InputContext.ContentPurpose.content_purpose_url]: "url"

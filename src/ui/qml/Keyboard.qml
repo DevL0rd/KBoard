@@ -204,6 +204,7 @@ Item {
         view: keysView
         strip: strip
         learningAllowed: !appRules.noLearn
+        terminalApp: appRules.terminalApp
     }
 
     ControllerNavigation {

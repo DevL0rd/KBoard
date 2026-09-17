@@ -20,7 +20,8 @@ QtObject {
     property var glide: null
     property int selectedWords: 0
 
-    readonly property FieldProfile field: FieldProfile {}
+    property bool terminalApp: false
+    readonly property FieldProfile field: FieldProfile { terminalApp: controller.terminalApp }
     readonly property TextEditing text: TextEditing {}
     readonly property bool smart: field.smart && view.pageId === "letters"
     readonly property string autocorrection: smart ? TypingEngine.autocorrection : ""
@@ -105,7 +106,7 @@ QtObject {
         if (correction && text.endsWith(correction.replacement + " ")) {
             text.replaceBefore(correction.replacement.length + 1, correction.original)
             TypingEngine.revertCorrection()
-            TypingEngine.learn(correction.original)
+            TypingEngine.acceptWord(correction.original)
             return
         }
         text.backspace()

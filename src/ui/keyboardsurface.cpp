@@ -158,7 +158,9 @@ void KeyboardSurface::relayout()
     const int columns = qMax(1, m_page.value(QStringLiteral("columns")).toInt());
     m_unitWidth = width() / columns;
     for (const KeyEntry &entry : std::as_const(m_entries)) {
-        if (entry.key.value(QStringLiteral("letter")).toBool()) {
+        const QString label = entry.key.value(QStringLiteral("label")).toString();
+        const QString type = entry.key.value(QStringLiteral("type")).toString();
+        if (label.size() == 1 && label.at(0).isLetter() && (type.isEmpty() || type == QLatin1String("char"))) {
             m_unitWidth = entry.rect.width() + m_gap;
             break;
         }
@@ -232,7 +234,9 @@ QVariantList KeyboardSurface::glideKeys() const
 {
     QVariantList keys;
     for (const KeyEntry &entry : m_entries) {
-        if (entry.key.value(QStringLiteral("letter")).toBool()) {
+        const QString label = entry.key.value(QStringLiteral("label")).toString();
+        const QString type = entry.key.value(QStringLiteral("type")).toString();
+        if (label.size() == 1 && label.at(0).isLetter() && (type.isEmpty() || type == QLatin1String("char"))) {
             keys.append(QVariantMap {
                 {QStringLiteral("label"), entry.key.value(QStringLiteral("label"))},
                 {QStringLiteral("x"), entry.rect.x()},

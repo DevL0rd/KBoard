@@ -326,11 +326,15 @@ void TypingEngine::setSuggestionList(const QVector<Suggestion> &slots, const QSt
 
 void TypingEngine::setLayout(const QVariantList &keys)
 {
+    if (keys.isEmpty()) {
+        return;
+    }
     const KeyGeometry geometry = KeyGeometry::fromVariantList(keys);
     if (geometry.isEmpty()) {
         setError(QStringLiteral("The keyboard layout passed to TypingEngine.setLayout has no letter keys"));
         return;
     }
+    setError(QString());
     if (geometry.fingerprint() == m_geometry.fingerprint() && m_glide.isReady()) {
         return;
     }
