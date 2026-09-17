@@ -30,6 +30,10 @@ PanelWindow {
     property double lastAppSwitch: 0
 
     function present() {
+        if (!Settings.enabled) {
+            KeyboardService.Hide()
+            return
+        }
         if (keyboard.rules.neverShow) {
             KeyboardService.Hide()
             return
