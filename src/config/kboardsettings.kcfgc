@@ -1,0 +1,8 @@
+File=kboardsettings.kcfg
+ClassName=KBoardSettings
+Singleton=true
+Mutators=true
+DefaultValueGetters=true
+GenerateProperties=true
+Notifiers=true
+ParentInConstructor=false
