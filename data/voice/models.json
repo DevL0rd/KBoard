@@ -1,0 +1,98 @@
+{
+  "defaultModel": "parakeet-tdt-0.6b-v3-q4_0",
+  "languageSets": {
+    "parakeet-v3": ["bg", "cs", "da", "de", "el", "en", "es", "et", "fi", "fr", "hr", "hu", "it", "lt", "lv", "mt", "nl", "pl", "pt", "ro", "ru", "sk", "sl", "sv", "uk"],
+    "whisper": ["en", "zh", "de", "es", "ru", "ko", "fr", "ja", "pt", "tr", "pl", "ca", "nl", "ar", "sv", "it", "id", "hi", "fi", "vi", "he", "uk", "el", "ms", "cs", "ro", "da", "hu", "ta", "no", "th", "ur", "hr", "bg", "lt", "la", "mi", "ml", "cy", "sk", "te", "fa", "lv", "bn", "sr", "az", "sl", "kn", "et", "mk", "br", "eu", "is", "hy", "ne", "mn", "bs", "kk", "sq", "sw", "gl", "mr", "pa", "si", "km", "sn", "yo", "so", "af", "oc", "ka", "be", "tg", "sd", "gu", "am", "yi", "lo", "uz", "fo", "ht", "ps", "tk", "nn", "mt", "sa", "lb", "my", "bo", "tl", "mg", "as", "tt", "haw", "ln", "ha", "ba", "jw", "su", "yue"]
+  },
+  "models": [
+    {
+      "id": "parakeet-tdt-0.6b-v3-q4_0",
+      "name": "Parakeet v3",
+      "variant": "Q4_0",
+      "engine": "parakeet",
+      "file": "ggml-parakeet-tdt-0.6b-v3-q4_0.bin",
+      "url": "https://huggingface.co/ggml-org/parakeet-GGUF/resolve/main/ggml-parakeet-tdt-0.6b-v3-q4_0.bin",
+      "sizeBytes": 355615679,
+      "sha256": "aa7fe2f5fb47d863ca23e8b1d490632d63a2599f515268b6d6bd656158dad45e",
+      "recommended": true,
+      "tier": "default",
+      "description": "Fast and accurate on any computer, with punctuation built in",
+      "license": "CC-BY-4.0",
+      "languageSet": "parakeet-v3"
+    },
+    {
+      "id": "parakeet-tdt-0.6b-v3-q8_0",
+      "name": "Parakeet v3",
+      "variant": "Q8_0",
+      "engine": "parakeet",
+      "file": "ggml-parakeet-tdt-0.6b-v3-q8_0.bin",
+      "url": "https://huggingface.co/ggml-org/parakeet-GGUF/resolve/main/ggml-parakeet-tdt-0.6b-v3-q8_0.bin",
+      "sizeBytes": 668757119,
+      "sha256": "4d64e9e96c2792186d072fde0034df0ad670cf680a2f53069052ead827fd600e",
+      "recommended": false,
+      "tier": "quality",
+      "description": "Highest Parakeet accuracy, best with a graphics card",
+      "license": "CC-BY-4.0",
+      "languageSet": "parakeet-v3"
+    },
+    {
+      "id": "whisper-base-q5_1",
+      "name": "Whisper Base",
+      "variant": "Q5_1",
+      "engine": "whisper",
+      "file": "ggml-base-q5_1.bin",
+      "url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base-q5_1.bin",
+      "sizeBytes": 59707625,
+      "sha256": "422f1ae452ade6f30a004d7e5c6a43195e4433bc370bf23fac9cc591f01a8898",
+      "recommended": false,
+      "tier": "light",
+      "description": "Smallest download for older computers, 99 languages",
+      "license": "MIT",
+      "languageSet": "whisper"
+    },
+    {
+      "id": "whisper-small-q5_1",
+      "name": "Whisper Small",
+      "variant": "Q5_1",
+      "engine": "whisper",
+      "file": "ggml-small-q5_1.bin",
+      "url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small-q5_1.bin",
+      "sizeBytes": 190085487,
+      "sha256": "ae85e4a935d7a567bd102fe55afc16bb595bdb618e11b2fc7591bc08120411bb",
+      "recommended": false,
+      "tier": "light",
+      "description": "Better accuracy than Base, still light, 99 languages",
+      "license": "MIT",
+      "languageSet": "whisper"
+    },
+    {
+      "id": "whisper-large-v3-turbo-q5_0",
+      "name": "Whisper Large v3 Turbo",
+      "variant": "Q5_0",
+      "engine": "whisper",
+      "file": "ggml-large-v3-turbo-q5_0.bin",
+      "url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo-q5_0.bin",
+      "sizeBytes": 574041195,
+      "sha256": "394221709cd5ad1f40c46e6031ca61bce88931e6e088c188294c6d5a55ffa7e2",
+      "recommended": false,
+      "tier": "languages",
+      "description": "Best for languages Parakeet does not cover, best with a graphics card",
+      "license": "MIT",
+      "languageSet": "whisper"
+    }
+  ],
+  "vad": {
+    "id": "silero-v6.2.0",
+    "name": "Silero VAD",
+    "variant": "v6.2.0",
+    "engine": "silero-vad",
+    "file": "ggml-silero-v6.2.0.bin",
+    "url": "https://huggingface.co/ggml-org/whisper-vad/resolve/main/ggml-silero-v6.2.0.bin",
+    "sizeBytes": 885098,
+    "sha256": "2aa269b785eeb53a82983a20501ddf7c1d9c48e33ab63a41391ac6c9f7fb6987",
+    "recommended": false,
+    "tier": "vad",
+    "description": "Detects when you start and stop speaking",
+    "license": "MIT"
+  }
+}
