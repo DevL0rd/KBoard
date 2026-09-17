@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Upgrade
+Type = Package
+Target = *
+
+[Action]
+Description = Updating KBoard...
+When = PostTransaction
+Exec = /usr/lib/kboard/system-update
+Depends = git

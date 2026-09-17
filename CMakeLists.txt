@@ -50,5 +50,6 @@ add_subdirectory(src)
 add_subdirectory(tests)
 
 install(DIRECTORY data/ DESTINATION ${KDE_INSTALL_DATADIR}/kboard)
+install(PROGRAMS packaging/kboard-input-method DESTINATION ${KDE_INSTALL_BINDIR})
 
 feature_summary(WHAT ALL INCLUDE_QUIET_PACKAGES FATAL_ON_MISSING_REQUIRED_PACKAGES)

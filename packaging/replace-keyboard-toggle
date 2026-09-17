@@ -1,0 +1,67 @@
+#!/usr/bin/env python3
+import os
+import re
+import sys
+import tempfile
+
+OLD = "dev.devl0rd.keyboardtoggle"
+NEW = "org.devl0rd.kboard"
+APPLET = re.compile(r"^\[Containments\]\[\d+\]\[Applets\]\[\d+\]$")
+
+
+def read_groups(path):
+    groups, header, lines = [], None, []
+    with open(path, encoding="utf-8") as handle:
+        for line in handle.read().splitlines():
+            if line.startswith("[") and line.endswith("]"):
+                groups.append((header, lines))
+                header, lines = line, []
+            else:
+                lines.append(line)
+    groups.append((header, lines))
+    return groups
+
+
+def write_groups(path, groups):
+    out = []
+    for header, lines in groups:
+        if header is not None:
+            out.append(header)
+        out.extend(lines)
+    directory = os.path.dirname(os.path.abspath(path))
+    with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=directory, delete=False) as handle:
+        handle.write("\n".join(out) + "\n")
+        temporary = handle.name
+    os.chmod(temporary, os.stat(path).st_mode & 0o7777)
+    os.replace(temporary, path)
+
+
+def replace(groups):
+    replaced = set()
+    result = []
+    for header, lines in groups:
+        if header and APPLET.match(header) and f"plugin={OLD}" in lines:
+            lines = [f"plugin={NEW}" if line == f"plugin={OLD}" else line for line in lines]
+            replaced.add(header)
+        elif header and any(header.startswith(applet + "[") for applet in replaced):
+            continue
+        result.append((header, lines))
+    return result, len(replaced)
+
+
+def main():
+    if len(sys.argv) != 2:
+        sys.stderr.write("usage: replace-keyboard-toggle <plasma-org.kde.plasma.desktop-appletsrc>\n")
+        return 2
+    path = sys.argv[1]
+    if not os.path.exists(path):
+        return 0
+    groups, count = replace(read_groups(path))
+    if count:
+        write_groups(path, groups)
+        print(f"Replaced {count} Keyboard Toggle widget{'s' if count != 1 else ''} with KBoard")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

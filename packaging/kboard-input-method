@@ -1,0 +1,70 @@
+#!/bin/bash
+set -euo pipefail
+
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/kboard"
+PREVIOUS="$CONFIG_DIR/previous-input-method"
+DESKTOP="$HOME/.local/share/applications/org.devl0rd.kboard.desktop"
+
+current_input_method() {
+    kreadconfig6 --file kwinrc --group Wayland --key InputMethod
+}
+
+switch_input_method() {
+    kwriteconfig6 --file kwinrc --group Wayland --key InputMethod --notify ""
+    kwriteconfig6 --file kwinrc --group Wayland --key InputMethod --notify "$1"
+}
+
+enable() {
+    local restart=$1 current
+    if [[ ! -f $DESKTOP ]]; then
+        echo "KBoard is not installed: $DESKTOP is missing."
+        exit 1
+    fi
+    current=$(current_input_method)
+    mkdir -p "$CONFIG_DIR"
+    if [[ $current != "$DESKTOP" && ! -f $PREVIOUS ]]; then
+        printf '%s\n' "$current" >"$PREVIOUS"
+    fi
+    kwriteconfig6 --file kwinrc --group Wayland --key VirtualKeyboardEnabled --type bool --notify true
+    if [[ $current != "$DESKTOP" ]]; then
+        switch_input_method "$DESKTOP"
+        echo "KBoard is now the on-screen keyboard."
+    elif $restart; then
+        switch_input_method "$DESKTOP"
+        echo "Restarted KBoard."
+    else
+        echo "KBoard is already the on-screen keyboard."
+    fi
+}
+
+restore() {
+    local current previous=""
+    current=$(current_input_method)
+    [[ -f $PREVIOUS ]] && previous=$(<"$PREVIOUS")
+    if [[ $current == "$DESKTOP" ]]; then
+        if [[ -n $previous ]]; then
+            switch_input_method "$previous"
+            echo "Gave the on-screen keyboard back to $previous"
+        else
+            kwriteconfig6 --file kwinrc --group Wayland --key InputMethod --notify ""
+            kwriteconfig6 --file kwinrc --group Wayland --key InputMethod --delete --notify
+            echo "Turned the on-screen keyboard off; none was set before KBoard."
+        fi
+    else
+        echo "KBoard was not the on-screen keyboard; left KWin's setting as it is."
+    fi
+    rm -f "$PREVIOUS"
+}
+
+case "${1:-}" in
+enable) enable false ;;
+restart) enable true ;;
+restore) restore ;;
+*)
+    echo "Usage: kboard-input-method enable|restart|restore"
+    echo "  enable   Make KBoard KWin's on-screen keyboard, remembering the previous one"
+    echo "  restart  Same as enable, and restart KBoard when it is already active"
+    echo "  restore  Give the on-screen keyboard back to the one used before KBoard"
+    exit 2
+    ;;
+esac

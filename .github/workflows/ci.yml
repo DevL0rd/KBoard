@@ -1,0 +1,93 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Build, test and lint
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:base-devel
+    steps:
+      - name: Install dependencies
+        run: |
+          pacman -Syu --noconfirm --needed git cmake ninja clang llvm extra-cmake-modules python \
+            qt6-base qt6-declarative qt6-wayland qt6-multimedia \
+            kconfig kcoreaddons ki18n kguiaddons kwindowsystem kdbusaddons kcrash kirigami kservice \
+            wayland wayland-protocols plasma-wayland-protocols libxkbcommon systemd-libs \
+            sdl3 whisper-cpp ggml hunspell hunspell-en_us \
+            dbus typos nodejs npm shellcheck
+
+      - name: Build xunused
+        run: |
+          git clone https://github.com/mgehre/xunused.git /tmp/xunused
+          git -C /tmp/xunused checkout b81e0ef
+          if [[ ! -f /usr/include/clang/Driver/Options.h ]]; then
+            sed -i 's|#include "clang/Driver/Options.h"|#include "clang/Options/Options.h"|' /tmp/xunused/main.cpp
+          fi
+          cmake -S /tmp/xunused -B /tmp/xunused/build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build /tmp/xunused/build
+          install -Dm755 /tmp/xunused/build/xunused /usr/local/bin/xunused
+
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Mark checkout as safe
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Run the full check suite
+        run: ./tools/check.sh
+
+  release:
+    name: Release
+    needs: checks
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Create the source archive
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          git archive --format=tar --prefix="kboard-${version}/" -o "kboard-${version}.tar" HEAD
+          git submodule foreach --quiet 'git archive --format=tar --prefix="kboard-'"${version}"'/$sm_path/" HEAD > "$toplevel/submodule.tar"; tar --concatenate --file="$toplevel/kboard-'"${version}"'.tar" "$toplevel/submodule.tar"; rm "$toplevel/submodule.tar"'
+          gzip -9 "kboard-${version}.tar"
+          sha256sum "kboard-${version}.tar.gz" > "kboard-${version}.tar.gz.sha256"
+
+      - name: Publish the release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            kboard-*.tar.gz
+            kboard-*.tar.gz.sha256
+          body: |
+            ## Install
+
+            KBoard is built against the Qt version on your machine, so install it from source:
+
+            ```sh
+            git clone --recursive --branch ${{ github.ref_name }} https://github.com/${{ github.repository }}.git
+            cd KBoard
+            ./install.sh
+            ```
+
+            The installer makes KBoard your on-screen keyboard right away and adds the KBoard widget. On pacman systems it rebuilds itself after Qt upgrades.
+
+            Updating from an older version is the same command: `./install.sh`. To remove it, run `./uninstall.sh`; your previous keyboard comes back.
+
+            The attached archive is the same source tree, including the Plasma-Shared submodule, for offline installs.
