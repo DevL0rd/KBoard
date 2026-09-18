@@ -20,7 +20,7 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
-          pacman -Syu --noconfirm --needed git cmake ninja clang llvm extra-cmake-modules python \
+          pacman -Syu --noconfirm --needed git cmake ninja clang llvm openmp extra-cmake-modules python \
             qt6-base qt6-declarative qt6-wayland qt6-multimedia \
             kconfig kcoreaddons ki18n kguiaddons kwindowsystem kdbusaddons kcrash kirigami kservice \
             wayland wayland-protocols plasma-wayland-protocols libxkbcommon systemd-libs \
