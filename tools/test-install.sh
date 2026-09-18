@@ -18,6 +18,9 @@ export XDG_STATE_HOME="$HOME/.local/state"
 export KBOARD_BUILD_DIR="${KBOARD_BUILD_DIR:-$REPO/build-packaging}"
 export PATH="$SHIMS:$PATH"
 export CALLS
+export GIT_CONFIG_COUNT=1
+export GIT_CONFIG_KEY_0=safe.directory
+export GIT_CONFIG_VALUE_0="$REPO"
 
 DESKTOP="$HOME/.local/share/applications/org.devl0rd.kboard.desktop"
 PLASMA_KEYBOARD=/usr/share/applications/org.kde.plasma.keyboard.desktop
