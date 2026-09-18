@@ -22,7 +22,7 @@ jobs:
         run: |
           pacman -Syu --noconfirm --needed git cmake ninja clang llvm openmp extra-cmake-modules python \
             qt6-base qt6-declarative qt6-wayland qt6-multimedia \
-            kconfig kcoreaddons ki18n kguiaddons kwindowsystem kdbusaddons kcrash kirigami kservice \
+            kconfig kcoreaddons ki18n kguiaddons kwindowsystem kdbusaddons kcrash kirigami kirigami-addons kservice \
             wayland wayland-protocols plasma-wayland-protocols libxkbcommon systemd-libs \
             sdl3 whisper-cpp ggml hunspell hunspell-en_us noto-fonts-emoji \
             dbus typos nodejs npm shellcheck
