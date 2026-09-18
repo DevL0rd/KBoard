@@ -5,6 +5,8 @@ import org.kde.kirigami as Kirigami
 import org.devl0rd.kboard.config
 import org.devl0rd.kboard.clipboard
 import org.devl0rd.kboard.sound
+import org.devl0rd.kboard.typing
+import org.devl0rd.kboard.platform
 
 Item {
     id: keyboard
@@ -86,7 +88,17 @@ Item {
             searching: host.searching,
             rects: interactiveRects.map(rect => ({ x: rect.x, y: rect.y, width: rect.width, height: rect.height })),
             keys: keys,
-            suggestions: suggestions
+            suggestions: suggestions,
+            typing: {
+                before: typing.text.before.slice(-24),
+                reports: typing.text.reportsText,
+                smart: typing.smart,
+                terminal: typing.terminalApp,
+                capitalize: TypingEngine.shouldCapitalize,
+                autoShift: keysView.modifiers.autoShift,
+                purpose: InputContext.contentPurpose,
+                surrounding: InputContext.surroundingText.slice(-24)
+            }
         }
     }
 

@@ -10,6 +10,7 @@ QtObject {
     property string before
     property string after
     property int pending: 0
+    property bool appReportsText: false
 
     readonly property bool reportsText: InputContext.surroundingText !== ""
     readonly property string trailingWord: {
@@ -30,6 +31,13 @@ QtObject {
     function sync() {
         const real = InputContext.textBeforeCursor
         pending = Math.max(0, pending - 1)
+        if (InputContext.surroundingText !== "")
+            appReportsText = true
+        if (!appReportsText && before !== "") {
+            pending = 0
+            refresh()
+            return
+        }
         if (pending > 0 && before.startsWith(real) && before !== real)
             return
         pending = 0
@@ -40,6 +48,9 @@ QtObject {
 
     function reset() {
         pending = 0
+        appReportsText = false
+        before = ""
+        after = ""
         sync()
     }
 
