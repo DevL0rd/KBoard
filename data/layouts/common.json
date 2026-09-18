@@ -117,6 +117,26 @@
           "icon": "super"
         },
         {
+          "type": "key",
+          "label": "Home",
+          "key": "home"
+        },
+        {
+          "type": "key",
+          "label": "End",
+          "key": "end"
+        },
+        {
+          "type": "key",
+          "label": "PgUp",
+          "key": "pageup"
+        },
+        {
+          "type": "key",
+          "label": "PgDn",
+          "key": "pagedown"
+        },
+        {
           "type": "arrow",
           "label": "←",
           "key": "left",
@@ -139,26 +159,6 @@
           "label": "→",
           "key": "right",
           "icon": "right"
-        },
-        {
-          "type": "key",
-          "label": "Home",
-          "key": "home"
-        },
-        {
-          "type": "key",
-          "label": "End",
-          "key": "end"
-        },
-        {
-          "type": "key",
-          "label": "PgUp",
-          "key": "pageup"
-        },
-        {
-          "type": "key",
-          "label": "PgDn",
-          "key": "pagedown"
         }
       ],
       "height": 0.72,
