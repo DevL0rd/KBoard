@@ -1,17 +1,16 @@
 #include "aboutinfo.h"
 #include "appnavigation.h"
+#include "qmlengine.h"
 #include "settingscatalog.h"
 
 #include <KAboutData>
 #include <KCrash>
 #include <KDBusService>
-#include <KLocalizedQmlContext>
 #include <KLocalizedString>
 #include <KWindowSystem>
 
 #include <QApplication>
 #include <QCommandLineParser>
-#include <QDir>
 #include <QIcon>
 #include <QQmlApplicationEngine>
 #include <QQuickStyle>
@@ -57,17 +56,7 @@ bool pageIsKnown(const QCommandLineParser &parser)
 
 void loadInterface(QQmlApplicationEngine &engine)
 {
-    const QString buildQml = QStringLiteral(KBOARD_QML_BUILD_DIR);
-    if (QDir(buildQml).exists() && qEnvironmentVariableIsSet("KBOARD_USE_BUILD_TREE")) {
-        engine.addImportPath(buildQml);
-    } else {
-        engine.addImportPath(QStringLiteral(KBOARD_QML_INSTALL_DIR));
-    }
-    KLocalization::setupLocalizedContext(&engine);
-    QObject::connect(
-        &engine, &QQmlApplicationEngine::objectCreationFailed, QCoreApplication::instance(), [] { QCoreApplication::exit(1); },
-        Qt::QueuedConnection);
-    engine.loadFromModule("org.devl0rd.kboard.settings", "Main");
+    KBoardQml::loadModule(engine, QStringLiteral("org.devl0rd.kboard.settings"), QStringLiteral("Main"));
 }
 
 void raiseWindows(const QQmlApplicationEngine &engine)

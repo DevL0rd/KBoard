@@ -5,17 +5,6 @@
 */
 
 #include "inputmethod_p.h"
-#include <QDateTime>
-#include <QDebug>
-#include <QGuiApplication>
-#include <QInputMethod>
-#include <QKeyEvent>
-#include <QStandardPaths>
-
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <unistd.h>
-
 InputMethod::InputMethod()
     : QWaylandClientExtensionTemplate<InputMethod>(1)
 { }
@@ -86,88 +75,5 @@ void InputMethodContext::zwp_input_method_context_v1_surrounding_text(const QStr
 }
 
 void InputMethodContext::zwp_input_method_context_v1_invoke_action(uint32_t, uint32_t) { }
-
-std::shared_ptr<Keyboard> InputMethodContext::keyboard()
-{
-    if (auto existing = m_keyboard.lock()) {
-        return existing;
-    }
-
-    auto wlKeyboard = grab_keyboard();
-    auto keyboard = std::make_shared<Keyboard>(wlKeyboard, this);
-    m_keyboard = keyboard;
-    return keyboard;
-}
-
-Keyboard::Keyboard(::wl_keyboard *keyboard, InputMethodContext *parent)
-    : wl_keyboard(keyboard)
-    , m_parent(parent)
-{
-    mXkbContext.reset(xkb_context_new(XKB_CONTEXT_NO_FLAGS));
-}
-
-Keyboard::~Keyboard() { }
-
-void Keyboard::keyboard_keymap(uint32_t format, int32_t fd, uint32_t size)
-{
-    mKeymapFormat = format;
-    if (format != WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1) {
-        close(fd);
-        return;
-    }
-
-    char *map_str = static_cast<char *>(mmap(nullptr, size, PROT_READ, MAP_PRIVATE, fd, 0));
-    if (map_str == MAP_FAILED) {
-        close(fd);
-        return;
-    }
-
-    mXkbKeymap.reset(xkb_keymap_new_from_string(mXkbContext.get(), map_str, XKB_KEYMAP_FORMAT_TEXT_V1, XKB_KEYMAP_COMPILE_NO_FLAGS));
-    QXkbCommon::verifyHasLatinLayout(mXkbKeymap.get());
-
-    munmap(map_str, size);
-    close(fd);
-
-    if (mXkbKeymap) {
-        mXkbState.reset(xkb_state_new(mXkbKeymap.get()));
-    } else {
-        mXkbState.reset(nullptr);
-    }
-}
-
-void Keyboard::keyboard_key(uint32_t serial, uint32_t time, uint32_t key, uint32_t state)
-{
-    m_parent->m_lastKeyboardSerial = serial;
-    m_parent->m_lastKeyboardTime = time;
-
-    auto code = key + 8;
-
-    xkb_keysym_t sym = xkb_state_key_get_one_sym(mXkbState.get(), code);
-
-    auto modifiers = QXkbCommon::modifiers(mXkbState.get());
-    int qtkey = QXkbCommon::keysymToQtKey(sym, modifiers, mXkbState.get(), code);
-    QString text = QXkbCommon::lookupString(mXkbState.get(), code);
-    const bool isRepeat = (state == 2);
-    QEvent::Type type = (state == 0) ? QEvent::KeyRelease : QEvent::KeyPress;
-
-    QKeyEvent keyEvent(type, qtkey, modifiers, key, sym, 0, text, isRepeat);
-    keyEvent.setAccepted(false);
-
-    if (type == QEvent::KeyPress) {
-        Q_EMIT keyPressed(&keyEvent);
-    } else {
-        Q_EMIT keyReleased(&keyEvent);
-    }
-
-    if (!keyEvent.isAccepted()) {
-        m_parent->key(serial, time, key, state);
-    }
-}
-
-void Keyboard::keyboard_modifiers(uint32_t serial, uint32_t mods_depressed, uint32_t mods_latched, uint32_t mods_locked, uint32_t group)
-{
-    xkb_state_update_mask(mXkbState.get(), mods_depressed, mods_latched, mods_locked, 0, 0, group);
-    m_parent->modifiers(serial, mods_depressed, mods_latched, mods_locked, group);
-}
 
 #include "moc_inputmethod_p.cpp"

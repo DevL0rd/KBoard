@@ -33,7 +33,6 @@ public:
     void reset(const QList<KeyEntry> &entries);
     void updateGeometry(const QList<KeyEntry> &entries);
     void setPressed(int row, bool pressed);
-    const QList<KeyEntry> &entries() const;
 
 private:
     QList<KeyEntry> m_entries;

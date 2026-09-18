@@ -37,7 +37,9 @@ shim() {
 make_shims() {
     mkdir -p "$SHIMS"
     shim systemctl </dev/null
-    shim sudo </dev/null
+    shim sudo <<'EOF'
+cat >/dev/null
+EOF
     shim gdbus </dev/null
     shim kpackagetool6 <<'EOF'
 [[ $3 == -u && ! -f $CALLS.applet ]] && exit 1
@@ -47,7 +49,11 @@ exit 0
 EOF
     shim kboard-voice-model <<'EOF'
 models="$HOME/.local/share/kboard/models"
-mkdir -p "$models" && touch "$models/$1"
+if [[ -f $models/$1 ]]; then
+    echo "$1 is already downloaded"
+else
+    mkdir -p "$models" && touch "$models/$1"
+fi
 EOF
 }
 

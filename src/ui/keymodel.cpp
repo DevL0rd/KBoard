@@ -91,8 +91,3 @@ void KeyModel::setPressed(int row, bool pressed)
     m_entries[row].pressed = pressed;
     Q_EMIT dataChanged(index(row), index(row), {PressedRole});
 }
-
-const QList<KeyEntry> &KeyModel::entries() const
-{
-    return m_entries;
-}

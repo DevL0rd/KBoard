@@ -1,16 +1,15 @@
 #include "activeapp.h"
 #include "keyboardservice.h"
+#include "qmlengine.h"
 #include "settingsbridge.h"
 
 #include <kboard_version.h>
 
 #include <KAboutData>
 #include <KCrash>
-#include <KLocalizedQmlContext>
 #include <KLocalizedString>
 
 #include <QDBusConnection>
-#include <QDir>
 #include <QGuiApplication>
 #include <QIcon>
 #include <QQmlApplicationEngine>
@@ -44,15 +43,6 @@ int main(int argc, char **argv)
     activeApp.start();
 
     QQmlApplicationEngine engine;
-    const QString buildQml = QStringLiteral(KBOARD_QML_BUILD_DIR);
-    if (QDir(buildQml).exists() && qEnvironmentVariableIsSet("KBOARD_USE_BUILD_TREE")) {
-        engine.addImportPath(buildQml);
-    } else {
-        engine.addImportPath(QStringLiteral(KBOARD_QML_INSTALL_DIR));
-    }
-    KLocalization::setupLocalizedContext(&engine);
-    QObject::connect(
-        &engine, &QQmlApplicationEngine::objectCreationFailed, &application, [] { QCoreApplication::exit(1); }, Qt::QueuedConnection);
-    engine.loadFromModule("org.devl0rd.kboard", "Main");
+    KBoardQml::loadModule(engine, QStringLiteral("org.devl0rd.kboard"), QStringLiteral("Main"));
     return application.exec();
 }
