@@ -26,6 +26,10 @@ void ActiveAppWatcher::start()
         qWarning() << "KBoard: cannot watch the active application, missing" << script;
         return;
     }
+    QDBusMessage unload
+        = QDBusMessage::createMethodCall(s_service, s_scripting, QStringLiteral("org.kde.kwin.Scripting"), QStringLiteral("unloadScript"));
+    unload << m_pluginName;
+    QDBusConnection::sessionBus().call(unload);
     QDBusMessage message
         = QDBusMessage::createMethodCall(s_service, s_scripting, QStringLiteral("org.kde.kwin.Scripting"), QStringLiteral("loadScript"));
     message << script << m_pluginName;
