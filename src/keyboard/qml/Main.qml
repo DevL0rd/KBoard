@@ -28,18 +28,16 @@ PanelWindow {
     }
 
     function present() {
-        if (!Settings.enabled) {
-            KeyboardService.Hide()
-            return
-        }
-        if (keyboard.rules.neverShow) {
+        if (!Settings.enabled || keyboard.rules.neverShow) {
             KeyboardService.Hide()
             return
         }
         if (shown)
             return
         shown = true
-        keyboard.slide = 1
+        slideOut.stop()
+        if (!window.visible)
+            keyboard.slide = 1
         window.visible = true
         slideIn.restart()
     }
@@ -47,16 +45,21 @@ PanelWindow {
     function dismiss() {
         if (!shown)
             return
-        KeyboardService.Deactivate()
         shown = false
         keyboard.panel = "keys"
+        slideIn.stop()
         slideOut.restart()
+    }
+
+    function presentForField() {
+        if (InputContext.active && Settings.enabled && Settings.showOnFocus && !KeyboardService.gestureActive)
+            present()
     }
 
     width: screenWidth
     height: Math.ceil(keyboard.height)
     visible: false
-    onVisibleChanged: KeyboardService.visible = visible
+    onShownChanged: KeyboardService.visible = shown
     interactiveRects: keyboard.interactiveRects
     blurRect: interactiveRects.length === 1 ? interactiveRects[0] : Qt.rect(0, keyboard.panelTop, width, keyboard.targetHeight)
     blurEnabled: Settings.blurEnabled && interactiveRects.length === 1
@@ -123,8 +126,7 @@ PanelWindow {
         target: InputContext
 
         function onActivated() {
-            if (Settings.enabled && Settings.showOnFocus && !KeyboardService.gestureActive)
-                window.present()
+            window.presentForField()
         }
 
         function onDeactivated() {
@@ -137,14 +139,19 @@ PanelWindow {
 
         function onEnabledChanged() {
             if (Settings.enabled)
-                window.present()
+                KeyboardService.Show()
             else
-                window.dismiss()
+                KeyboardService.Hide()
         }
     }
 
     Connections {
         target: KeyboardService
+
+        function onGestureActiveChanged() {
+            if (!KeyboardService.gestureActive)
+                window.presentForField()
+        }
 
         function onActiveAppChanged() {
             if (Settings.enabled && keyboard.rules.alwaysShow)

@@ -40,7 +40,6 @@ public Q_SLOTS:
     Q_SCRIPTABLE void Enable();
     Q_SCRIPTABLE void Disable();
     Q_SCRIPTABLE bool IsEnabled() const;
-    Q_SCRIPTABLE void Deactivate();
     Q_SCRIPTABLE QString KeyMap();
     Q_SCRIPTABLE void SetActiveApp(const QString &application);
 

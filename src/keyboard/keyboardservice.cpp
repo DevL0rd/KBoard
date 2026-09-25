@@ -107,11 +107,6 @@ void KeyboardService::deactivate()
     QDBusConnection::sessionBus().asyncCall(message);
 }
 
-void KeyboardService::Deactivate()
-{
-    deactivate();
-}
-
 void KeyboardService::SetEnabled(bool enabled)
 {
     if (enabled == KBoardSettings::enabled()) {
@@ -120,11 +115,6 @@ void KeyboardService::SetEnabled(bool enabled)
     KBoardSettings::setEnabled(enabled);
     KBoardSettings::self()->save();
     Q_EMIT EnabledChanged(enabled);
-    if (enabled) {
-        Show();
-    } else {
-        Hide();
-    }
 }
 
 void KeyboardService::Enable()
