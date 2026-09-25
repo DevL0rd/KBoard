@@ -1,9 +1,18 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
-ID="kboard"
-TITLE="KBoard"
-STATE_FILE="${UPDATE_SOURCE_STATE:-/var/lib/$ID/source}"
+exec 1>&2
+export HOME="${HOME:-/root}"
+export PATH="${PATH:-/usr/local/sbin:/usr/local/bin:/usr/bin:/bin}"
+LIB_DIR=$(dirname "$(readlink -f "$0")")
+if [[ ! -r $LIB_DIR/lib.sh ]]; then
+    echo "kboard: $LIB_DIR/lib.sh is missing, run ./install.sh from your KBoard checkout once to finish updating"
+    exit 0
+fi
+source "$LIB_DIR/lib.sh"
+ID="$UPDATE_ID"
+TITLE="$UPDATE_TITLE"
+STATE_FILE="${UPDATE_SOURCE_STATE:-$UPDATE_STATE_DIR/source}"
 
 log() {
     printf '%s: %s\n' "$ID" "$*"
@@ -20,7 +29,7 @@ home=$(getent passwd "$owner" | cut -d: -f6)
 as_owner() {
     runuser -u "$owner" -- env -i HOME="$home" USER="$owner" LOGNAME="$owner" PATH="$home/.local/bin:/usr/local/bin:/usr/bin:/bin" \
         LANG="${LANG:-C.UTF-8}" XDG_RUNTIME_DIR="/run/user/$uid" DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
-        GIT_TERMINAL_PROMPT=0 GIT_SSH_COMMAND="ssh -o BatchMode=yes -o ConnectTimeout=15" "$@"
+        GIT_TERMINAL_PROMPT=0 GIT_ASKPASS= GIT_SSH_COMMAND="ssh -o BatchMode=yes -o ConnectTimeout=15" "$@"
 }
 
 git_owner() {
@@ -45,12 +54,15 @@ pull_updates() {
     git_owner merge --ff-only --quiet '@{upstream}' || return 0
     git_owner submodule update --init --recursive --quiet
     log "updated to $(git_owner rev-parse --short HEAD)"
-    install -Dm755 "$checkout/packaging/system-update" "/usr/lib/$ID/system-update"
-    install -Dm644 "$checkout/packaging/$ID-update.hook" "/etc/pacman.d/hooks/$ID-update.hook"
+    install_update_hook "$checkout"
 }
 
 if [[ ! -d $checkout ]] || ! git_owner rev-parse --git-dir >/dev/null 2>&1; then
     log "checkout $checkout is gone or not a git repository, skipping"
+    exit 0
+fi
+if [[ -e $home/.local/state/$ID/install.lock ]] && ! flock -n "$home/.local/state/$ID/install.lock" true; then
+    log "an install is running from $checkout, leaving the update to it"
     exit 0
 fi
 pull_updates

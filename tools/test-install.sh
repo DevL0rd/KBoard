@@ -85,10 +85,14 @@ logged() {
 
 hook_registered() {
     if (( EUID == 0 )); then
-        test -f /etc/pacman.d/hooks/kboard-update.hook
+        test -f /usr/share/libalpm/hooks/kboard-update.hook
     else
-        logged "sudo install -Dm644 $REPO/packaging/kboard-update.hook /etc/pacman.d/hooks/kboard-update.hook"
+        logged "sudo install -Dm644 $REPO/packaging/kboard-update.hook /usr/share/libalpm/hooks/kboard-update.hook"
     fi
+}
+
+hook_removed() {
+    (( EUID != 0 )) || test ! -e /usr/share/libalpm/hooks/kboard-update.hook
 }
 
 contains() {
@@ -136,7 +140,7 @@ run() {
 
 test_first_install() {
     echo "First install over plasma-keyboard"
-    run "$ROOT/install1.log" "$REPO/install.sh"
+    run "$ROOT/install1.log" "$REPO/install.sh" --skip-deps
     check "InputMethod points at the installed desktop file" equals "$(input_method)" "$DESKTOP"
     check "VirtualKeyboardEnabled is true" equals "$(input_method VirtualKeyboardEnabled)" true
     check "VirtualKeyboardMode is kept" equals "$(input_method VirtualKeyboardMode)" 1
@@ -145,6 +149,7 @@ test_first_install() {
     check "kboard-input-method is installed" test -x "$HOME/.local/bin/kboard-input-method"
     check "desktop file is installed" test -f "$DESKTOP"
     check "install manifest is kept" test -s "$XDG_CONFIG_HOME/kboard/install-manifest"
+    check "the first install is remembered" test -f "$XDG_CONFIG_HOME/kboard/set-up"
     check "voice model is downloaded" test -f "$HOME/.local/share/kboard/models/parakeet-tdt-0.6b-v3-q4_0"
     check "plasmoid is installed" logged "kpackagetool6 -t Plasma/Applet -i $REPO/plasmoids/org.devl0rd.kboard"
     check "shared QML is staged into the plasmoid" test -f "$REPO/plasmoids/org.devl0rd.kboard/contents/ui/lib/PopCard.qml"
@@ -161,10 +166,10 @@ test_second_install() {
     echo "Second install with nothing changed"
     local applets_before
     applets_before=$(<"$APPLETS")
-    run "$ROOT/install2.log" "$REPO/install.sh"
+    run "$ROOT/install2.log" "$REPO/install.sh" --skip-deps
     check "skips the rebuild" contains "$ROOT/install2.log" "KBoard is up to date."
     check "does not build" bash -c "! grep -q 'Building KBoard' '$ROOT/install2.log'"
-    check "does not restart the active keyboard" contains "$ROOT/install2.log" "already the on-screen keyboard"
+    check "leaves the on-screen keyboard alone" bash -c "! grep -qE 'on-screen keyboard|Restarted KBoard' '$ROOT/install2.log'"
     check "previous input method is unchanged" equals "$(<"$PREVIOUS")" "$PLASMA_KEYBOARD"
     check "voice model download is skipped" contains "$ROOT/install2.log" "already downloaded"
     check "plasmoid is upgraded" logged "kpackagetool6 -t Plasma/Applet -u"
@@ -181,6 +186,14 @@ test_system_update() {
     check "pending flag is cleared" test ! -e "$XDG_STATE_HOME/kboard/update-pending"
 }
 
+test_keyboard_switched_away() {
+    echo "Install again after switching to another keyboard"
+    kwriteconfig6 --file kwinrc --group Wayland --key InputMethod "$PLASMA_KEYBOARD"
+    run "$ROOT/install4.log" "$REPO/install.sh" --skip-deps
+    check "the other keyboard stays" equals "$(input_method)" "$PLASMA_KEYBOARD"
+    kwriteconfig6 --file kwinrc --group Wayland --key InputMethod "$DESKTOP"
+}
+
 test_uninstall() {
     echo "Uninstall"
     run "$ROOT/uninstall.log" "$REPO/uninstall.sh"
@@ -192,6 +205,10 @@ test_uninstall() {
     check "KBoard QML modules are removed" test ! -e "$HOME/.local/lib/qml/org/devl0rd/kboard"
     check "plasmoid is removed" logged "kpackagetool6 -t Plasma/Applet -r org.devl0rd.kboard"
     check "update unit is removed" test ! -e "$XDG_CONFIG_HOME/systemd/user/kboard-update.service"
+    check "update hook is removed" hook_removed
+    check "VirtualKeyboardEnabled is taken back out" bash -c "! grep -q VirtualKeyboardEnabled '$XDG_CONFIG_HOME/kwinrc'"
+    check "the install state in ~/.config/kboard is removed" test ! -e "$XDG_CONFIG_HOME/kboard"
+    check "the update state is removed" test ! -e "$XDG_STATE_HOME/kboard"
     check "kboardrc is kept" test -f "$XDG_CONFIG_HOME/kboardrc"
     check "learned words are kept" test -f "$HOME/.local/share/kboard/learned-words.json"
     check "voice models are kept" test -f "$HOME/.local/share/kboard/models/parakeet-tdt-0.6b-v3-q4_0"
@@ -200,7 +217,7 @@ test_uninstall() {
 test_without_previous_keyboard() {
     echo "Install and uninstall without a previous keyboard"
     rm -f "$XDG_CONFIG_HOME/kwinrc"
-    run "$ROOT/install3.log" "$REPO/install.sh"
+    run "$ROOT/install3.log" "$REPO/install.sh" --skip-deps
     check "InputMethod points at KBoard" equals "$(input_method)" "$DESKTOP"
     check "an empty previous input method is saved" equals "$(<"$PREVIOUS")" ""
     run "$ROOT/uninstall2.log" "$REPO/uninstall.sh"
@@ -212,6 +229,7 @@ seed_session
 test_first_install
 test_second_install
 test_system_update
+test_keyboard_switched_away
 test_uninstall
 test_without_previous_keyboard
 

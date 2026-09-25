@@ -18,7 +18,7 @@ if [[ -f "$MANIFEST" ]]; then
     while IFS= read -r installed || [[ -n $installed ]]; do
         rm -f "$installed"
         directory=$(dirname "$installed")
-        while [[ $directory == "$PREFIX"/*/* && $directory != "$PREFIX"/share/applications ]] && rmdir "$directory" 2>/dev/null; do
+        while [[ $directory == "$PREFIX"/*/* ]] && rmdir "$directory" 2>/dev/null; do
             directory=$(dirname "$directory")
         done
     done <"$MANIFEST"
@@ -27,8 +27,14 @@ if [[ -f "$MANIFEST" ]]; then
 else
     echo "No install manifest at $MANIFEST, so no KBoard files were removed from $PREFIX."
 fi
-rm -f "$CONFIG_DIR/installed-revision"
+rm -f "$CONFIG_DIR/installed-revision" "$CONFIG_DIR/set-up"
 rmdir "$CONFIG_DIR" 2>/dev/null || true
+rm -rf "$UPDATE_STATE_HOME"
+for directory in "$PREFIX/share/plasma/plasmoids" "$PREFIX/share/plasma" "${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user" "${XDG_CONFIG_HOME:-$HOME/.config}/systemd" "$PREFIX/bin" "$PREFIX/lib"; do
+    if [[ -d $directory ]]; then
+        rmdir --ignore-fail-on-non-empty "$directory"
+    fi
+done
 
 echo "Removed the widget and the update hook."
 echo "Kept ~/.config/kboardrc, learned words, clipboard pins and downloaded voice models in ~/.local/share/kboard."
