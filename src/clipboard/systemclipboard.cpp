@@ -7,6 +7,11 @@
 #include <QImage>
 #include <QMimeData>
 
+namespace
+{
+const QString s_publishedFormat = QStringLiteral("application/x-kboard-published");
+}
+
 SystemClipboard::SystemClipboard(QObject *parent)
     : QObject(parent)
 { }
@@ -25,8 +30,12 @@ bool SystemClipboard::start()
         return false;
     }
     connect(clipboard, &KSystemClipboard::changed, this, [this, clipboard](QClipboard::Mode mode) {
-        if (mode == QClipboard::Clipboard && !clipboard->ownsClipboard()) {
-            Q_EMIT copied(clipboard->mimeData(QClipboard::Clipboard));
+        if (mode != QClipboard::Clipboard) {
+            return;
+        }
+        const QMimeData *mime = clipboard->mimeData(QClipboard::Clipboard);
+        if (mime && !mime->hasFormat(s_publishedFormat)) {
+            Q_EMIT copied(mime);
         }
     });
     return true;
@@ -59,6 +68,7 @@ bool SystemClipboard::publish(QMimeData *mime)
         m_errorString = i18n("The system clipboard is not available.");
         return false;
     }
+    mime->setData(s_publishedFormat, QByteArrayLiteral("1"));
     clipboard->setMimeData(mime, QClipboard::Clipboard);
     return true;
 }
