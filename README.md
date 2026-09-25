@@ -49,7 +49,7 @@ cd KBoard
 ./install.sh
 ```
 
-That's it. The installer builds KBoard into your home folder, tells KWin to use it as the on-screen keyboard (remembering the one you had), downloads the voice typing model and restarts your panel. Tap any text field and the keyboard comes up. The only time it asks for your password is to register the update hook on pacman systems.
+That's it. The installer installs what KBoard needs with your package manager, builds KBoard into your home folder, tells KWin to use it as the on-screen keyboard (remembering the one you had), downloads the voice typing model and restarts your panel. Tap any text field and the keyboard comes up. It only asks for your password to install packages and to hook KBoard into system updates.
 
 > [!TIP]
 > Add **KBoard** to your panel from **Add Widgets** to show and hide the keyboard by hand, and open **KBoard Settings** from your app launcher to make it yours.
@@ -57,11 +57,11 @@ That's it. The installer builds KBoard into your home folder, tells KWin to use 
 <table>
   <tr>
     <td>🔄 <b>Update</b></td>
-    <td>On pacman-based systems KBoard rebuilds itself with every system update and tells you when it's done. Anywhere else, run <code>git pull &amp;&amp; ./install.sh</code>. It's safe to repeat and keeps your settings, learned words and voice models.</td>
+    <td>KBoard updates itself with every system update, rebuilds when Qt or the voice typing libraries update, and tells you when it's done. You can also run <code>./install.sh</code> again any time. It's safe to repeat, keeps your settings, learned words and voice models, and won't switch your on-screen keyboard back if you changed it.</td>
   </tr>
   <tr>
     <td>📦 <b>From a package</b></td>
-    <td>Package builds run <code>./install.sh --aur</code> (or set <code>KBOARD_AUR=true</code>), so your package manager handles updates instead and no pacman hook is registered.</td>
+    <td>Package builds run <code>./install.sh --aur</code> (or set <code>KBOARD_AUR=true</code>), so your package manager handles dependencies and updates instead and no update hook is registered.</td>
   </tr>
   <tr>
     <td>🧹 <b>Remove</b></td>
@@ -69,7 +69,11 @@ That's it. The installer builds KBoard into your home folder, tells KWin to use 
   </tr>
   <tr>
     <td>🖥️ <b>Needs</b></td>
-    <td>KDE Plasma 6 on Wayland, Qt 6 (Quick, Wayland client, Multimedia), KDE Frameworks 6, CMake with Ninja, <code>whisper-cpp</code> and <code>ggml</code> for voice typing, <code>sdl3</code> for controllers, <code>hunspell</code> plus a dictionary for your language, and about 340 MB for the voice model. A graphics card is optional: install <code>ggml-cuda</code>, <code>ggml-vulkan</code> or <code>ggml-hip</code> and voice typing uses it. The installer checks everything first and lists whatever is missing.</td>
+    <td>KDE Plasma 6 on Wayland, Qt 6 (Quick, Wayland client, Multimedia), KDE Frameworks 6, CMake with Ninja, <code>whisper-cpp</code> and <code>ggml</code> for voice typing, <code>sdl3</code> for controllers, <code>hunspell</code> plus a dictionary for your language, and about 340 MB for the voice model. A graphics card is optional: install <code>ggml-cuda</code>, <code>ggml-vulkan</code> or <code>ggml-hip</code> and voice typing uses it. The installer installs everything it can, then checks and lists whatever is still missing.</td>
+  </tr>
+  <tr>
+    <td>🐧 <b>Distros</b></td>
+    <td>The installer sets everything up on Arch and Arch-based systems like CachyOS, and on Debian unstable. On Fedora and openSUSE Tumbleweed it installs the packages too, but they don't ship whisper.cpp with Parakeet voice typing yet, and Debian testing still has Qt 6.10, so the installer tells you what's missing. Fedora Atomic desktops like Kinoite, Aurora and Bazzite and SteamOS aren't supported yet, because their system images don't include whisper.cpp.</td>
   </tr>
 </table>
 
