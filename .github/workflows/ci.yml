@@ -18,14 +18,8 @@ jobs:
     container:
       image: archlinux:base-devel
     steps:
-      - name: Install dependencies
-        run: |
-          pacman -Syu --noconfirm --needed git cmake ninja clang llvm openmp extra-cmake-modules python \
-            qt6-base qt6-declarative qt6-wayland qt6-multimedia \
-            kconfig kcoreaddons ki18n kguiaddons kwindowsystem kdbusaddons kcrash kirigami kirigami-addons kservice \
-            wayland wayland-protocols plasma-wayland-protocols libxkbcommon systemd-libs \
-            sdl3 whisper-cpp ggml hunspell hunspell-en_us noto-fonts-emoji \
-            dbus typos nodejs npm shellcheck
+      - name: Install the check tools
+        run: pacman -Syu --noconfirm --needed git cmake ninja clang llvm openmp dbus typos nodejs npm shellcheck
 
       - name: Build xunused
         run: |
@@ -45,8 +39,69 @@ jobs:
       - name: Mark checkout as safe
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
+      - name: Install KBoard's dependencies
+        run: packaging/dependencies.sh
+
       - name: Run the full check suite
         run: ./tools/check.sh
+
+  distros:
+    name: Install dependencies${{ matrix.build && ' and build' || '' }} on ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Fedora 44
+            image: fedora:44
+            plasma: dnf install -y git plasma-desktop
+            build: false
+          - name: openSUSE Tumbleweed
+            image: opensuse/tumbleweed
+            plasma: zypper --non-interactive dup --allow-downgrade && zypper --non-interactive install --force-resolution git plasma6-desktop
+            build: false
+          - name: Debian testing
+            image: debian:testing
+            plasma: apt-get update && apt-get install -y git plasma-desktop
+            build: false
+          - name: Debian unstable
+            image: debian:unstable
+            plasma: apt-get update && apt-get install -y git plasma-desktop
+            build: true
+    container:
+      image: ${{ matrix.image }}
+    env:
+      DEBIAN_FRONTEND: noninteractive
+    steps:
+      - name: Install Plasma
+        run: ${{ matrix.plasma }}
+
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install KBoard's dependencies
+        run: packaging/dependencies.sh
+
+      - name: Build and install
+        if: matrix.build
+        run: |
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DKDE_INSTALL_USE_QT_SYS_PATHS=ON -DBUILD_TESTING=OFF -DKBOARD_WERROR=OFF
+          cmake --build build
+          DESTDIR="$PWD/staging" cmake --install build
+          find staging -path '*/bin/kboard' | grep .
+          find staging -path '*/applications/org.devl0rd.kboard.desktop' | grep .
+
+  install:
+    name: Install, check and uninstall on Arch Linux
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install, check and uninstall KBoard in a Plasma session
+        run: tests/install/run.sh
 
   release:
     name: Release
@@ -86,7 +141,7 @@ jobs:
             ./install.sh
             ```
 
-            The installer makes KBoard your on-screen keyboard right away. On pacman systems it rebuilds itself after Qt upgrades.
+            The installer installs the build dependencies and makes KBoard your on-screen keyboard right away. It updates itself with every system update and rebuilds after Qt upgrades.
 
             Updating from an older version is the same command: `./install.sh`. To remove it, run `./uninstall.sh`; your previous keyboard comes back.
 

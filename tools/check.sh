@@ -4,7 +4,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 BUILD_DIR="${KBOARD_BUILD_DIR:-build}"
 QMLLINT="${QMLLINT:-/usr/lib/qt6/bin/qmllint}"
-SCRIPTS=(install.sh uninstall.sh packaging/lib.sh packaging/system-update packaging/kboard-input-method tools/check.sh tools/test-install.sh)
+SCRIPTS=(install.sh uninstall.sh packaging/lib.sh packaging/dependencies.sh packaging/system-update packaging/kboard-input-method packaging/kboard-update.zypp tools/check.sh tools/test-install.sh tests/install/*.sh)
 PYTHON_SCRIPTS=(packaging/replace-keyboard-toggle)
 QML_NOISE=(unqualified import unresolved-type missing-type missing-property incompatible-type unused-imports)
 
@@ -75,7 +75,7 @@ done
 for script in "${PYTHON_SCRIPTS[@]}"; do
     python3 -c "import ast, sys; ast.parse(open(sys.argv[1]).read(), sys.argv[1])" "$script"
 done
-shellcheck -x "${SCRIPTS[@]}"
+shellcheck -x --source-path=SCRIPTDIR "${SCRIPTS[@]}"
 
 step "typos"
 typos
