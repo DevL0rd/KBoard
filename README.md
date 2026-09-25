@@ -9,6 +9,7 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/DevL0rd/KBoard/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/DevL0rd/KBoard/ci.yml?branch=main&style=for-the-badge&label=build&logo=githubactions&logoColor=white"></a>
   <img alt="KDE Plasma 6" src="https://img.shields.io/badge/KDE_Plasma-6-1d99f3?style=for-the-badge&logo=kde&logoColor=white">
   <img alt="Wayland" src="https://img.shields.io/badge/Wayland-native-4a86c8?style=for-the-badge">
   <img alt="Glide typing, voice typing and controller support" src="https://img.shields.io/badge/Glide_·_Voice_·_Controller-built_in-76b900?style=for-the-badge">
