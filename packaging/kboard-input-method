@@ -15,7 +15,14 @@ virtual_keyboard_enabled() {
 }
 
 switch_input_method() {
+    local running
+    running=$(pgrep -u "$(id -u)" -x kboard || true)
     kwriteconfig6 --file kwinrc --group Wayland --key InputMethod --notify ""
+    if [[ -n $running ]] && ! timeout 10 pidwait -u "$(id -u)" -x kboard; then
+        kwriteconfig6 --file kwinrc --group Wayland --key InputMethod --notify "$1"
+        echo "KWin did not stop the running KBoard, so it was not restarted." >&2
+        exit 1
+    fi
     kwriteconfig6 --file kwinrc --group Wayland --key InputMethod --notify "$1"
 }
 

@@ -44,6 +44,7 @@ make_shims() {
 cat >/dev/null
 EOF
     shim gdbus </dev/null
+    shim pgrep <<<"exit 1"
     shim kpackagetool6 <<'EOF'
 [[ $3 == -u && ! -f $CALLS.applet ]] && exit 1
 [[ $3 == -i ]] && touch "$CALLS.applet"

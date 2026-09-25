@@ -3,25 +3,25 @@ set -euo pipefail
 
 source "$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)/lib.sh"
 
-ARCH_PACKAGES=(base-devel cmake ninja git pkgconf python extra-cmake-modules
+ARCH_PACKAGES=(base-devel procps-ng cmake ninja git pkgconf python extra-cmake-modules
     qt6-base qt6-declarative qt6-wayland qt6-multimedia
     kconfig kcoreaddons ki18n kguiaddons kwindowsystem kdbusaddons kcrash kirigami kirigami-addons kservice kpackage
     wayland wayland-protocols libxkbcommon systemd-libs sdl3 hunspell hunspell-en_us noto-fonts-emoji)
 SYSTEM_WHISPER_PACKAGES=(whisper-cpp ggml)
-FEDORA_PACKAGES=(cmake ninja-build git gcc-c++ pkgconf-pkg-config python3 extra-cmake-modules
+FEDORA_PACKAGES=(procps-ng cmake ninja-build git gcc-c++ pkgconf-pkg-config python3 extra-cmake-modules
     qt6-qtbase-devel qt6-qtbase-private-devel qt6-qtdeclarative-devel qt6-qtwayland-devel qt6-qtmultimedia-devel
     kf6-kconfig kf6-kconfig-devel kf6-kcoreaddons-devel kf6-ki18n-devel kf6-kguiaddons-devel kf6-kwindowsystem-devel
     kf6-kdbusaddons-devel kf6-kcrash-devel kf6-kirigami-devel kf6-kirigami-addons kf6-kservice-devel kf6-kpackage
     wayland-devel wayland-protocols-devel libxkbcommon-devel systemd-devel SDL3-devel
     hunspell-devel hunspell-en-US google-noto-color-emoji-fonts libdnf5-plugin-actions)
-SUSE_PACKAGES=(cmake ninja git gcc-c++ pkgconf-pkg-config python3 kf6-extra-cmake-modules
+SUSE_PACKAGES=(procps cmake ninja git gcc-c++ pkgconf-pkg-config python3 kf6-extra-cmake-modules
     qt6-base-devel qt6-base-private-devel qt6-declarative-devel qt6-declarative-imports qt6-wayland-devel qt6-wayland-private-devel
     qt6-multimedia-devel qt6-multimedia-imports
     kf6-kconfig kf6-kconfig-devel kf6-kcoreaddons-devel kf6-ki18n-devel kf6-kguiaddons-devel kf6-kwindowsystem-devel
     kf6-kdbusaddons-devel kf6-kcrash-devel kf6-kirigami-devel kf6-kirigami-imports kirigami-addons6 kf6-kservice-devel kf6-kpackage
     wayland-devel wayland-protocols-devel libxkbcommon-devel libudev-devel SDL3-devel
     hunspell-devel myspell-en_US google-noto-coloremoji-fonts)
-DEBIAN_PACKAGES=(cmake ninja-build git g++ pkgconf python3 extra-cmake-modules
+DEBIAN_PACKAGES=(procps cmake ninja-build git g++ pkgconf python3 extra-cmake-modules
     qt6-base-dev qt6-base-private-dev qt6-declarative-dev qt6-declarative-dev-tools qt6-wayland-dev qt6-wayland-dev-tools
     qt6-wayland-private-dev qt6-multimedia-dev
     libkf6config-dev libkf6config-bin libkf6coreaddons-dev libkf6i18n-dev libkf6guiaddons-dev libkf6windowsystem-dev
