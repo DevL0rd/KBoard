@@ -47,6 +47,7 @@ EOF
     shim kpackagetool6 <<'EOF'
 [[ $3 == -u && ! -f $CALLS.applet ]] && exit 1
 [[ $3 == -i ]] && touch "$CALLS.applet"
+[[ $3 == -[iu] && -f $4/contents/ui/lib/PopCard.qml ]] && touch "$CALLS.lib"
 [[ $3 == -r ]] && rm -f "$CALLS.applet"
 exit 0
 EOF
@@ -151,8 +152,9 @@ test_first_install() {
     check "install manifest is kept" test -s "$XDG_CONFIG_HOME/kboard/install-manifest"
     check "the first install is remembered" test -f "$XDG_CONFIG_HOME/kboard/set-up"
     check "voice model is downloaded" test -f "$HOME/.local/share/kboard/models/parakeet-tdt-0.6b-v3-q4_0"
-    check "plasmoid is installed" logged "kpackagetool6 -t Plasma/Applet -i $REPO/plasmoids/org.devl0rd.kboard"
-    check "shared QML is staged into the plasmoid" test -f "$REPO/plasmoids/org.devl0rd.kboard/contents/ui/lib/PopCard.qml"
+    check "plasmoid is installed" logged "kpackagetool6 -t Plasma/Applet -i"
+    check "shared QML is staged into the plasmoid" test -f "$CALLS.lib"
+    check "the checkout stays free of staged QML" test ! -e "$REPO/plasmoids/org.devl0rd.kboard/contents/ui/lib"
     check "pacman hook is registered" hook_registered
     check "update unit is written" contains "$XDG_CONFIG_HOME/systemd/user/kboard-update.service" "ExecStart=$REPO/install.sh --system-update"
     check "plasmashell is stopped and started" logged "systemctl --user start plasma-plasmashell.service"

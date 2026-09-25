@@ -155,7 +155,11 @@ if ! command -v kboard-voice-model >/dev/null 2>&1; then
 fi
 kboard-voice-model "$VOICE_MODEL"
 
-PLASMOID="$REPO_DIR/plasmoids/org.devl0rd.kboard"
+rm -rf "$REPO_DIR/plasmoids/org.devl0rd.kboard/contents/ui/lib"
+PLASMOID_STAGE=$(mktemp -d)
+trap 'rm -rf "$PLASMOID_STAGE"' EXIT
+PLASMOID="$PLASMOID_STAGE/org.devl0rd.kboard"
+cp -r "$REPO_DIR/plasmoids/org.devl0rd.kboard" "$PLASMOID"
 mkdir -p "$PLASMOID/contents/ui/lib"
 cp "$REPO_DIR/shared/common/"*.qml "$REPO_DIR/shared/common/"*.js "$PLASMOID/contents/ui/lib/"
 if kpackagetool6 -t Plasma/Applet -u "$PLASMOID" >/dev/null 2>&1; then
