@@ -1,6 +1,3 @@
-pkg_check_modules(Whisper REQUIRED IMPORTED_TARGET whisper)
-pkg_check_modules(Parakeet REQUIRED IMPORTED_TARGET parakeet)
-
 add_library(KBoardVoice SHARED
     audiocapture.cpp
     audiocapture.h
@@ -38,8 +35,17 @@ target_include_directories(KBoardVoice PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_options(KBoardVoice PRIVATE -fvisibility=default)
 target_link_libraries(KBoardVoice
     PUBLIC Qt::Core Qt::Quick
-    PRIVATE Qt::Network Qt::Multimedia KBoardConfig KBoardPlatform PkgConfig::Whisper PkgConfig::Parakeet
+    PRIVATE Qt::Network Qt::Multimedia KBoardConfig KBoardPlatform
 )
+if(KBOARD_BUNDLED_WHISPER)
+    target_link_libraries(KBoardVoice PRIVATE whisper parakeet ggml)
+    target_link_options(KBoardVoice PRIVATE "LINKER:--exclude-libs,ALL")
+else()
+    pkg_check_modules(Whisper REQUIRED IMPORTED_TARGET "whisper >= ${KBOARD_SYSTEM_WHISPER_MIN_VERSION}")
+    pkg_check_modules(Parakeet REQUIRED IMPORTED_TARGET "parakeet >= ${KBOARD_SYSTEM_WHISPER_MIN_VERSION}")
+    target_link_libraries(KBoardVoice PRIVATE PkgConfig::Whisper PkgConfig::Parakeet)
+    target_compile_definitions(KBoardVoice PRIVATE KBOARD_LOAD_GGML_BACKENDS)
+endif()
 set_target_properties(KBoardVoice PROPERTIES VERSION ${PROJECT_VERSION} SOVERSION 0)
 
 ecm_add_qml_module(KBoardVoice URI "org.devl0rd.kboard.voice" GENERATE_PLUGIN_SOURCE DEPENDENCIES QtQuick)

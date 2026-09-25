@@ -10,12 +10,14 @@ source "$REPO_DIR/packaging/lib.sh"
 
 AUR=false
 SYSTEM_UPDATE=false
+LOGIN_UPDATE=false
 SKIP_DEPS=false
 [[ ${KBOARD_AUR:-} == @(1|true|yes) ]] && AUR=true
 for argument in "$@"; do
     case "$argument" in
     --aur) AUR=true ;;
     --system-update) SYSTEM_UPDATE=true ;;
+    --login-update) SYSTEM_UPDATE=true LOGIN_UPDATE=true ;;
     --skip-deps) SKIP_DEPS=true ;;
     -h | --help)
         echo "Usage: ./install.sh [--skip-deps] [--aur]"
@@ -28,9 +30,6 @@ for argument in "$@"; do
     esac
 done
 
-if image_based_system; then
-    refuse_image_based_system
-fi
 mkdir -p "$UPDATE_STATE_HOME"
 exec 9>"$UPDATE_STATE_HOME/install.lock"
 if ! flock -n 9; then
@@ -38,55 +37,13 @@ if ! flock -n 9; then
     $SYSTEM_UPDATE && exit 0
     exit 1
 fi
-if ! $SKIP_DEPS && ! $AUR && ! $SYSTEM_UPDATE; then
-    echo "Installing build dependencies..."
-    "$REPO_DIR/packaging/dependencies.sh"
-fi
-
-QT_MIN_VERSION=$(sed -n 's/^set(QT_MIN_VERSION "\(.*\)")$/\1/p' "$REPO_DIR/CMakeLists.txt")
-missing=0
-for command_name in cmake ninja c++ pkg-config python3 kreadconfig6 kwriteconfig6 kpackagetool6 busctl; do
-    if ! command -v "$command_name" >/dev/null 2>&1; then
-        echo "Missing required command: $command_name"
-        missing=1
-    fi
-done
-for module in "Qt6Core >= $QT_MIN_VERSION" Qt6Quick Qt6WaylandClient Qt6Multimedia wayland-client wayland-protocols xkbcommon whisper parakeet ggml sdl3 hunspell libudev; do
-    if ! pkg-config --exists "$module" 2>/dev/null; then
-        echo "Missing required library: $module"
-        missing=1
-    fi
-done
-for package in ECM KF6Config KF6CoreAddons KF6I18n KF6GuiAddons KF6WindowSystem KF6DBusAddons KF6Kirigami KF6Crash KF6Service; do
-    found=0
-    for directory in /usr/lib/cmake /usr/lib64/cmake /usr/lib/*-linux-gnu/cmake /usr/local/lib/cmake /usr/share/"$package"/cmake /usr/share/cmake; do
-        if [[ -f "$directory/$package/${package}Config.cmake" || -f "$directory/${package}Config.cmake" ]]; then
-            found=1
-            break
-        fi
-    done
-    if (( ! found )); then
-        echo "Missing required CMake package: $package"
-        missing=1
-    fi
-done
-if (( missing )); then
-    echo "Install the missing Qt 6/KDE Frameworks/build dependencies, then run this again."
-    exit 1
-fi
-
-if [[ ! -e "$REPO_DIR/shared/common/PopupShell.qml" ]]; then
-    echo "shared/common (Plasma-Shared submodule) is empty."
-    echo "Run: git submodule update --init --recursive"
-    exit 1
-fi
 
 PREFIX="$HOME/.local"
 BIN_DIR="$PREFIX/bin"
 BUILD_DIR="${KBOARD_BUILD_DIR:-$REPO_DIR/build}"
+BUILT_FOR="$BUILD_DIR/kboard-built-for"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/kboard"
 STAMP="$CONFIG_DIR/installed-revision"
-BUILT_FOR="$BUILD_DIR/kboard-built-for"
 MANIFEST="$CONFIG_DIR/install-manifest"
 SET_UP="$CONFIG_DIR/set-up"
 VOICE_MODEL="parakeet-tdt-0.6b-v3-q4_0"
@@ -95,9 +52,9 @@ mkdir -p "$CONFIG_DIR"
 
 cmake_options=(-DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX="$PREFIX" -DKDE_INSTALL_USE_QT_SYS_PATHS=OFF -DBUILD_TESTING=OFF -DKBOARD_WERROR=OFF)
 [[ -n ${KBOARD_KLIPY_API_KEY:-} ]] && cmake_options+=(-DKBOARD_KLIPY_API_KEY="$KBOARD_KLIPY_API_KEY")
+image_based_system && cmake_options+=(-DKBOARD_BUNDLED_WHISPER=ON)
 
-SYSTEM=$(pkg-config --modversion Qt6Core Qt6WaylandClient whisper parakeet ggml)
-if $SYSTEM_UPDATE; then
+if $SYSTEM_UPDATE && ! image_based_system; then
     qt_library=$(find /usr/lib /usr/lib64 -maxdepth 2 -name libQt6Core.so.6 -print -quit 2>/dev/null)
     if [[ -n $qt_library ]]; then
         qt_runtime=$(basename "$(readlink -f "$qt_library")")
@@ -109,21 +66,57 @@ if $SYSTEM_UPDATE; then
     fi
 fi
 
-REVISION=$( {
-    printf '%s\n' "${cmake_options[@]}" "$PREFIX" "$SYSTEM"
-    find "$REPO_DIR/CMakeLists.txt" "$REPO_DIR/src" "$REPO_DIR/data" "$REPO_DIR/packaging/kboard-input-method" -type f -not -path '*/__pycache__/*' -print0 | LC_ALL=C sort -z | xargs -0 sha256sum
-} | sha256sum | cut -d' ' -f1)
+identify_build() {
+    SYSTEM=$(system_fingerprint)
+    REVISION=$( {
+        printf '%s\n' "${cmake_options[@]}" "$PREFIX" "$SYSTEM"
+        find "$REPO_DIR/CMakeLists.txt" "$REPO_DIR/3rdparty" "$REPO_DIR/src" "$REPO_DIR/data" "$REPO_DIR/packaging/kboard-input-method" -type f -not -path '*/__pycache__/*' -print0 | LC_ALL=C sort -z | xargs -0 sha256sum
+    } | sha256sum | cut -d' ' -f1)
+}
+identify_build
+
+install_dependencies=false
+if $LOGIN_UPDATE; then
+    [[ -f $STAMP && "$(<"$STAMP")" == "$REVISION" ]] || install_dependencies=true
+elif ! $SYSTEM_UPDATE && ! $SKIP_DEPS && ! $AUR; then
+    install_dependencies=true
+fi
+if $install_dependencies; then
+    echo "Installing build dependencies..."
+    "$REPO_DIR/packaging/dependencies.sh"
+    identify_build
+fi
+
+QT_MIN_VERSION=$(sed -n 's/^set(QT_MIN_VERSION "\(.*\)")$/\1/p' "$REPO_DIR/CMakeLists.txt")
+missing=0
+for command_name in python3 kreadconfig6 kwriteconfig6 kpackagetool6 busctl; do
+    if ! command -v "$command_name" >/dev/null 2>&1; then
+        echo "Missing required command: $command_name"
+        missing=1
+    fi
+done
+in_build_env "$REPO_DIR/packaging/check-build-dependencies" "$QT_MIN_VERSION" || missing=1
+if (( missing )); then
+    echo "Install the missing Qt 6/KDE Frameworks/build dependencies, then run this again."
+    exit 1
+fi
+
+if [[ ! -e "$REPO_DIR/shared/common/PopupShell.qml" ]]; then
+    echo "shared/common (Plasma-Shared submodule) is empty."
+    echo "Run: git submodule update --init --recursive"
+    exit 1
+fi
 
 REBUILT=false
 if [[ -f "$STAMP" && "$(<"$STAMP")" == "$REVISION" && -f "$MANIFEST" && -x "$BIN_DIR/kboard" ]]; then
     echo "KBoard is up to date."
 else
     echo "Building KBoard..."
-    cmake -S "$REPO_DIR" -B "$BUILD_DIR" -G Ninja "${cmake_options[@]}" >/dev/null
+    in_build_env cmake -S "$REPO_DIR" -B "$BUILD_DIR" -G Ninja "${cmake_options[@]}" >/dev/null
     clean=()
     [[ -f $BUILT_FOR && "$(<"$BUILT_FOR")" == "$SYSTEM" ]] || clean=(--clean-first)
-    cmake --build "$BUILD_DIR" "${clean[@]}"
-    cmake --install "$BUILD_DIR" >/dev/null
+    in_build_env cmake --build "$BUILD_DIR" "${clean[@]}"
+    in_build_env cmake --install "$BUILD_DIR" >/dev/null
     if [[ -f "$MANIFEST" ]]; then
         while IFS= read -r installed || [[ -n $installed ]]; do
             if ! grep -qxF -- "$installed" "$BUILD_DIR/install_manifest.txt"; then

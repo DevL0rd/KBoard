@@ -69,11 +69,11 @@ That's it. The installer installs what KBoard needs with your package manager, b
   </tr>
   <tr>
     <td>🖥️ <b>Needs</b></td>
-    <td>KDE Plasma 6 on Wayland, Qt 6 (Quick, Wayland client, Multimedia), KDE Frameworks 6, CMake with Ninja, <code>whisper-cpp</code> and <code>ggml</code> for voice typing, <code>sdl3</code> for controllers, <code>hunspell</code> plus a dictionary for your language, and about 340 MB for the voice model. A graphics card is optional: install <code>ggml-cuda</code>, <code>ggml-vulkan</code> or <code>ggml-hip</code> and voice typing uses it. The installer installs everything it can, then checks and lists whatever is still missing.</td>
+    <td>KDE Plasma 6 on Wayland, Qt 6.11 or newer (Quick, Wayland client, Multimedia), KDE Frameworks 6, CMake with Ninja, <code>sdl3</code> for controllers, <code>hunspell</code> plus a dictionary for your language, and about 340 MB for the voice model. Voice typing uses your distro's whisper.cpp when it has Parakeet support (Arch, Debian); everywhere else KBoard builds whisper.cpp in, running on the CPU (needs AVX2). A graphics card is optional with your distro's whisper.cpp: install <code>ggml-cuda</code>, <code>ggml-vulkan</code> or <code>ggml-hip</code> and voice typing uses it. The installer installs everything it can, then checks and lists whatever is still missing.</td>
   </tr>
   <tr>
     <td>🐧 <b>Distros</b></td>
-    <td>The installer sets everything up on Arch and Arch-based systems like CachyOS, and on Debian unstable. On Fedora and openSUSE Tumbleweed it installs the packages too, but they don't ship whisper.cpp with Parakeet voice typing yet, and Debian testing still has Qt 6.10, so the installer tells you what's missing. Fedora Atomic desktops like Kinoite, Aurora and Bazzite and SteamOS aren't supported yet, because their system images don't include whisper.cpp.</td>
+    <td>Arch and CachyOS, Fedora 44, openSUSE Tumbleweed, Debian unstable (Debian testing once it gets Qt 6.11), Fedora Atomic desktops like Kinoite, Aurora and Bazzite, and SteamOS 3.9 in Desktop Mode. On Fedora Atomic and SteamOS, KBoard is built in a toolbox matched to your system and rebuilt at login after system updates.</td>
   </tr>
 </table>
 
@@ -400,7 +400,7 @@ KBoard keeps plasma-keyboard's Wayland plumbing and builds a different keyboard 
 <details>
 <summary><b>Does voice typing need a graphics card?</b></summary>
 <br>
-No. The model that comes with KBoard is quick enough on a plain CPU. If you install <code>ggml-cuda</code>, <code>ggml-vulkan</code> or <code>ggml-hip</code>, it uses your NVIDIA, AMD or Intel card instead, and <b>Voice Typing → Processing device</b> shows what it picked and lets you choose. The model is unloaded after five idle minutes to give the memory back.
+No. The model that comes with KBoard is quick enough on a plain CPU. On Arch and Debian, if you install <code>ggml-cuda</code>, <code>ggml-vulkan</code> or <code>ggml-hip</code>, it uses your NVIDIA, AMD or Intel card instead, and <b>Voice Typing → Processing device</b> shows what it picked and lets you choose. The model is unloaded after five idle minutes to give the memory back.
 </details>
 
 <details>

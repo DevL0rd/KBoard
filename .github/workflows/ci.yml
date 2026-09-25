@@ -55,11 +55,13 @@ jobs:
           - name: Fedora 44
             image: fedora:44
             plasma: dnf install -y git plasma-desktop
-            build: false
+            bundled-whisper: 'ON'
+            build: true
           - name: openSUSE Tumbleweed
             image: opensuse/tumbleweed
             plasma: zypper --non-interactive dup --allow-downgrade && zypper --non-interactive install --force-resolution git plasma6-desktop
-            build: false
+            bundled-whisper: 'ON'
+            build: true
           - name: Debian testing
             image: debian:testing
             plasma: apt-get update && apt-get install -y git plasma-desktop
@@ -67,6 +69,24 @@ jobs:
           - name: Debian unstable
             image: debian:unstable
             plasma: apt-get update && apt-get install -y git plasma-desktop
+            bundled-whisper: 'OFF'
+            build: true
+          - name: SteamOS 3.9
+            image: archlinux:latest
+            plasma: |
+              repos="jupiter-3.9 holo-3.9 core-3.9 extra-3.9 multilib-3.9"
+              conf() {
+                printf '[options]\nArchitecture = auto\nSigLevel = %s\nLocalFileSigLevel = Optional\n' "$1"
+                for repo in $repos; do printf '[%s]\nServer = https://steamdeck-packages.steamos.cloud/archlinux-mirror/$repo/os/$arch\n' "$repo"; done
+              }
+              conf Never > /etc/pacman-bootstrap.conf
+              pacman -Sy --noconfirm --config /etc/pacman-bootstrap.conf holo-keyring
+              pacman-key --init
+              pacman-key --populate archlinux holo
+              conf "Required DatabaseOptional" > /etc/pacman.conf
+              pacman -Syuu --noconfirm --ignore filesystem
+              pacman -S --noconfirm --needed git plasma-desktop
+            bundled-whisper: 'ON'
             build: true
     container:
       image: ${{ matrix.image }}
@@ -83,14 +103,22 @@ jobs:
       - name: Install KBoard's dependencies
         run: packaging/dependencies.sh
 
+      - name: Check the build dependencies
+        if: matrix.build
+        run: packaging/check-build-dependencies "$(sed -n 's/^set(QT_MIN_VERSION "\(.*\)")$/\1/p' CMakeLists.txt)"
+
       - name: Build and install
         if: matrix.build
         run: |
           cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DKDE_INSTALL_USE_QT_SYS_PATHS=ON -DBUILD_TESTING=OFF -DKBOARD_WERROR=OFF
+          grep -qx 'KBOARD_BUNDLED_WHISPER:BOOL=${{ matrix.bundled-whisper }}' build/CMakeCache.txt
           cmake --build build
           DESTDIR="$PWD/staging" cmake --install build
           find staging -path '*/bin/kboard' | grep .
           find staging -path '*/applications/org.devl0rd.kboard.desktop' | grep .
+          if [ '${{ matrix.bundled-whisper }}' = ON ] && find staging \( -name '*whisper*' -o -name '*ggml*' -o -name '*parakeet*' \) | grep .; then
+            exit 1
+          fi
 
   install:
     name: Install, check and uninstall on Arch Linux
@@ -120,7 +148,7 @@ jobs:
         run: |
           version="${GITHUB_REF_NAME#v}"
           git archive --format=tar --prefix="kboard-${version}/" -o "kboard-${version}.tar" HEAD
-          git submodule foreach --quiet 'git archive --format=tar --prefix="kboard-'"${version}"'/$sm_path/" HEAD > "$toplevel/submodule.tar"; tar --concatenate --file="$toplevel/kboard-'"${version}"'.tar" "$toplevel/submodule.tar"; rm "$toplevel/submodule.tar"'
+          git submodule foreach --quiet "git archive --format=tar --prefix=\"kboard-${version}/\$sm_path/\" HEAD > \"\$toplevel/submodule.tar\"; tar --concatenate --file=\"\$toplevel/kboard-${version}.tar\" \"\$toplevel/submodule.tar\"; rm \"\$toplevel/submodule.tar\""
           gzip -9 "kboard-${version}.tar"
           sha256sum "kboard-${version}.tar.gz" > "kboard-${version}.tar.gz.sha256"
 

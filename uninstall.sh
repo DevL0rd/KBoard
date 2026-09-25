@@ -3,6 +3,7 @@ set -euo pipefail
 
 REPO_DIR=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 source "$REPO_DIR/packaging/lib.sh"
+source "$REPO_DIR/packaging/build-box.sh"
 PREFIX="$HOME/.local"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/kboard"
 MANIFEST="$CONFIG_DIR/install-manifest"
@@ -27,6 +28,7 @@ if [[ -f "$MANIFEST" ]]; then
 else
     echo "No install manifest at $MANIFEST, so no KBoard files were removed from $PREFIX."
 fi
+remove_build_boxes
 rm -f "$CONFIG_DIR/installed-revision" "$CONFIG_DIR/set-up"
 rmdir "$CONFIG_DIR" 2>/dev/null || true
 rm -rf "$UPDATE_STATE_HOME"

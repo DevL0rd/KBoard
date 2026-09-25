@@ -36,8 +36,10 @@ namespace VoiceBackends
 {
 void ensureLoaded()
 {
+#ifdef KBOARD_LOAD_GGML_BACKENDS
     static std::once_flag once;
     std::call_once(once, [] { ggml_backend_load_all(); });
+#endif
 }
 
 QList<VoiceDevice> devices()

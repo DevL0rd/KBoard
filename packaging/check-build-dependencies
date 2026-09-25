@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -uo pipefail
+
+missing=0
+for command_name in cmake ninja cc c++ pkg-config; do
+    if ! command -v "$command_name" >/dev/null 2>&1; then
+        echo "Missing required command: $command_name"
+        missing=1
+    fi
+done
+for module in "Qt6Core >= $1" Qt6Quick Qt6WaylandClient Qt6Multimedia wayland-client wayland-protocols xkbcommon sdl3 hunspell libudev; do
+    if ! pkg-config --exists "$module" 2>/dev/null; then
+        echo "Missing required library: $module"
+        missing=1
+    fi
+done
+for package in ECM KF6Config KF6CoreAddons KF6I18n KF6GuiAddons KF6WindowSystem KF6DBusAddons KF6Kirigami KF6Crash KF6Service; do
+    found=0
+    for directory in /usr/lib/cmake /usr/lib64/cmake /usr/lib/*-linux-gnu/cmake /usr/local/lib/cmake /usr/share/"$package"/cmake /usr/share/cmake; do
+        if [[ -f "$directory/$package/${package}Config.cmake" || -f "$directory/${package}Config.cmake" ]]; then
+            found=1
+            break
+        fi
+    done
+    if ((!found)); then
+        echo "Missing required CMake package: $package"
+        missing=1
+    fi
+done
+exit "$missing"

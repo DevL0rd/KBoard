@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+CHECKOUT=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)
+source "$CHECKOUT/packaging/lib.sh"
+export GIT_TERMINAL_PROMPT=0 GIT_ASKPASS='' GIT_SSH_COMMAND="ssh -o BatchMode=yes -o ConnectTimeout=15"
+pull_checkout git -C "$CHECKOUT" || true
+exec "$CHECKOUT/install.sh" --login-update

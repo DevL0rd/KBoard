@@ -7,6 +7,7 @@ UPDATE_DIR="/usr/lib/$UPDATE_ID"
 UPDATE_STATE_DIR="/var/lib/$UPDATE_ID"
 UPDATE_STATE_HOME="$HOME/.local/state/$UPDATE_ID"
 UPDATE_PENDING="$UPDATE_STATE_HOME/update-pending"
+UPDATE_LOGIN_UNIT="$UPDATE_ID-login-update.service"
 UPDATE_LEGACY_HOOK="/etc/pacman.d/hooks/$UPDATE_ID-update.hook"
 declare -A UPDATE_HOOKS=(
     [pacman]="$UPDATE_ID-update.hook /usr/share/libalpm/hooks/$UPDATE_ID-update.hook 644"
@@ -15,14 +16,45 @@ declare -A UPDATE_HOOKS=(
     [apt-get]="$UPDATE_ID-update.apt /etc/apt/apt.conf.d/99$UPDATE_ID-update 644"
 )
 
+BUILD_BOX=""
+BUILD_ENV=()
+if [[ -e /run/ostree-booted ]]; then
+    BUILD_BOX="$UPDATE_ID-fedora-$(. /etc/os-release && printf '%s' "$VERSION_ID")"
+    BUILD_ENV=(toolbox run --container "$BUILD_BOX")
+elif [[ $(. /etc/os-release && printf '%s' "$ID") == steamos ]]; then
+    BUILD_BOX="$UPDATE_ID-steamos"
+    BUILD_ENV=(distrobox enter "$BUILD_BOX" --)
+fi
+
 image_based_system() {
-    [[ -e /run/ostree-booted || $(. /etc/os-release && printf '%s' "$ID") == steamos ]]
+    [[ -n $BUILD_BOX ]]
 }
 
-refuse_image_based_system() {
-    echo "KBoard can't be installed on image-based systems like Fedora Atomic desktops and SteamOS yet."
-    echo "Voice typing needs whisper.cpp with Parakeet, and their read-only system images don't include it."
-    exit 1
+in_build_env() {
+    "${BUILD_ENV[@]}" "$@"
+}
+
+valve_repositories() {
+    grep -qE '^\[(jupiter|holo)(-[0-9.]+)?\]' /etc/pacman.conf 2>/dev/null
+}
+
+library_version() {
+    local library
+    library=$(find /usr/lib /usr/lib64 -maxdepth 2 -name "$1.so.6" -print -quit 2>/dev/null)
+    [[ -n $library ]] && basename "$(readlink -f "$library")" | sed "s/^$1\.so\.//"
+}
+
+system_fingerprint() {
+    local module
+    if image_based_system; then
+        printf 'image=%s\n' "$(. /etc/os-release && printf '%s' "${OSTREE_VERSION:-${BUILD_ID:-$VERSION_ID}}")"
+        printf 'qt=%s\n' "$(library_version libQt6Core)"
+        printf 'kf=%s\n' "$(library_version libKF6CoreAddons)"
+        return 0
+    fi
+    for module in Qt6Core Qt6WaylandClient whisper parakeet ggml; do
+        printf '%s=%s\n' "$module" "$(pkg-config --modversion "$module" 2>/dev/null || echo none)"
+    done
 }
 
 package_manager() {
@@ -76,20 +108,28 @@ install_update_hook() {
     remove_system_file "$UPDATE_LEGACY_HOOK"
 }
 
+enable_user_unit() {
+    local units="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
+    mkdir -p "$units"
+    sed "s|@CHECKOUT@|$1|g" "$1/packaging/$2.in" >"$units/$2"
+    systemctl --user daemon-reload
+    systemctl --user enable "$2" >/dev/null 2>&1
+}
+
 register_system_updates() {
     local checkout="$1" aur="$2"
-    if [[ $aur == true ]] || ! package_manager >/dev/null || ! git -C "$checkout" rev-parse --git-dir >/dev/null 2>&1; then
+    if [[ $aur == true ]] || ! git -C "$checkout" rev-parse --git-dir >/dev/null 2>&1 || { ! image_based_system && ! package_manager >/dev/null; }; then
         unregister_system_updates
         return 0
     fi
     echo "Registering $UPDATE_TITLE with system updates..."
+    if image_based_system; then
+        enable_user_unit "$checkout" "$UPDATE_LOGIN_UNIT"
+        return 0
+    fi
     install_update_hook "$checkout"
     printf '%s\n%s\n' "$checkout" "$(id -un)" | update_as_root install -Dm644 /dev/stdin "$UPDATE_STATE_DIR/source"
-    local units="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
-    mkdir -p "$units"
-    sed "s|@CHECKOUT@|$checkout|g" "$checkout/packaging/$UPDATE_ID-update.service.in" >"$units/$UPDATE_UNIT"
-    systemctl --user daemon-reload
-    systemctl --user enable "$UPDATE_UNIT" >/dev/null 2>&1
+    enable_user_unit "$checkout" "$UPDATE_UNIT"
 }
 
 unregister_system_updates() {
@@ -100,13 +140,36 @@ unregister_system_updates() {
     done
     remove_system_file "$UPDATE_STATE_DIR"
     remove_system_file "$UPDATE_DIR"
-    local unit="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/$UPDATE_UNIT"
-    if [[ -e $unit ]]; then
-        systemctl --user disable "$UPDATE_UNIT" >/dev/null 2>&1 || true
-        rm -f "$unit"
-        systemctl --user daemon-reload
-    fi
+    local name unit
+    for name in "$UPDATE_UNIT" "$UPDATE_LOGIN_UNIT"; do
+        unit="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/$name"
+        if [[ -e $unit ]]; then
+            systemctl --user disable "$name" >/dev/null 2>&1 || true
+            rm -f "$unit"
+            systemctl --user daemon-reload
+        fi
+    done
     rm -f "$UPDATE_PENDING"
+}
+
+pull_checkout() {
+    "$@" rev-parse --abbrev-ref '@{upstream}' >/dev/null 2>&1 || return 1
+    if ! "$@" fetch --quiet; then
+        printf '%s: %s\n' "$UPDATE_ID" "could not fetch updates, rebuilding the current checkout only"
+        return 1
+    fi
+    [[ $("$@" rev-list --count 'HEAD..@{upstream}') -gt 0 ]] || return 1
+    if [[ -n $("$@" status --porcelain --untracked-files=no) ]]; then
+        printf '%s: %s\n' "$UPDATE_ID" "the checkout has local changes, skipping the pull"
+        return 1
+    fi
+    if [[ $("$@" rev-list --count '@{upstream}..HEAD') -gt 0 ]]; then
+        printf '%s: %s\n' "$UPDATE_ID" "the checkout has local commits that aren't upstream, skipping the pull"
+        return 1
+    fi
+    "$@" merge --ff-only --quiet '@{upstream}' || return 1
+    "$@" submodule update --init --recursive --quiet
+    printf '%s: updated to %s\n' "$UPDATE_ID" "$("$@" rev-parse --short HEAD)"
 }
 
 notify_updated() {

@@ -4,7 +4,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 BUILD_DIR="${KBOARD_BUILD_DIR:-build}"
 QMLLINT="${QMLLINT:-/usr/lib/qt6/bin/qmllint}"
-SCRIPTS=(install.sh uninstall.sh packaging/lib.sh packaging/dependencies.sh packaging/system-update packaging/kboard-input-method packaging/kboard-update.zypp tools/check.sh tools/test-install.sh tests/install/*.sh)
+SCRIPTS=(install.sh uninstall.sh packaging/lib.sh packaging/build-box.sh packaging/check-build-dependencies packaging/dependencies.sh packaging/system-update packaging/login-update packaging/kboard-input-method packaging/kboard-update.zypp tools/check.sh tools/test-install.sh tests/install/*.sh)
 PYTHON_SCRIPTS=(packaging/replace-keyboard-toggle)
 QML_NOISE=(unqualified import unresolved-type missing-type missing-property incompatible-type unused-imports)
 

@@ -37,24 +37,8 @@ git_owner() {
 }
 
 pull_updates() {
-    git_owner rev-parse --abbrev-ref '@{upstream}' >/dev/null 2>&1 || return 0
-    if ! git_owner fetch --quiet; then
-        log "could not fetch updates for $checkout, rebuilding the current checkout only"
-        return 0
-    fi
-    [[ $(git_owner rev-list --count 'HEAD..@{upstream}') -gt 0 ]] || return 0
-    if [[ -n $(git_owner status --porcelain --untracked-files=no) ]]; then
-        log "$checkout has local changes, skipping the pull"
-        return 0
-    fi
-    if [[ $(git_owner rev-list --count '@{upstream}..HEAD') -gt 0 ]]; then
-        log "$checkout has local commits that aren't upstream, skipping the pull"
-        return 0
-    fi
-    git_owner merge --ff-only --quiet '@{upstream}' || return 0
-    git_owner submodule update --init --recursive --quiet
-    log "updated to $(git_owner rev-parse --short HEAD)"
-    install_update_hook "$checkout"
+    pull_checkout git_owner && install_update_hook "$checkout"
+    return 0
 }
 
 if [[ ! -d $checkout ]] || ! git_owner rev-parse --git-dir >/dev/null 2>&1; then

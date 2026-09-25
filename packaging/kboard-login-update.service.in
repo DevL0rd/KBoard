@@ -1,0 +1,11 @@
+[Unit]
+Description=Rebuild KBoard when the system image or the checkout changed
+After=graphical-session.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=@CHECKOUT@
+ExecStart=@CHECKOUT@/packaging/login-update
+
+[Install]
+WantedBy=graphical-session.target

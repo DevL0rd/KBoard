@@ -33,7 +33,10 @@ The widget's popup components in `shared/common/` (git submodule).
 
 ## Libraries used at run time
 
-These are linked from your system and not redistributed.
+These are linked from your system and not redistributed. On distros without a
+whisper.cpp that has Parakeet support, the build downloads the pinned whisper.cpp
+release (https://github.com/ggml-org/whisper.cpp, MIT) and links it and its ggml
+into KBoard.
 
 | Library | Used for | Licence |
 | --- | --- | --- |
