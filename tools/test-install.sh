@@ -26,6 +26,7 @@ DESKTOP="$HOME/.local/share/applications/org.devl0rd.kboard.desktop"
 PLASMA_KEYBOARD=/usr/share/applications/org.kde.plasma.keyboard.desktop
 APPLETS="$XDG_CONFIG_HOME/plasma-org.kde.plasma.desktop-appletsrc"
 PREVIOUS="$XDG_CONFIG_HOME/kboard/previous-input-method"
+UPDATE_COPY="$XDG_DATA_HOME/kboard/source"
 failures=0
 
 shim() {
@@ -157,7 +158,9 @@ test_first_install() {
     check "shared QML is staged into the plasmoid" test -f "$CALLS.lib"
     check "the checkout stays free of staged QML" test ! -e "$REPO/plasmoids/org.devl0rd.kboard/contents/ui/lib"
     check "pacman hook is registered" hook_registered
-    check "update unit is written" contains "$XDG_CONFIG_HOME/systemd/user/kboard-update.service" "ExecStart=$REPO/install.sh --system-update"
+    check "an update copy of the checkout is kept" test -x "$UPDATE_COPY/install.sh"
+    check "the update copy pulls over https" bash -c "git -C '$UPDATE_COPY' remote get-url origin | grep -q '^https://'"
+    check "update unit runs the update copy" contains "$XDG_CONFIG_HOME/systemd/user/kboard-update.service" "ExecStart=$UPDATE_COPY/install.sh --system-update"
     check "plasmashell is stopped and started" logged "systemctl --user start plasma-plasmashell.service"
     check "Keyboard Toggle is replaced by KBoard" contains "$APPLETS" "plugin=org.devl0rd.kboard"
     check "old widget id is gone" bash -c "! grep -q keyboardtoggle '$APPLETS'"
@@ -209,6 +212,7 @@ test_uninstall() {
     check "plasmoid is removed" logged "kpackagetool6 -t Plasma/Applet -r org.devl0rd.kboard"
     check "update unit is removed" test ! -e "$XDG_CONFIG_HOME/systemd/user/kboard-update.service"
     check "update hook is removed" hook_removed
+    check "the update copy is removed" test ! -e "$UPDATE_COPY"
     check "VirtualKeyboardEnabled is taken back out" bash -c "! grep -q VirtualKeyboardEnabled '$XDG_CONFIG_HOME/kwinrc'"
     check "the install state in ~/.config/kboard is removed" test ! -e "$XDG_CONFIG_HOME/kboard"
     check "the update state is removed" test ! -e "$XDG_STATE_HOME/kboard"
