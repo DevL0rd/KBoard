@@ -41,6 +41,7 @@ case "$(package_manager)" in
 pacman)
     valve_repositories || ARCH_PACKAGES+=("${SYSTEM_WHISPER_PACKAGES[@]}")
     update_as_root pacman -S --needed --noconfirm "${ARCH_PACKAGES[@]}"
+    update_as_root pacman -D --asexplicit "${ARCH_PACKAGES[@]}" >/dev/null
     ;;
 dnf) update_as_root dnf install -y "${FEDORA_PACKAGES[@]}" ;;
 zypper) update_as_root zypper --non-interactive install "${SUSE_PACKAGES[@]}" ;;
