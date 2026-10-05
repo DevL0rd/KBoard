@@ -71,6 +71,6 @@ LanguageLoad loadLanguage(const LanguageSource &source)
         }
         result.userData = userFile.readAll();
     }
-    result.data = data;
+    result.data = std::move(data);
     return result;
 }

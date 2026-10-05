@@ -88,7 +88,7 @@ bool SoundPackLoader::readWav(const QString &path, SoundSample *sample, QString 
         } else if (id == "data") {
             pcm = QByteArrayView(bytes.constData() + body, size);
         }
-        offset = body + size + (size & 1);
+        offset = body + size + size % 2;
     }
 
     if (format != 1 || channels != 1 || bits != 16 || rate != RequiredSampleRate) {

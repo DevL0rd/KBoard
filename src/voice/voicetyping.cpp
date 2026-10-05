@@ -56,7 +56,7 @@ VoiceTyping::VoiceTyping(QObject *parent)
 
 VoiceTyping::~VoiceTyping()
 {
-    QMetaObject::invokeMethod(m_capture, [capture = m_capture]() { delete capture; }, Qt::BlockingQueuedConnection);
+    QMetaObject::invokeMethod(m_capture, [capture = m_capture] { delete capture; }, Qt::BlockingQueuedConnection);
     m_captureThread->quit();
     m_captureThread->wait();
 }
@@ -122,7 +122,7 @@ void VoiceTyping::connectSpeech()
 
 void VoiceTyping::connectEngine()
 {
-    connect(m_engine, &EngineClient::readyChanged, this, [this]() {
+    connect(m_engine, &EngineClient::readyChanged, this, [this] {
         Q_EMIT backendChanged();
         Q_EMIT modelsChanged();
         updateActiveState();
@@ -152,9 +152,9 @@ void VoiceTyping::connectSettings()
     connect(settings, &KBoardSettings::voiceModelChanged, this, &VoiceTyping::onModelSettingsChanged);
     connect(settings, &KBoardSettings::voiceDeviceChanged, this, &VoiceTyping::onModelSettingsChanged);
     connect(settings, &KBoardSettings::voiceUnloadMinutesChanged, this, &VoiceTyping::scheduleUnload);
-    connect(settings, &KBoardSettings::voiceEndSilenceMsChanged, this, [this]() {
+    connect(settings, &KBoardSettings::voiceEndSilenceMsChanged, this, [this] {
         const int ms = KBoardSettings::voiceEndSilenceMs();
-        QMetaObject::invokeMethod(m_capture, [capture = m_capture, ms]() { capture->setEndSilenceMs(ms); }, Qt::QueuedConnection);
+        QMetaObject::invokeMethod(m_capture, [capture = m_capture, ms] { capture->setEndSilenceMs(ms); }, Qt::QueuedConnection);
     });
 }
 
@@ -210,7 +210,7 @@ void VoiceTyping::beginSession()
 
     const CaptureOptions options {
         m_session.id, m_models->vadPath(), KBoardSettings::voiceMicrophone(), KBoardSettings::voiceEndSilenceMs()};
-    QMetaObject::invokeMethod(m_capture, [capture = m_capture, options]() { capture->start(options); }, Qt::QueuedConnection);
+    QMetaObject::invokeMethod(m_capture, [capture = m_capture, options] { capture->start(options); }, Qt::QueuedConnection);
 }
 
 void VoiceTyping::stop()

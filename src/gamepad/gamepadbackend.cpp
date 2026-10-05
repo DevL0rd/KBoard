@@ -9,7 +9,7 @@
 
 namespace
 {
-constexpr int AxisKeyShift = 8;
+constexpr unsigned AxisKeyShift = 8U;
 constexpr quint64 AxisKeyMask = 0xff;
 constexpr double RumbleLevelMax = 0xffff;
 constexpr double AxisScale = 32767.0;
@@ -238,7 +238,7 @@ void GamepadBackend::emitButton(const SDL_Event &event)
 
 void GamepadBackend::queueAxis(const SDL_Event &event)
 {
-    const quint64 key = (static_cast<quint64>(event.gaxis.which) << AxisKeyShift) | event.gaxis.axis;
+    const quint64 key = (static_cast<quint64>(event.gaxis.which) << AxisKeyShift) | static_cast<quint64>(event.gaxis.axis);
     m_pendingAxes.insert(key, {normalizeAxis(event.gaxis.axis, event.gaxis.value), nsToMs(event.gaxis.timestamp)});
 }
 

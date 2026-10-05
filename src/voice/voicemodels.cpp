@@ -17,7 +17,7 @@ VoiceModels::VoiceModels(QObject *parent)
     connect(&m_watcher, &QFileSystemWatcher::directoryChanged, this, &VoiceModels::changed);
     connect(m_downloader, &ModelDownloader::progressChanged, this, &VoiceModels::progressChanged);
     connect(m_downloader, &ModelDownloader::entryFinished, this, &VoiceModels::changed);
-    connect(m_downloader, &ModelDownloader::finished, this, [this]() {
+    connect(m_downloader, &ModelDownloader::finished, this, [this] {
         const QString id = m_downloadingId;
         m_downloadingId.clear();
         Q_EMIT progressChanged();
@@ -30,7 +30,7 @@ VoiceModels::VoiceModels(QObject *parent)
         Q_EMIT progressChanged();
         Q_EMIT changed();
     });
-    connect(m_downloader, &ModelDownloader::canceled, this, [this]() {
+    connect(m_downloader, &ModelDownloader::canceled, this, [this] {
         m_downloadingId.clear();
         Q_EMIT progressChanged();
         Q_EMIT changed();

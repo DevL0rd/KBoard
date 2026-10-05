@@ -36,12 +36,12 @@ bool InputPolicy::allowsAutocorrect() const
 
 bool InputPolicy::forcesUppercase() const
 {
-    return hint & InputContext::content_hint_uppercase;
+    return InputContext::hasHint(hint, InputContext::content_hint_uppercase);
 }
 
 bool InputPolicy::shouldCapitalize(const TextAnalysis::WordContext &context, bool autoCapitalize) const
 {
-    if (purposeBlocksText(purpose) || (hint & InputContext::content_hint_lowercase)) {
+    if (purposeBlocksText(purpose) || InputContext::hasHint(hint, InputContext::content_hint_lowercase)) {
         return false;
     }
     if (forcesUppercase()) {
@@ -50,6 +50,7 @@ bool InputPolicy::shouldCapitalize(const TextAnalysis::WordContext &context, boo
     if (!autoCapitalize || !context.wordBefore.isEmpty()) {
         return false;
     }
-    const bool titleCase = (hint & InputContext::content_hint_titlecase) || purpose == InputContext::content_purpose_name;
+    const bool titleCase
+        = InputContext::hasHint(hint, InputContext::content_hint_titlecase) || purpose == InputContext::content_purpose_name;
     return titleCase || context.sentenceStart;
 }

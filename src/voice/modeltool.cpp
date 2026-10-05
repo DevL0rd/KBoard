@@ -59,12 +59,12 @@ int download(QCoreApplication &app, const QList<ModelEntry> &queue, const QStrin
     });
     QObject::connect(&downloader, &ModelDownloader::entryFinished, &app,
         [&](const QString &id) { err << "\r" << id << " downloaded      " << Qt::endl; });
-    QObject::connect(&downloader, &ModelDownloader::finished, &app, [&]() { app.exit(0); });
+    QObject::connect(&downloader, &ModelDownloader::finished, &app, [&] { app.exit(0); });
     QObject::connect(&downloader, &ModelDownloader::failed, &app, [&](const QString &, const QString &message) {
         err << Qt::endl << message << Qt::endl;
         app.exit(1);
     });
-    QMetaObject::invokeMethod(&downloader, [&]() { downloader.fetch(queue, directory); }, Qt::QueuedConnection);
+    QMetaObject::invokeMethod(&downloader, [&] { downloader.fetch(queue, directory); }, Qt::QueuedConnection);
     return app.exec();
 }
 }

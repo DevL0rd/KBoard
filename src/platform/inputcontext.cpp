@@ -130,10 +130,16 @@ int InputContext::contentPurpose() const
     return m_context ? int(m_context->m_contentPurpose) : int(content_purpose_normal);
 }
 
+bool InputContext::hasHint(int hints, int hint)
+{
+    return (static_cast<unsigned>(hints) & static_cast<unsigned>(hint)) != 0;
+}
+
 bool InputContext::isSensitive() const
 {
-    const int hint = contentHint();
-    return (hint & content_hint_sensitive_data) || (hint & content_hint_hidden_text) || contentPurpose() == content_purpose_password;
+    const int hints = contentHint();
+    return hasHint(hints, content_hint_sensitive_data) || hasHint(hints, content_hint_hidden_text)
+        || contentPurpose() == content_purpose_password;
 }
 
 QString InputContext::preferredLanguage() const

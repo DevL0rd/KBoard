@@ -20,14 +20,14 @@ EngineClient::EngineClient(QObject *parent)
 
 EngineClient::~EngineClient()
 {
-    QMetaObject::invokeMethod(m_host, [host = m_host]() { delete host; }, Qt::BlockingQueuedConnection);
+    QMetaObject::invokeMethod(m_host, [host = m_host] { delete host; }, Qt::BlockingQueuedConnection);
     m_thread->quit();
     m_thread->wait();
 }
 
 void EngineClient::post(std::function<void(SpeechEngine &)> job)
 {
-    QMetaObject::invokeMethod(m_host, [host = m_host, job = std::move(job)]() { job(host->engine); }, Qt::QueuedConnection);
+    QMetaObject::invokeMethod(m_host, [host = m_host, job = std::move(job)] { job(host->engine); }, Qt::QueuedConnection);
 }
 
 void EngineClient::load(const QString &engine, const QString &modelPath, const QString &deviceSetting)
@@ -50,7 +50,7 @@ void EngineClient::load(const QString &engine, const QString &modelPath, const Q
         const VoiceDevice used = speech.device();
         QMetaObject::invokeMethod(
             this,
-            [this, token, ok, error, used]() {
+            [this, token, ok, error, used] {
                 if (token != m_loadToken) {
                     return;
                 }
@@ -123,7 +123,7 @@ void EngineClient::transcribe(const DecodeRequest &request)
         } else {
             result.error = QStringLiteral("The voice model is not loaded");
         }
-        QMetaObject::invokeMethod(this, [this, request, result]() { Q_EMIT decoded(request, result); }, Qt::QueuedConnection);
+        QMetaObject::invokeMethod(this, [this, request, result] { Q_EMIT decoded(request, result); }, Qt::QueuedConnection);
     });
 }
 
@@ -144,7 +144,7 @@ void EngineClient::refreshDevices()
         }
         QMetaObject::invokeMethod(
             this,
-            [this, list]() {
+            [this, list] {
                 m_devices = list;
                 Q_EMIT devicesChanged();
             },

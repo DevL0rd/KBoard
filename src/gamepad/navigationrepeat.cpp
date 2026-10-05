@@ -25,14 +25,11 @@ QPoint resolve(double x, double y, double deadzone, QPoint previous)
     const double ay = std::abs(y);
     const double release = deadzone * ReleaseRatio;
 
-    if (previous.x() != 0 && previous.y() == 0) {
-        if (ax >= release && ax >= ay * AxisLockRatio && (x > 0) == (previous.x() > 0)) {
-            return previous;
-        }
-    } else if (previous.y() != 0 && previous.x() == 0) {
-        if (ay >= release && ay >= ax * AxisLockRatio && (y > 0) == (previous.y() > 0)) {
-            return previous;
-        }
+    if (previous.x() != 0 && previous.y() == 0 && ax >= release && ax >= ay * AxisLockRatio && (x > 0) == (previous.x() > 0)) {
+        return previous;
+    }
+    if (previous.y() != 0 && previous.x() == 0 && ay >= release && ay >= ax * AxisLockRatio && (y > 0) == (previous.y() > 0)) {
+        return previous;
     }
 
     if (std::max(ax, ay) < deadzone) {

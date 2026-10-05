@@ -92,6 +92,7 @@ public:
     QString textAfterCursor() const;
     bool hasSurroundingText() const;
     int contentHint() const;
+    static bool hasHint(int hints, int hint);
     int contentPurpose() const;
     bool isSensitive() const;
     QString preferredLanguage() const;

@@ -5,6 +5,19 @@
 #include <poll.h>
 #include <vector>
 
+namespace
+{
+
+constexpr unsigned ReadableEvents = unsigned {POLLIN} | unsigned {POLLERR} | unsigned {POLLHUP} | unsigned {POLLNVAL};
+constexpr unsigned BrokenEvents = unsigned {POLLNVAL} | unsigned {POLLHUP} | unsigned {POLLERR};
+
+bool hasEvent(const pollfd &entry, unsigned events)
+{
+    return (static_cast<unsigned>(entry.revents) & events) != 0;
+}
+
+}
+
 void PollSet::setControlDescriptors(int wakeFd, int hotplugFd)
 {
     m_wakeFd = wakeFd;
@@ -42,12 +55,11 @@ PollSet::Result PollSet::wait(int timeoutMs) const
         return result;
     }
 
-    const auto readable = [](const pollfd &entry) { return (entry.revents & (POLLIN | POLLERR | POLLHUP | POLLNVAL)) != 0; };
-    result.wake = readable(fds.at(0));
-    result.hotplug = readable(fds.at(1));
+    result.wake = hasEvent(fds.at(0), ReadableEvents);
+    result.hotplug = hasEvent(fds.at(1), ReadableEvents);
     for (size_t index = 2; index < fds.size(); ++index) {
-        result.device = result.device || readable(fds.at(index));
-        result.invalid = result.invalid || (fds.at(index).revents & (POLLNVAL | POLLHUP | POLLERR)) != 0;
+        result.device = result.device || hasEvent(fds.at(index), ReadableEvents);
+        result.invalid = result.invalid || hasEvent(fds.at(index), BrokenEvents);
     }
     return result;
 }
