@@ -56,4 +56,5 @@ target_link_libraries(kboard-settings PRIVATE
     KBoardSettingsApp
 )
 install(TARGETS kboard-settings ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
-install(PROGRAMS org.devl0rd.kboard.settings.desktop DESTINATION ${KDE_INSTALL_APPDIR})
+configure_file(org.devl0rd.kboard.settings.desktop.in ${CMAKE_CURRENT_BINARY_DIR}/org.devl0rd.kboard.settings.desktop @ONLY)
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/org.devl0rd.kboard.settings.desktop DESTINATION ${KDE_INSTALL_APPDIR})
