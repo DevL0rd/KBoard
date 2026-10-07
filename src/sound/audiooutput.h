@@ -20,12 +20,10 @@ public:
 public Q_SLOTS:
     void open();
     void suspend();
-    void close();
 
 Q_SIGNALS:
     void opened(const QString &deviceName, int sampleRate, int channels, int bufferFrames);
     void suspended();
-    void closed();
     void failed(const QString &message);
 
 private:

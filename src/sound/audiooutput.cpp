@@ -87,17 +87,6 @@ void AudioOutput::suspend()
     }
 }
 
-void AudioOutput::close()
-{
-    if (!m_sink) {
-        return;
-    }
-    m_sink->stop();
-    m_sink.reset();
-    m_deviceId.clear();
-    Q_EMIT closed();
-}
-
 void AudioOutput::reopenForDeviceChange()
 {
     if (!m_sink || QMediaDevices::defaultAudioOutput().id() == m_deviceId) {

@@ -48,7 +48,7 @@ public:
     static constexpr float GainRange = 0.15f;
     static constexpr int RequestedBufferFrames = 256;
     static constexpr int IdleSuspendMs = 20000;
-    static constexpr int InactiveCloseMs = 1500;
+    static constexpr int InactiveSuspendMs = 1500;
 
     explicit KeySound(QObject *parent = nullptr);
     KeySound(Output output, const QString &soundsDirectory, QObject *parent = nullptr);

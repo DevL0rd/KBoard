@@ -65,8 +65,7 @@ KeySound::KeySound(Output output, const QString &soundsDirectory, QObject *paren
         if (!m_audio) {
             return;
         }
-        const char *slot = m_active ? "suspend" : "close";
-        QMetaObject::invokeMethod(m_audio, slot, Qt::QueuedConnection);
+        QMetaObject::invokeMethod(m_audio, &AudioOutput::suspend, Qt::QueuedConnection);
     });
 
     m_audio = new AudioOutput(&m_mixer, RequestedBufferFrames);
@@ -83,10 +82,6 @@ KeySound::KeySound(Output output, const QString &soundsDirectory, QObject *paren
         updateLatency();
     });
     connect(m_audio, &AudioOutput::suspended, this, [this] {
-        m_deviceOpen = false;
-        Q_EMIT deviceChanged();
-    });
-    connect(m_audio, &AudioOutput::closed, this, [this] {
         m_deviceOpen = false;
         Q_EMIT deviceChanged();
     });
@@ -254,7 +249,7 @@ void KeySound::ensureOpen()
     if (!m_audio) {
         return;
     }
-    m_idleTimer.start(m_active ? IdleSuspendMs : InactiveCloseMs);
+    m_idleTimer.start(m_active ? IdleSuspendMs : InactiveSuspendMs);
     if (m_deviceOpen || m_opening) {
         return;
     }
@@ -340,7 +335,7 @@ void KeySound::setActive(bool active)
     if (active) {
         ensureOpen();
     } else {
-        m_idleTimer.start(InactiveCloseMs);
+        m_idleTimer.start(InactiveSuspendMs);
     }
 }
 
