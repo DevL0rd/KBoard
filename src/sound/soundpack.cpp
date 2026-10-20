@@ -5,6 +5,7 @@
 #include <QFileInfo>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QtEndian>
 
 #include <algorithm>
 
@@ -21,16 +22,14 @@ constexpr std::array<const char *, static_cast<size_t>(SoundKind::Count)> kindNa
     "close",
 };
 
-quint32 readU32(const char *data)
+quint32 readU32(QByteArrayView data, qsizetype offset)
 {
-    const auto *bytes = reinterpret_cast<const uchar *>(data);
-    return quint32(bytes[0]) | quint32(bytes[1]) << 8 | quint32(bytes[2]) << 16 | quint32(bytes[3]) << 24;
+    return qFromLittleEndian<quint32>(data.sliced(offset, 4).data());
 }
 
-quint16 readU16(const char *data)
+quint16 readU16(QByteArrayView data, qsizetype offset)
 {
-    const auto *bytes = reinterpret_cast<const uchar *>(data);
-    return quint16(bytes[0] | bytes[1] << 8);
+    return qFromLittleEndian<quint16>(data.sliced(offset, 2).data());
 }
 }
 
@@ -71,23 +70,24 @@ bool SoundPackLoader::readWav(const QString &path, SoundSample *sample, QString 
     int rate = 0;
     int bits = 0;
     int format = 0;
+    const QByteArrayView data(bytes);
     QByteArrayView pcm;
     qsizetype offset = 12;
-    while (offset + 8 <= bytes.size()) {
-        const QByteArrayView id(bytes.constData() + offset, 4);
-        const qsizetype size = readU32(bytes.constData() + offset + 4);
+    while (offset + 8 <= data.size()) {
+        const QByteArrayView id = data.sliced(offset, 4);
+        const qsizetype size = readU32(data, offset + 4);
         const qsizetype body = offset + 8;
-        if (body + size > bytes.size()) {
+        if (body + size > data.size()) {
             *error = QStringLiteral("%1 has a truncated chunk").arg(path);
             return false;
         }
         if (id == "fmt " && size >= 16) {
-            format = readU16(bytes.constData() + body);
-            channels = readU16(bytes.constData() + body + 2);
-            rate = static_cast<int>(readU32(bytes.constData() + body + 4));
-            bits = readU16(bytes.constData() + body + 14);
+            format = readU16(data, body);
+            channels = readU16(data, body + 2);
+            rate = static_cast<int>(readU32(data, body + 4));
+            bits = readU16(data, body + 14);
         } else if (id == "data") {
-            pcm = QByteArrayView(bytes.constData() + body, size);
+            pcm = data.sliced(body, size);
         }
         offset = body + size + size % 2;
     }
@@ -109,7 +109,7 @@ bool SoundPackLoader::readWav(const QString &path, SoundSample *sample, QString 
     const qsizetype count = pcm.size() / 2;
     sample->frames.resize(count);
     for (qsizetype i = 0; i < count; ++i) {
-        sample->frames[i] = static_cast<qint16>(readU16(pcm.data() + i * 2)) / 32768.0f;
+        sample->frames[i] = static_cast<qint16>(readU16(pcm, i * 2)) / 32768.0f;
     }
     sample->sampleRate = rate;
     sample->fileName = QFileInfo(path).fileName();
