@@ -5,7 +5,6 @@
 #include <QFileInfo>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QtEndian>
 
 #include <algorithm>
 
@@ -24,12 +23,14 @@ constexpr std::array<const char *, static_cast<size_t>(SoundKind::Count)> kindNa
 
 quint32 readU32(const char *data)
 {
-    return qFromLittleEndian<quint32>(data);
+    const auto *bytes = reinterpret_cast<const uchar *>(data);
+    return quint32(bytes[0]) | quint32(bytes[1]) << 8 | quint32(bytes[2]) << 16 | quint32(bytes[3]) << 24;
 }
 
 quint16 readU16(const char *data)
 {
-    return qFromLittleEndian<quint16>(data);
+    const auto *bytes = reinterpret_cast<const uchar *>(data);
+    return quint16(bytes[0] | bytes[1] << 8);
 }
 }
 
@@ -108,7 +109,7 @@ bool SoundPackLoader::readWav(const QString &path, SoundSample *sample, QString 
     const qsizetype count = pcm.size() / 2;
     sample->frames.resize(count);
     for (qsizetype i = 0; i < count; ++i) {
-        sample->frames[i] = qFromLittleEndian<qint16>(pcm.data() + i * 2) / 32768.0f;
+        sample->frames[i] = static_cast<qint16>(readU16(pcm.data() + i * 2)) / 32768.0f;
     }
     sample->sampleRate = rate;
     sample->fileName = QFileInfo(path).fileName();
