@@ -75,6 +75,24 @@ identify_build() {
 }
 identify_build
 
+record_outcome() {
+    local status=$?
+    [[ -n ${PLASMOID_STAGE:-} ]] && rm -rf "$PLASMOID_STAGE"
+    if (( status != 0 )); then
+        $SYSTEM_UPDATE && printf '%s\n' "$REVISION" >"$UPDATE_FAILED"
+    else
+        rm -f "$UPDATE_FAILED"
+    fi
+    return 0
+}
+trap record_outcome EXIT
+
+if $SYSTEM_UPDATE && [[ -f $UPDATE_FAILED && "$(<"$UPDATE_FAILED")" == "$REVISION" ]]; then
+    echo "Last update failed for these inputs, skipping; run ./install.sh to retry."
+    trap - EXIT
+    exit 0
+fi
+
 install_dependencies=false
 if $LOGIN_UPDATE; then
     [[ -f $STAMP && "$(<"$STAMP")" == "$REVISION" ]] || install_dependencies=true
@@ -150,7 +168,6 @@ kboard-voice-model "$VOICE_MODEL"
 
 rm -rf "$REPO_DIR/plasmoids/org.devl0rd.kboard/contents/ui/lib"
 PLASMOID_STAGE=$(mktemp -d)
-trap 'rm -rf "$PLASMOID_STAGE"' EXIT
 PLASMOID="$PLASMOID_STAGE/org.devl0rd.kboard"
 cp -r "$REPO_DIR/plasmoids/org.devl0rd.kboard" "$PLASMOID"
 mkdir -p "$PLASMOID/contents/ui/lib"

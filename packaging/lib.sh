@@ -7,6 +7,7 @@ UPDATE_DIR="/usr/lib/$UPDATE_ID"
 UPDATE_STATE_DIR="/var/lib/$UPDATE_ID"
 UPDATE_STATE_HOME="$HOME/.local/state/$UPDATE_ID"
 UPDATE_PENDING="$UPDATE_STATE_HOME/update-pending"
+UPDATE_FAILED="$UPDATE_STATE_HOME/update-failed"
 UPDATE_LOGIN_UNIT="$UPDATE_ID-login-update.service"
 UPDATE_SOURCE_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/$UPDATE_ID/source"
 UPDATE_GIT_ENV=(GIT_TERMINAL_PROMPT=0 GIT_ASKPASS= "GIT_SSH_COMMAND=ssh -o BatchMode=yes -o ConnectTimeout=15")
@@ -198,7 +199,7 @@ unregister_system_updates() {
             systemctl --user daemon-reload
         fi
     done
-    rm -f "$UPDATE_PENDING"
+    rm -f "$UPDATE_PENDING" "$UPDATE_FAILED"
     remove_update_source
 }
 

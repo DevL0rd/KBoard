@@ -49,9 +49,16 @@ if [[ -e $home/.local/state/$ID/install.lock ]] && ! flock -n "$home/.local/stat
     log "an install is running from $checkout, leaving the update to it"
     exit 0
 fi
+lock_file="$(dirname "$STATE_FILE")/update.lock"
+mkdir -p "$(dirname "$lock_file")"
+exec 8>"$lock_file"
+if ! flock -n 8; then
+    log "another update is running, leaving the update to it"
+    exit 0
+fi
 pull_updates
 if [[ -S /run/user/$uid/bus ]]; then
-    (cd "$checkout" && as_owner "$checkout/install.sh" --system-update)
+    (cd "$checkout" && as_owner "$checkout/install.sh" --system-update 8>&-)
 else
     as_owner mkdir -p "$home/.local/state/$ID"
     as_owner touch "$home/.local/state/$ID/update-pending"
