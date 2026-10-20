@@ -8,7 +8,7 @@ import org.kde.kirigami as Kirigami
 import org.devl0rd.kboard.settings
 
 Kirigami.ApplicationWindow {
-    id: window
+    id: appWindow
 
     readonly property var currentPage: SettingsCatalog.page(AppNavigation.page)
 
@@ -41,7 +41,7 @@ Kirigami.ApplicationWindow {
     }
 
     ControllerNavigation {
-        window: window
+        window: appWindow
         onPageStep: delta => rail.step(delta)
         onBackRequested: rail.clearSearch()
     }
@@ -90,7 +90,7 @@ Kirigami.ApplicationWindow {
 
             PageHeader {
                 Layout.fillWidth: true
-                page: window.currentPage
+                page: appWindow.currentPage
             }
 
             StatusMessages {
@@ -101,7 +101,7 @@ Kirigami.ApplicationWindow {
             PageHost {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                page: window.currentPage
+                page: appWindow.currentPage
             }
         }
     }

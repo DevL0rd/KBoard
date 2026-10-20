@@ -2,7 +2,7 @@ import QtQuick
 import org.kde.kirigami as Kirigami
 
 Item {
-    id: status
+    id: statusItem
 
     property string iconName
     property string title
@@ -17,7 +17,7 @@ Item {
 
     opacity: visible ? 1 : 0
     Behavior on opacity {
-        NumberAnimation { duration: Kirigami.Units.longDuration * status.animationScale; easing.type: Easing.OutCubic }
+        NumberAnimation { duration: Kirigami.Units.longDuration * statusItem.animationScale; easing.type: Easing.OutCubic }
     }
 
     Column {
@@ -37,7 +37,7 @@ Item {
                 anchors.centerIn: parent
                 width: Kirigami.Units.iconSizes.medium
                 height: width
-                source: status.iconName
+                source: statusItem.iconName
                 color: Kirigami.Theme.highlightColor
                 isMask: true
             }
@@ -51,7 +51,7 @@ Item {
         Text {
             width: parent.width
             visible: text !== ""
-            text: status.title
+            text: statusItem.title
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.Wrap
             color: Kirigami.Theme.textColor
@@ -62,7 +62,7 @@ Item {
         Text {
             width: parent.width
             visible: text !== ""
-            text: status.text
+            text: statusItem.text
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.Wrap
             color: Qt.alpha(Kirigami.Theme.textColor, 0.7)
@@ -72,32 +72,32 @@ Item {
         Item {
             width: 1
             height: Kirigami.Units.smallSpacing
-            visible: status.actionText !== ""
+            visible: statusItem.actionText !== ""
         }
 
         Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
-            visible: status.actionText !== ""
+            visible: statusItem.actionText !== ""
             width: actionLabel.implicitWidth + Kirigami.Units.gridUnit * 1.5
             height: Kirigami.Units.gridUnit * 1.8
             radius: height / 2
             color: actionTap.pressed ? Qt.darker(Kirigami.Theme.highlightColor, 1.15) : Kirigami.Theme.highlightColor
             scale: actionTap.pressed ? 0.95 : 1
             Behavior on scale {
-                NumberAnimation { duration: Kirigami.Units.shortDuration * status.animationScale; easing.type: Easing.OutCubic }
+                NumberAnimation { duration: Kirigami.Units.shortDuration * statusItem.animationScale; easing.type: Easing.OutCubic }
             }
 
             Text {
                 id: actionLabel
                 anchors.centerIn: parent
-                text: status.actionText
+                text: statusItem.actionText
                 color: Kirigami.Theme.highlightedTextColor
                 font.weight: Font.DemiBold
             }
 
             TapHandler {
                 id: actionTap
-                onTapped: status.actionTriggered()
+                onTapped: statusItem.actionTriggered()
             }
         }
     }

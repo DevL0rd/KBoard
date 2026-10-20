@@ -5,7 +5,7 @@ import org.devl0rd.kboard.config
 import org.devl0rd.kboard.ui
 
 Item {
-    id: view
+    id: keyboardView
 
     property string layoutId: Settings.activeLayout
     property var layoutIds: Settings.layouts
@@ -23,15 +23,15 @@ Item {
     property var pressPoints: ({})
     property string previewText: ""
 
-    readonly property alias surface: surface
+    readonly property alias surface: keySurface
     readonly property alias modifiers: keyModifiers
-    readonly property alias popup: popup
+    readonly property alias popup: accentPopup
     readonly property string shiftState: keyModifiers.shiftState
     readonly property bool shifted: keyModifiers.shifted
     readonly property bool multipleLayouts: layoutIds.length > 1
     readonly property var layout: Layouts.revision >= 0 ? Layouts.layout(layoutId) : ({})
     readonly property string spaceLabel: multipleLayouts ? layout.name ?? "" : ""
-    readonly property int popupKeyIndex: popup.keyIndex
+    readonly property int popupKeyIndex: accentPopup.keyIndex
     readonly property var page: Layouts.revision >= 0 ? Layouts.page(layoutId, pageId, {
         numberRow: pageId === "letters" && numberRow,
         desktopRow: desktopRow,
@@ -39,8 +39,8 @@ Item {
         variant: variant,
         multipleLayouts: multipleLayouts
     }) : ({})
-    readonly property bool valid: surface.count > 0
-    readonly property var interactiveRects: surface.halfRects
+    readonly property bool valid: keySurface.count > 0
+    readonly property var interactiveRects: keySurface.halfRects
 
     signal keyPressed(var key)
     signal textKey(string text)
@@ -69,7 +69,7 @@ Item {
     }
 
     function commitPopup() {
-        keyInput.released(popup.touchId, popup.keyIndex, "popup")
+        keyInput.released(accentPopup.touchId, accentPopup.keyIndex, "popup")
     }
 
     function demoPress(label) {
@@ -81,24 +81,24 @@ Item {
     }
 
     function glideKeys() {
-        return surface.glideKeys()
+        return keySurface.glideKeys()
     }
 
     onLayoutIdChanged: pageId = "letters"
 
     KeyboardSurface {
-        id: surface
+        id: keySurface
 
         anchors.fill: parent
-        page: view.page
+        page: keyboardView.page
         gap: Theme.gap
-        split: view.split
-        splitGap: view.splitGap
-        interactive: !view.preview && view.visible
+        split: keyboardView.split
+        splitGap: keyboardView.splitGap
+        interactive: !keyboardView.preview && keyboardView.visible
         gestures.longPressDelay: Settings.longPressDelay
         gestures.repeatDelay: Settings.keyRepeatDelay
         gestures.repeatInterval: Settings.keyRepeatInterval
-        gestures.glideEnabled: view.glideEnabled
+        gestures.glideEnabled: keyboardView.glideEnabled
         gestures.cursorSwipeEnabled: Settings.spaceCursorSwipe
         gestures.deleteSwipeEnabled: Settings.backspaceSwipeDelete
 
@@ -108,42 +108,42 @@ Item {
             anchors.fill: parent
 
             Repeater {
-                model: surface.model
+                model: keySurface.model
 
                 delegate: KeyCap {
-                    keyboard: view
+                    keyboard: keyboardView
                 }
             }
         }
 
         FocusRing {
-            target: view.focusIndex >= 0 && surface.halfRects.length > 0 ? surface.keyRect(view.focusIndex) : Qt.rect(0, 0, 0, 0)
+            target: keyboardView.focusIndex >= 0 && keySurface.halfRects.length > 0 ? keySurface.keyRect(keyboardView.focusIndex) : Qt.rect(0, 0, 0, 0)
             radius: Math.min(Theme.radius, target.height / 2)
-            visible: view.focusIndex >= 0
+            visible: keyboardView.focusIndex >= 0
         }
 
         GlideTrail {
-            id: trail
+            id: glideTrail
 
             anchors.fill: parent
-            visible: view.glideTrail
+            visible: keyboardView.glideTrail
             color: Theme.accent
-            lineWidth: Math.max(4, surface.unitWidth * 0.07)
-            glowWidth: Math.max(14, surface.unitWidth * 0.26)
+            lineWidth: Math.max(4, keySurface.unitWidth * 0.07)
+            glowWidth: Math.max(14, keySurface.unitWidth * 0.26)
             tailDuration: Theme.animated ? 700 : 0
             fadeDuration: Theme.duration(320)
         }
 
         Repeater {
-            model: surface.model
+            model: keySurface.model
 
             delegate: KeyBubble {
-                keyboard: view
+                keyboard: keyboardView
             }
         }
 
         AccentPopup {
-            id: popup
+            id: accentPopup
         }
     }
 
@@ -154,19 +154,19 @@ Item {
     KeyInput {
         id: keyInput
 
-        view: view
-        surface: surface
-        popup: popup
-        trail: trail
+        view: keyboardView
+        surface: keySurface
+        popup: accentPopup
+        trail: glideTrail
         modifiers: keyModifiers
     }
 
     PreviewDemo {
         id: demo
 
-        view: view
-        surface: surface
-        trail: trail
+        view: keyboardView
+        surface: keySurface
+        trail: glideTrail
         input: keyInput
     }
 
@@ -186,7 +186,7 @@ Item {
         NumberAnimation {
             target: keyLayer
             property: "x"
-            from: surface.unitWidth * 0.12
+            from: keySurface.unitWidth * 0.12
             to: 0
             duration: Theme.duration(220)
             easing.type: Easing.OutCubic

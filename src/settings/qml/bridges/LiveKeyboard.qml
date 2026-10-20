@@ -6,14 +6,14 @@ import org.devl0rd.kboard.ui
 Item {
     id: live
 
-    readonly property alias view: view
+    readonly property alias view: keyboardView
 
     function demoPress(label) {
-        view.demoPress(label);
+        keyboardView.demoPress(label);
     }
 
     function demoGlide(word) {
-        view.demoGlide(word);
+        keyboardView.demoGlide(word);
     }
 
     KeyboardBackdrop {
@@ -21,7 +21,7 @@ Item {
     }
 
     KeyboardView {
-        id: view
+        id: keyboardView
         anchors.fill: parent
         preview: true
     }

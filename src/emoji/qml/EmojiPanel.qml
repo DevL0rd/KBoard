@@ -48,7 +48,7 @@ Item {
     }
 
     function refresh() {
-        gridModel.refresh()
+        emojiGridModel.refresh()
     }
 
     function openGroup(id) {
@@ -86,13 +86,13 @@ Item {
         grid.positionViewAtBeginning()
     }
     onVisibleChanged: {
-        if (visible && gridModel.stale && !searchActive) {
-            gridModel.refresh()
+        if (visible && emojiGridModel.stale && !searchActive) {
+            emojiGridModel.refresh()
         }
     }
 
     EmojiGridModel {
-        id: gridModel
+        id: emojiGridModel
         columns: panel.columns
         kaomojiColumns: Math.max(2, Math.min(5, Math.floor(panel.contentWidth / (Kirigami.Units.gridUnit * 8))))
         searchText: panel.searchActive ? panel.searchText : ""
@@ -156,11 +156,11 @@ Item {
         anchors.leftMargin: panel.sideMargin
         anchors.rightMargin: panel.sideMargin
         visible: EmojiStore.ready
-        gridModel: gridModel
+        gridModel: emojiGridModel
         cellWidth: panel.cellWidth
         cellHeight: panel.cellHeight
         glyphSize: Math.round(Math.min(panel.cellWidth, panel.cellHeight) * 0.64)
-        kaomojiColumns: gridModel.kaomojiColumns
+        kaomojiColumns: emojiGridModel.kaomojiColumns
         animScale: panel.animScale
         searchActive: panel.searchActive
         onMovementStarted: popup.dismiss()

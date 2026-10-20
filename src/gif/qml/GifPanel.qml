@@ -76,7 +76,7 @@ Item {
     }
 
     Item {
-        id: header
+        id: chipsAnchor
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
@@ -121,7 +121,7 @@ Item {
 
     GifChipsRow {
         id: chips
-        anchors.top: header.bottom
+        anchors.top: chipsAnchor.bottom
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.topMargin: Kirigami.Units.smallSpacing * 1.5

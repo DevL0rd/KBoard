@@ -6,7 +6,7 @@ import org.devl0rd.kboard.config
 import "KeyboardModel.js" as KeyboardModel
 
 Item {
-    id: kb
+    id: miniKeyboard
 
     property int keyStyle: Settings.keyStyle
     property real keyRadius: Settings.keyRadius
@@ -48,7 +48,7 @@ Item {
         y;
         width;
         height;
-        return backdrop ? backdrop.mapFromItem(kb, 0, 0) : Qt.point(0, 0);
+        return backdrop ? backdrop.mapFromItem(miniKeyboard, 0, 0) : Qt.point(0, 0);
     }
     readonly property var model: KeyboardModel.layout({ numberRow: numberRow, desktopRow: desktopRow, spaceLabel: spaceLabel })
     readonly property real unitW: width / 10
@@ -100,23 +100,23 @@ Item {
     }
 
     KeyboardPanel {
-        kb: kb
+        kb: miniKeyboard
     }
 
     KeyCaps {
-        kb: kb
+        kb: miniKeyboard
     }
 
     GlideTrail {
-        kb: kb
+        kb: miniKeyboard
         z: 5
     }
 
     KeyBubble {
-        kb: kb
+        kb: miniKeyboard
     }
 
     AccentStrip {
-        kb: kb
+        kb: miniKeyboard
     }
 }

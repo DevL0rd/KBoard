@@ -16,8 +16,6 @@ Item {
     readonly property string caption: GlideScenes.captions[scene]
     readonly property string word: "kboard"
     readonly property var wordPoints: {
-        keyboard.width;
-        keyboard.height;
         return GlidePath.smooth(word.split("").map(letter => keyboard.keyCenter(letter)), 8);
     }
     readonly property real glideT: clock.progress("glide")

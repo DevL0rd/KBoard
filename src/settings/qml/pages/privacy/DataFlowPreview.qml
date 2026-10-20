@@ -30,7 +30,7 @@ Item {
         model: preview.sources
 
         Item {
-            id: source
+            id: flow
             required property var modelData
             required property int index
             readonly property point origin: Qt.point(preview.width * 0.14, preview.height * (0.18 + 0.3 * index))
@@ -38,20 +38,20 @@ Item {
             Shape {
                 width: preview.width
                 height: preview.height
-                opacity: source.modelData.on ? 1 : 0.25
+                opacity: flow.modelData.on ? 1 : 0.25
                 preferredRendererType: Shape.CurveRenderer
 
                 ShapePath {
                     strokeColor: Qt.alpha(Kirigami.Theme.textColor, 0.25)
                     strokeWidth: 1.5
                     fillColor: "transparent"
-                    startX: source.origin.x + Kirigami.Units.gridUnit
-                    startY: source.origin.y
+                    startX: flow.origin.x + Kirigami.Units.gridUnit
+                    startY: flow.origin.y
                     PathCubic {
                         x: preview.hub.x - Kirigami.Units.gridUnit * 1.6
                         y: preview.hub.y
                         control1X: preview.width * 0.35
-                        control1Y: source.origin.y
+                        control1Y: flow.origin.y
                         control2X: preview.width * 0.35
                         control2Y: preview.hub.y
                     }
@@ -59,25 +59,25 @@ Item {
             }
 
             Rectangle {
-                readonly property real t: ((clock.now / clock.total) + source.index * 0.33) % 1
+                readonly property real t: ((clock.now / clock.total) + flow.index * 0.33) % 1
                 readonly property real e: Ease.inOutCubic(t)
-                visible: source.modelData.on
+                visible: flow.modelData.on
                 width: Kirigami.Units.smallSpacing * 2
                 height: width
                 radius: width / 2
                 color: preview.accent
-                x: Ease.lerp(source.origin.x + Kirigami.Units.gridUnit, preview.hub.x - Kirigami.Units.gridUnit * 1.6, e) - width / 2
-                y: Ease.lerp(source.origin.y, preview.hub.y, Ease.inOutQuad(t)) - height / 2
+                x: Ease.lerp(flow.origin.x + Kirigami.Units.gridUnit, preview.hub.x - Kirigami.Units.gridUnit * 1.6, e) - width / 2
+                y: Ease.lerp(flow.origin.y, preview.hub.y, Ease.inOutQuad(t)) - height / 2
                 opacity: Ease.pulse(t)
             }
 
             Kirigami.Icon {
-                x: source.origin.x - width / 2
-                y: source.origin.y - height / 2
+                x: flow.origin.x - width / 2
+                y: flow.origin.y - height / 2
                 width: Kirigami.Units.iconSizes.medium
                 height: width
-                source: source.modelData.icon
-                opacity: source.modelData.on ? 1 : 0.4
+                source: flow.modelData.icon
+                opacity: flow.modelData.on ? 1 : 0.4
             }
         }
     }
