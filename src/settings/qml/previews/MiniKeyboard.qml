@@ -43,13 +43,8 @@ Item {
     property var trail: []
     property real trailOpacity: 1
 
-    readonly property point backdropOrigin: {
-        x;
-        y;
-        width;
-        height;
-        return backdrop ? backdrop.mapFromItem(miniKeyboard, 0, 0) : Qt.point(0, 0);
-    }
+    readonly property rect placement: Qt.rect(x, y, width, height)
+    readonly property point backdropOrigin: backdrop && placement ? backdrop.mapFromItem(miniKeyboard, 0, 0) : Qt.point(0, 0)
     readonly property var model: KeyboardModel.layout({ numberRow: numberRow, desktopRow: desktopRow, spaceLabel: spaceLabel })
     readonly property real unitW: width / 10
     readonly property real unitH: height / model.height
