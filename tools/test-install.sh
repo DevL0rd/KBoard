@@ -192,6 +192,24 @@ test_system_update() {
     check "pending flag is cleared" test ! -e "$XDG_STATE_HOME/kboard/update-pending"
 }
 
+test_update_trigger() {
+    echo "System update trigger"
+    local hook="$ROOT/generated.hook" built="$ROOT/built-for"
+    cp "$REPO/packaging/kboard-update.hook" "$hook"
+    check "the hook names its packages" contains "$hook" "Target = qt6-base"
+    check "the hook no longer matches every package" bash -c "! grep -qE 'Target = (\\*|@PACKAGES@)' '$hook'"
+    (
+        source "$REPO/packaging/lib.sh"
+        package_manager() { echo pacman; }
+        image_based_system() { return 1; }
+        pacman() { echo "qt6-base ${QT_VERSION:-1}"; }
+        system_fingerprint >"$built"
+    )
+    check "an unchanged dependency set needs no update" bash -c "source '$REPO/packaging/lib.sh'; package_manager() { echo pacman; }; image_based_system() { return 1; }; pacman() { echo 'qt6-base 1'; }; system_built_for '$built'"
+    check "a changed dependency triggers an update" bash -c "source '$REPO/packaging/lib.sh'; package_manager() { echo pacman; }; image_based_system() { return 1; }; pacman() { echo 'qt6-base 2'; }; ! system_built_for '$built'"
+    check "a missing build record triggers an update" bash -c "source '$REPO/packaging/lib.sh'; ! system_built_for '$ROOT/none'"
+}
+
 test_keyboard_switched_away() {
     echo "Install again after switching to another keyboard"
     kwriteconfig6 --file kwinrc --group Wayland --key InputMethod "$PLASMA_KEYBOARD"
@@ -236,6 +254,7 @@ seed_session
 test_first_install
 test_second_install
 test_system_update
+test_update_trigger
 test_keyboard_switched_away
 test_uninstall
 test_without_previous_keyboard

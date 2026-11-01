@@ -18,6 +18,8 @@ check "org.devl0rd.KBoard answers" "gdbus call --session --dest org.devl0rd.KBoa
 check "the settings app is installed" "test -x \$HOME/.local/bin/kboard-settings"
 check "the voice model is downloaded" "find \$HOME/.local/share/kboard/models -type f | grep -q ."
 check "the widget is installed" "test -f \$HOME/.local/share/plasma/plasmoids/org.devl0rd.kboard/metadata.json"
+check "the system update hook names its packages" "grep -q '^Target = qt6-base' /usr/share/libalpm/hooks/kboard-update.hook && ! grep -q '^Target = \\*' /usr/share/libalpm/hooks/kboard-update.hook"
+check "the updater removes its own files when the checkout is gone" "grep -q 'remove_system_update_files' /usr/lib/kboard/system-update"
 check "the system update hook is registered" "test -f /usr/share/libalpm/hooks/kboard-update.hook"
 check "kboard-update.service is enabled" "systemctl --user is-enabled kboard-update.service"
 check "Plasma runs" "systemctl --user is-active plasma-plasmashell.service"

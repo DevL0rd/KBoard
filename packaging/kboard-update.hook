@@ -2,7 +2,34 @@
 Operation = Install
 Operation = Upgrade
 Type = Package
-Target = *
+Target = gcc
+Target = cmake
+Target = ninja
+Target = pkgconf
+Target = extra-cmake-modules
+Target = qt6-base
+Target = qt6-declarative
+Target = qt6-wayland
+Target = qt6-multimedia
+Target = kconfig
+Target = kcoreaddons
+Target = ki18n
+Target = kguiaddons
+Target = kwindowsystem
+Target = kdbusaddons
+Target = kcrash
+Target = kirigami
+Target = kirigami-addons
+Target = kservice
+Target = kpackage
+Target = wayland
+Target = wayland-protocols
+Target = libxkbcommon
+Target = systemd-libs
+Target = sdl3
+Target = hunspell
+Target = whisper-cpp
+Target = ggml
 
 [Action]
 Description = Updating KBoard...

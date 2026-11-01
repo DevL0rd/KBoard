@@ -55,9 +55,24 @@ system_fingerprint() {
         printf 'kf=%s\n' "$(library_version libKF6CoreAddons)"
         return 0
     fi
+    update_package_versions
     for module in Qt6Core Qt6WaylandClient whisper parakeet ggml; do
         printf '%s=%s\n' "$module" "$(pkg-config --modversion "$module" 2>/dev/null || echo none)"
     done
+}
+
+update_package_versions() {
+    local hook packages
+    [[ $(package_manager) == pacman ]] || return 0
+    hook="$(dirname "${BASH_SOURCE[0]}")/$UPDATE_ID-update.hook"
+    [[ -r $hook ]] || read -r _ hook _ <<<"${UPDATE_HOOKS[pacman]}"
+    mapfile -t packages < <(sed -n 's/^Target = //p' "$hook")
+    ((${#packages[@]})) || return 0
+    pacman -Q "${packages[@]}" 2>/dev/null | sort
+}
+
+system_built_for() {
+    [[ -f $1 && $(<"$1") == "$(system_fingerprint)" ]]
 }
 
 package_manager() {
@@ -182,7 +197,7 @@ register_system_updates() {
     enable_user_unit "$checkout" "$UPDATE_UNIT"
 }
 
-unregister_system_updates() {
+remove_system_update_files() {
     local entry source target mode
     for entry in "${UPDATE_HOOKS[@]}" "- $UPDATE_LEGACY_HOOK -"; do
         read -r source target mode <<<"$entry"
@@ -190,6 +205,10 @@ unregister_system_updates() {
     done
     remove_system_file "$UPDATE_STATE_DIR"
     remove_system_file "$UPDATE_DIR"
+}
+
+unregister_system_updates() {
+    remove_system_update_files
     local name unit
     for name in "$UPDATE_UNIT" "$UPDATE_LOGIN_UNIT"; do
         unit="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/$name"

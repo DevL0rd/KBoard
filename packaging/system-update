@@ -36,15 +36,21 @@ git_owner() {
     as_owner git -C "$checkout" "$@"
 }
 
+pulled=false
 pull_updates() {
-    pull_checkout git_owner && install_update_hook "$checkout"
+    if pull_checkout git_owner; then
+        pulled=true
+        install_update_hook "$checkout"
+    fi
     return 0
 }
 
-if [[ ! -d $checkout ]] || ! git_owner rev-parse --git-dir >/dev/null 2>&1; then
-    log "checkout $checkout is gone or not a git repository, skipping"
-    exit 0
-fi
+update_needed() {
+    $pulled && return 0
+    [[ -e $home/.local/state/$ID/update-pending ]] && return 0
+    ! as_owner bash -c 'source "$1" && system_built_for "$2"' _ "$LIB_DIR/lib.sh" "$checkout/build/kboard-built-for"
+}
+
 if [[ -e $home/.local/state/$ID/install.lock ]] && ! flock -n "$home/.local/state/$ID/install.lock" true; then
     log "an install is running from $checkout, leaving the update to it"
     exit 0
@@ -56,7 +62,21 @@ if ! flock -n 8; then
     log "another update is running, leaving the update to it"
     exit 0
 fi
+if [[ ! -d $checkout ]]; then
+    if [[ -d $home ]]; then
+        log "checkout $checkout is gone, removing the system update files; the user-level files in $home stay"
+        HOME="$home" bash -c 'source "$1" && remove_system_update_files' _ "$LIB_DIR/lib.sh"
+    else
+        log "checkout $checkout is gone and $home is missing, skipping"
+    fi
+    exit 0
+fi
+if ! git_owner rev-parse --git-dir >/dev/null 2>&1; then
+    log "git cannot read $checkout, skipping"
+    exit 0
+fi
 pull_updates
+update_needed || exit 0
 if [[ -S /run/user/$uid/bus ]]; then
     (cd "$checkout" && as_owner "$checkout/install.sh" --system-update 8>&-)
 else
