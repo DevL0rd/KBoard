@@ -48,7 +48,7 @@ pull_updates() {
 update_needed() {
     $pulled && return 0
     [[ -e $home/.local/state/$ID/update-pending ]] && return 0
-    ! as_owner bash -c 'source "$1" && system_built_for "$2"' _ "$LIB_DIR/lib.sh" "$checkout/build/kboard-built-for"
+    ! as_owner bash -c "source \"\$1\" && system_built_for \"\$2\"" _ "$LIB_DIR/lib.sh" "$checkout/build/kboard-built-for"
 }
 
 if [[ -e $home/.local/state/$ID/install.lock ]] && ! flock -n "$home/.local/state/$ID/install.lock" true; then
@@ -65,7 +65,7 @@ fi
 if [[ ! -d $checkout ]]; then
     if [[ -d $home ]]; then
         log "checkout $checkout is gone, removing the system update files; the user-level files in $home stay"
-        HOME="$home" bash -c 'source "$1" && remove_system_update_files' _ "$LIB_DIR/lib.sh"
+        HOME="$home" bash -c "source \"\$1\" && remove_system_update_files" _ "$LIB_DIR/lib.sh"
     else
         log "checkout $checkout is gone and $home is missing, skipping"
     fi
