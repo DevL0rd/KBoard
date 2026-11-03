@@ -79,10 +79,52 @@ private Q_SLOTS:
         const auto entries = KeyLayout::compute(letters(), {1000, 400, 10, false, 0});
         const int q = find(entries, QStringLiteral("q"));
         QCOMPARE(KeyLayout::neighbor(entries, q, 1, 0), find(entries, QStringLiteral("w")));
-        QCOMPARE(KeyLayout::neighbor(entries, q, -1, 0), q);
         QCOMPARE(KeyLayout::neighbor(entries, q, 0, 1), find(entries, QStringLiteral("a")));
         QCOMPARE(KeyLayout::neighbor(entries, find(entries, QStringLiteral("p")), 0, 1), find(entries, QStringLiteral("l")));
-        QCOMPARE(KeyLayout::neighbor(entries, q, 0, -1), q);
+    }
+
+    void navigationWrapsAroundTheEdges()
+    {
+        const auto entries = KeyLayout::compute(letters(), {1000, 400, 10, false, 0});
+        const int q = find(entries, QStringLiteral("q"));
+        const int p = find(entries, QStringLiteral("p"));
+        QCOMPARE(KeyLayout::neighbor(entries, q, -1, 0), p);
+        QCOMPARE(KeyLayout::neighbor(entries, p, 1, 0), q);
+
+        const int lastRow = entries.last().row;
+        const int up = KeyLayout::neighbor(entries, q, 0, -1);
+        QCOMPARE(entries.at(up).row, lastRow);
+        const int down = KeyLayout::neighbor(entries, up, 0, 1);
+        QCOMPARE(entries.at(down).row, entries.at(q).row);
+        QCOMPARE(down, q);
+    }
+
+    void wrappingKeepsTheNearestColumnAndStaysInTheRow()
+    {
+        const auto entries = KeyLayout::compute(letters(), {1000, 400, 10, false, 0});
+        const int a = find(entries, QStringLiteral("a"));
+        const int l = find(entries, QStringLiteral("l"));
+        QCOMPARE(KeyLayout::neighbor(entries, a, -1, 0), l);
+        QCOMPARE(KeyLayout::neighbor(entries, l, 1, 0), a);
+        const int top = KeyLayout::neighbor(entries, find(entries, QStringLiteral("p")), 0, -1);
+        const int bottom = entries.at(top).row;
+        QCOMPARE(bottom, entries.last().row);
+        const qreal pCenter = entries.at(find(entries, QStringLiteral("p"))).rect.center().x();
+        for (const KeyEntry &entry : entries) {
+            if (entry.row == bottom) {
+                QVERIFY(std::abs(entries.at(top).rect.center().x() - pCenter) <= std::abs(entry.rect.center().x() - pCenter));
+            }
+        }
+    }
+
+    void splitLayoutWrapsAcrossBothHalves()
+    {
+        const auto entries = KeyLayout::compute(letters(), {2000, 400, 10, true, 0});
+        const int q = find(entries, QStringLiteral("q"), 0);
+        const int p = find(entries, QStringLiteral("p"), 1);
+        QVERIFY(q >= 0 && p >= 0);
+        QCOMPARE(KeyLayout::neighbor(entries, q, -1, 0), p);
+        QCOMPARE(KeyLayout::neighbor(entries, p, 1, 0), q);
     }
 
     void rowWeightsScaleHeights()

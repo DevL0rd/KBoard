@@ -207,14 +207,35 @@ int neighbor(const QList<KeyEntry> &entries, int index, int dx, int dy)
     }
     const KeyEntry &current = entries.at(index);
     if (dx != 0) {
+        int first = index;
+        int last = index;
+        for (int i = 0; i < entries.size(); ++i) {
+            if (entries.at(i).row == current.row) {
+                first = qMin(first, i);
+                last = qMax(last, i);
+            }
+        }
         const int target = index + (dx > 0 ? 1 : -1);
-        const bool sameRow = target >= 0 && target < entries.size() && entries.at(target).row == current.row;
-        return sameRow ? target : index;
+        if (target >= first && target <= last) {
+            return target;
+        }
+        return dx > 0 ? first : last;
     }
     if (dy == 0) {
         return index;
     }
-    const int row = current.row + (dy > 0 ? 1 : -1);
+    int lowest = current.row;
+    int highest = current.row;
+    for (const KeyEntry &entry : entries) {
+        lowest = qMin(lowest, entry.row);
+        highest = qMax(highest, entry.row);
+    }
+    int row = current.row + (dy > 0 ? 1 : -1);
+    if (row > highest) {
+        row = lowest;
+    } else if (row < lowest) {
+        row = highest;
+    }
     const qreal center = current.rect.center().x();
     int best = index;
     qreal bestDistance = std::numeric_limits<qreal>::max();
