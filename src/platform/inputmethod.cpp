@@ -5,6 +5,25 @@
 */
 
 #include "inputmethod_p.h"
+FakeInput::FakeInput()
+    : QWaylandClientExtensionTemplate<FakeInput>(4)
+{ }
+
+FakeInput::~FakeInput() = default;
+
+bool FakeInput::sendKey(uint evdevCode, bool pressed)
+{
+    if (!isActive()) {
+        return false;
+    }
+    if (!m_authenticated) {
+        authenticate(QStringLiteral("KBoard"), QStringLiteral("On-screen keyboard shortcuts"));
+        m_authenticated = true;
+    }
+    keyboard_key(evdevCode, pressed ? 1 : 0);
+    return true;
+}
+
 InputMethod::InputMethod()
     : QWaylandClientExtensionTemplate<InputMethod>(1)
 { }

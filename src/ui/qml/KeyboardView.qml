@@ -46,6 +46,7 @@ Item {
     signal textKey(string text)
     signal actionKey(string action, var key)
     signal shortcutKey(int code, int modifiers)
+    signal modifierKey(int modifiers)
     signal backspaceRepeated(int count)
     signal cursorSwipe(int steps)
     signal cursorSwipeFinished

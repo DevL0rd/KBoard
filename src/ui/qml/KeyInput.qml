@@ -17,13 +17,16 @@ QtObject {
         letters: () => view.pageId = "letters",
         fn: () => view.functionRow = !view.functionRow,
         shift: () => modifiers.tapShift(),
-        modifier: key => modifiers.tapSticky(key.modifier),
+        modifier: key => {
+            if (modifiers.tapSticky(key.modifier))
+                view.modifierKey(KeyNames.modifierMask(key.modifier))
+        },
         key: key => sendNamed(key.key),
         arrow: key => sendNamed(key.key),
         char: key => sendText(modifiers.shifted ? key.shiftOutput : key.output),
-        space: key => action("space", key),
-        backspace: key => action("backspace", key),
-        enter: key => action("enter", key),
+        space: key => modifiers.stickyMask ? sendNamed("space") : action("space", key),
+        backspace: key => modifiers.stickyMask ? sendNamed("backspace") : action("backspace", key),
+        enter: key => modifiers.stickyMask ? sendNamed("enter") : action("enter", key),
         emoji: key => action("panel:emoji", key),
         globe: key => action("globe", key),
         hide: key => action("hide", key)
@@ -44,7 +47,7 @@ QtObject {
     function sendText(text) {
         const code = modifiers.stickyMask ? KeyNames.evdev(text.toLowerCase()) : 0
         if (code) {
-            view.shortcutKey(code, modifiers.stickyMask | (KeyNames.needsShift(text) ? KeyNames.modifierMask("shift") : 0))
+            view.shortcutKey(code, modifiers.stickyMask | (KeyNames.symbolNeedsShift(text) ? KeyNames.modifierMask("shift") : 0))
         } else {
             view.textKey(text)
         }
@@ -52,7 +55,7 @@ QtObject {
     }
 
     function sendNamed(name) {
-        view.shortcutKey(KeyNames.evdev(name), modifiers.stickyMask | (modifiers.shifted ? KeyNames.modifierMask("shift") : 0))
+        view.shortcutKey(KeyNames.evdev(name), modifiers.stickyMask | (modifiers.shiftHeld ? KeyNames.modifierMask("shift") : 0))
         modifiers.consume()
     }
 
@@ -87,6 +90,9 @@ QtObject {
         const key = surface.keyData(index)
         if (key.type === "shift") {
             modifiers.lockShift()
+            surface.gestures.setTouchMode(touchId, "consumed")
+        } else if (key.type === "modifier") {
+            modifiers.lockSticky(key.modifier)
             surface.gestures.setTouchMode(touchId, "consumed")
         } else if (key.type === "space" && view.multipleLayouts) {
             openPopup(touchId, index, languageItems())

@@ -2,6 +2,7 @@ add_library(KBoardPlatform SHARED)
 
 ecm_add_qtwayland_client_protocol(KBoardPlatform PROTOCOL ${WaylandProtocols_DATADIR}/unstable/input-method/input-method-unstable-v1.xml BASENAME input-method-unstable-v1)
 ecm_add_qtwayland_client_protocol(KBoardPlatform PROTOCOL "${Wayland_DATADIR}/wayland.xml" BASENAME wayland)
+ecm_add_qtwayland_client_protocol(KBoardPlatform PROTOCOL ${CMAKE_CURRENT_SOURCE_DIR}/fake-input.xml BASENAME fake-input)
 
 target_sources(KBoardPlatform PRIVATE
     inputcontext.cpp

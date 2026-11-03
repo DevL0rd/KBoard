@@ -202,6 +202,10 @@ QtObject {
             InputContext.key(code, modifiers)
         }
 
+        function onModifierKey(modifiers) {
+            InputContext.tapModifiers(modifiers)
+        }
+
         function onBackspaceRepeated(count) {
             KeySound.play("backspace")
             if (count > 14)

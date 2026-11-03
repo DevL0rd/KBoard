@@ -10,8 +10,10 @@
 #include "inputmethod_p.h"
 #include "keycodes.h"
 
+#include <QDebug>
 #include <QElapsedTimer>
 #include <QRegularExpression>
+#include <QTimer>
 
 #include <xkbcommon/xkbcommon-keysyms.h>
 
@@ -30,8 +32,10 @@ QElapsedTimer &eventClock()
 InputContext::InputContext(QObject *parent)
     : QObject(parent)
     , m_inputMethod(new InputMethod)
+    , m_fakeInput(new FakeInput)
 {
     m_inputMethod->setParent(this);
+    m_fakeInput->setParent(this);
     connect(m_inputMethod, &InputMethod::activityChanged, this, &InputContext::attach);
 }
 
@@ -265,40 +269,34 @@ void InputContext::keysym(uint sym, uint modifiers)
     m_context->keysym(m_context->m_latestSerial, time, sym, 0, modifiers);
 }
 
-void InputContext::sendModifiers(uint modifiers)
+bool InputContext::sendKeys(uint modifiers, uint evdevCode)
 {
-    m_context->modifiers(m_context->m_latestSerial, modifiers, 0, 0, 0);
+    for (const KeyCodes::KeyEvent &event : KeyCodes::chord(modifiers, evdevCode)) {
+        if (!m_fakeInput->sendKey(event.code, event.pressed)) {
+            qWarning() << "KWin offers no fake input, so the key press is dropped";
+            return false;
+        }
+    }
+    return true;
 }
 
 void InputContext::key(uint evdevCode, uint modifiers)
 {
-    if (!m_context) {
-        return;
-    }
-    keyDown(evdevCode, modifiers);
-    keyUp(evdevCode);
-    if (modifiers) {
-        sendModifiers(0);
-    }
+    sendKeys(modifiers, evdevCode);
 }
 
-void InputContext::keyDown(uint evdevCode, uint modifiers)
+void InputContext::tapModifiers(uint modifiers)
 {
-    if (!m_context) {
-        return;
+    const auto events = KeyCodes::chord(modifiers, 0);
+    const auto half = events.size() / 2;
+    for (qsizetype i = 0; i < half; ++i) {
+        m_fakeInput->sendKey(events.at(i).code, true);
     }
-    if (modifiers) {
-        sendModifiers(modifiers);
-    }
-    m_context->key(m_context->m_latestSerial, eventClock().elapsed(), evdevCode, 1);
-}
-
-void InputContext::keyUp(uint evdevCode)
-{
-    if (!m_context) {
-        return;
-    }
-    m_context->key(m_context->m_latestSerial, eventClock().elapsed(), evdevCode, 0);
+    QTimer::singleShot(60, this, [this, events, half] {
+        for (qsizetype i = half; i < events.size(); ++i) {
+            m_fakeInput->sendKey(events.at(i).code, false);
+        }
+    });
 }
 
 bool InputContext::shortcut(const QString &combo)
@@ -314,11 +312,10 @@ bool InputContext::shortcut(const QString &combo)
             code = KeyCodes::evdevForName(name);
         }
     }
-    if (!code || !m_context) {
+    if (!code && !modifiers) {
         return false;
     }
-    key(code, modifiers);
-    return true;
+    return sendKeys(modifiers, code);
 }
 
 void InputContext::moveCursor(int steps)

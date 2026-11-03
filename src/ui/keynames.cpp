@@ -66,13 +66,9 @@ uint KeyNames::evdev(const QString &name)
     return KeyCodes::evdevForName(name.toLower());
 }
 
-bool KeyNames::needsShift(const QString &text)
+bool KeyNames::symbolNeedsShift(const QString &text)
 {
-    if (text.size() != 1) {
-        return false;
-    }
-    const QChar ch = text.at(0);
-    return symbols().value(ch, Symbol {0, false}).shifted || (ch.isLetter() && ch.isUpper());
+    return text.size() == 1 && symbols().value(text.at(0), Symbol {0, false}).shifted;
 }
 
 uint KeyNames::modifierMask(const QString &modifier)

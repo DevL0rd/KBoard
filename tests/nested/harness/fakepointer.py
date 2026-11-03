@@ -10,7 +10,7 @@ CLIENTS = Path(__file__).resolve().parent.parent / "clients"
 @cache
 def binary():
     build = Path(tempfile.mkdtemp(prefix="kboard-fakepointer-"))
-    protocol = CLIENTS / "fake-input.xml"
+    protocol = CLIENTS.parents[2] / "src" / "platform" / "fake-input.xml"
     subprocess.run(["wayland-scanner", "client-header", protocol, build / "fake-input-client-protocol.h"], check=True)
     subprocess.run(["wayland-scanner", "private-code", protocol, build / "fake-input-protocol.c"], check=True)
     output = build / "fakepointer"

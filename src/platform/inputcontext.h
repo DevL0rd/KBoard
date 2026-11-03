@@ -12,6 +12,7 @@
 #include <QQmlEngine>
 #include <memory>
 
+class FakeInput;
 class InputMethod;
 class InputMethodContext;
 
@@ -109,8 +110,7 @@ public:
     Q_INVOKABLE void tab();
     Q_INVOKABLE void keysym(uint sym, uint modifiers = 0);
     Q_INVOKABLE void key(uint evdevCode, uint modifiers = 0);
-    Q_INVOKABLE void keyDown(uint evdevCode, uint modifiers = 0);
-    Q_INVOKABLE void keyUp(uint evdevCode);
+    Q_INVOKABLE void tapModifiers(uint modifiers);
     Q_INVOKABLE bool shortcut(const QString &combo);
     Q_INVOKABLE void moveCursor(int steps);
     Q_INVOKABLE void moveCursorVertical(int steps);
@@ -129,10 +129,11 @@ Q_SIGNALS:
 private:
     explicit InputContext(QObject *parent = nullptr);
     void attach();
-    void sendModifiers(uint modifiers);
+    bool sendKeys(uint modifiers, uint evdevCode);
     int byteOffsetToChar(uint32_t bytes) const;
 
     InputMethod *m_inputMethod;
+    FakeInput *m_fakeInput;
     std::shared_ptr<InputMethodContext> m_context;
     QString m_preedit;
     QString m_language;

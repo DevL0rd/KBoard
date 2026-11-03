@@ -15,11 +15,12 @@ def build_dir():
 
 
 class NestedSession:
-    def __init__(self, width=1920, height=1080, extra_kwinrc="", kboardrc="", xwayland=False, output_count=1, kdeglobals=""):
+    def __init__(self, width=1920, height=1080, extra_kwinrc="", kboardrc="", xwayland=False, output_count=1, kdeglobals="", global_shortcuts=False):
         self.width = width
         self.height = height
         self.output_count = output_count
         self.xwayland = xwayland
+        self.global_shortcuts = global_shortcuts
         self.root = Path(tempfile.mkdtemp(prefix="kboard-test-"))
         self.socket = f"kboard-test-{os.getpid()}"
         self.config_home = self.root / "config"
@@ -61,8 +62,10 @@ class NestedSession:
         script.write_text("#!/bin/sh\n" + session_script)
         script.chmod(0o755)
         log = open(self.log_path, "w")
-        command = ["dbus-run-session", "--", "kwin_wayland", "--virtual", "--no-lockscreen", "--no-global-shortcuts",
-                   "--inputmethod", str(build_dir() / "bin" / "kboard")]
+        command = ["dbus-run-session", "--", "kwin_wayland", "--virtual", "--no-lockscreen"]
+        if not self.global_shortcuts:
+            command.append("--no-global-shortcuts")
+        command += ["--inputmethod", str(build_dir() / "bin" / "kboard")]
         if self.xwayland:
             command.append("--xwayland")
         command += ["--socket", self.socket, "--width", str(self.width), "--height", str(self.height),

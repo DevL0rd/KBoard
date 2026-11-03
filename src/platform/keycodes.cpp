@@ -3,6 +3,8 @@
 
 #include <QHash>
 
+#include <iterator>
+
 #include <linux/input-event-codes.h>
 
 namespace KeyCodes
@@ -99,5 +101,36 @@ uint modifierForName(const QString &name)
         return InputContext::SuperModifier;
     }
     return 0;
+}
+
+QList<KeyEvent> chord(uint modifiers, uint code)
+{
+    struct Held
+    {
+        uint mask;
+        uint key;
+    };
+    static constexpr Held held[] = {
+        {InputContext::ControlModifier, KEY_LEFTCTRL},
+        {InputContext::ShiftModifier, KEY_LEFTSHIFT},
+        {InputContext::AltModifier, KEY_LEFTALT},
+        {InputContext::SuperModifier, KEY_LEFTMETA},
+    };
+    QList<KeyEvent> events;
+    for (const Held &modifier : held) {
+        if (modifiers & modifier.mask) {
+            events.append({modifier.key, true});
+        }
+    }
+    if (code) {
+        events.append({code, true});
+        events.append({code, false});
+    }
+    for (auto it = std::rbegin(held); it != std::rend(held); ++it) {
+        if (modifiers & it->mask) {
+            events.append({it->key, false});
+        }
+    }
+    return events;
 }
 }

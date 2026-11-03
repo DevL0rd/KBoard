@@ -11,10 +11,24 @@
 #include <QtWaylandClient/QWaylandClientExtensionTemplate>
 
 #include <memory>
+#include <qwayland-fake-input.h>
 #include <qwayland-input-method-unstable-v1.h>
 #include <qwayland-wayland.h>
 
 #include "inputcontext.h"
+
+class FakeInput : public QWaylandClientExtensionTemplate<FakeInput>, public QtWayland::org_kde_kwin_fake_input
+{
+    Q_OBJECT
+public:
+    FakeInput();
+    ~FakeInput() override;
+
+    bool sendKey(uint evdevCode, bool pressed);
+
+private:
+    bool m_authenticated = false;
+};
 
 class InputMethodContext;
 class InputMethod : public QWaylandClientExtensionTemplate<InputMethod>, public QtWayland::zwp_input_method_v1

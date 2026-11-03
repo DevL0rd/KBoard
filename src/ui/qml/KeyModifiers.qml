@@ -13,9 +13,9 @@ QtObject {
     readonly property bool shifted: shiftState !== "off"
     readonly property int stickyMask: ["ctrl", "alt", "super"].reduce((mask, name) => sticky[name] !== "off" ? mask | KeyNames.modifierMask(name) : mask, 0)
     readonly property int doubleTapWindow: 350
+    readonly property bool shiftHeld: shiftState === "on" && !shiftFromAuto
 
     property double lastShiftTap: 0
-    property var lastStickyTap: ({})
     property bool shiftFromAuto: false
 
     function stateOf(name) {
@@ -40,13 +40,18 @@ QtObject {
         shiftState = "locked"
     }
 
+    function setSticky(name, state) {
+        sticky = Object.assign({}, sticky, { [name]: state })
+    }
+
     function tapSticky(name) {
-        const now = Date.now()
-        const quick = now - (lastStickyTap[name] ?? 0) < doubleTapWindow
-        lastStickyTap[name] = now
         const current = stateOf(name)
-        const next = current === "off" ? "on" : current === "on" && quick ? "locked" : "off"
-        sticky = Object.assign({}, sticky, { [name]: next })
+        setSticky(name, current === "off" ? "on" : "off")
+        return current === "on"
+    }
+
+    function lockSticky(name) {
+        setSticky(name, "locked")
     }
 
     function consume() {
