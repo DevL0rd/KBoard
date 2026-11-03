@@ -5,7 +5,7 @@ cd "$(dirname "$0")/../.."
 CONTAINER="kboard-install-test"
 IMAGE="${KBOARD_TEST_IMAGE:-archlinux:latest}"
 CCACHE_HOST="${KBOARD_TEST_CCACHE:-}"
-CCACHE_GUEST=/home/tester/.ccache
+CCACHE_GUEST=/opt/ccache
 
 as_root() {
     docker exec "$CONTAINER" "$@"
