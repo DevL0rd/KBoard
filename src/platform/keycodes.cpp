@@ -3,7 +3,7 @@
 
 #include <QHash>
 
-#include <iterator>
+#include <ranges>
 
 #include <linux/input-event-codes.h>
 
@@ -126,9 +126,9 @@ QList<KeyEvent> chord(uint modifiers, uint code)
         events.append({code, true});
         events.append({code, false});
     }
-    for (auto it = std::rbegin(held); it != std::rend(held); ++it) {
-        if (modifiers & it->mask) {
-            events.append({it->key, false});
+    for (const Held &modifier : std::views::reverse(held)) {
+        if (modifiers & modifier.mask) {
+            events.append({modifier.key, false});
         }
     }
     return events;

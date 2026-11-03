@@ -122,6 +122,58 @@ void renumberColumns(QList<KeyEntry> &entries)
         entry.column = column;
     }
 }
+int horizontalNeighbor(const QList<KeyEntry> &entries, int index, int dx)
+{
+    const int row = entries.at(index).row;
+    int first = index;
+    int last = index;
+    for (int i = 0; i < entries.size(); ++i) {
+        if (entries.at(i).row == row) {
+            first = qMin(first, i);
+            last = qMax(last, i);
+        }
+    }
+    const int target = index + (dx > 0 ? 1 : -1);
+    if (target >= first && target <= last) {
+        return target;
+    }
+    return dx > 0 ? first : last;
+}
+
+int wrappedRow(const QList<KeyEntry> &entries, int row, int dy)
+{
+    int lowest = row;
+    int highest = row;
+    for (const KeyEntry &entry : entries) {
+        lowest = qMin(lowest, entry.row);
+        highest = qMax(highest, entry.row);
+    }
+    const int next = row + (dy > 0 ? 1 : -1);
+    if (next > highest) {
+        return lowest;
+    }
+    if (next < lowest) {
+        return highest;
+    }
+    return next;
+}
+
+int verticalNeighbor(const QList<KeyEntry> &entries, int index, int dy)
+{
+    const KeyEntry &current = entries.at(index);
+    const int row = wrappedRow(entries, current.row, dy);
+    const qreal center = current.rect.center().x();
+    int best = index;
+    qreal bestDistance = std::numeric_limits<qreal>::max();
+    for (int i = 0; i < entries.size(); ++i) {
+        const qreal distance = std::abs(entries.at(i).rect.center().x() - center);
+        if (entries.at(i).row == row && distance < bestDistance) {
+            bestDistance = distance;
+            best = i;
+        }
+    }
+    return best;
+}
 }
 
 namespace KeyLayout
@@ -205,48 +257,13 @@ int neighbor(const QList<KeyEntry> &entries, int index, int dx, int dy)
     if (index < 0 || index >= entries.size()) {
         return 0;
     }
-    const KeyEntry &current = entries.at(index);
     if (dx != 0) {
-        int first = index;
-        int last = index;
-        for (int i = 0; i < entries.size(); ++i) {
-            if (entries.at(i).row == current.row) {
-                first = qMin(first, i);
-                last = qMax(last, i);
-            }
-        }
-        const int target = index + (dx > 0 ? 1 : -1);
-        if (target >= first && target <= last) {
-            return target;
-        }
-        return dx > 0 ? first : last;
+        return horizontalNeighbor(entries, index, dx);
     }
     if (dy == 0) {
         return index;
     }
-    int lowest = current.row;
-    int highest = current.row;
-    for (const KeyEntry &entry : entries) {
-        lowest = qMin(lowest, entry.row);
-        highest = qMax(highest, entry.row);
-    }
-    int row = current.row + (dy > 0 ? 1 : -1);
-    if (row > highest) {
-        row = lowest;
-    } else if (row < lowest) {
-        row = highest;
-    }
-    const qreal center = current.rect.center().x();
-    int best = index;
-    qreal bestDistance = std::numeric_limits<qreal>::max();
-    for (int i = 0; i < entries.size(); ++i) {
-        const qreal distance = std::abs(entries.at(i).rect.center().x() - center);
-        if (entries.at(i).row == row && distance < bestDistance) {
-            bestDistance = distance;
-            best = i;
-        }
-    }
-    return best;
+    return verticalNeighbor(entries, index, dy);
 }
 
 QVariantList halfRects(const Params &params)
