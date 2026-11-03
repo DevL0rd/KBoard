@@ -6,3 +6,4 @@ compile_commands.json
 plasmoids/*/contents/ui/lib/
 /models/*.bin
 /models/*.gguf
+/.ccache/

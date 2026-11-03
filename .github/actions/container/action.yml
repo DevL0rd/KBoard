@@ -1,0 +1,35 @@
+name: Run a CI mode in the Arch container
+description: Restores the compiler cache and runs tests/ci/run.sh in an Arch Linux container
+inputs:
+  mode:
+    description: The run.sh mode
+    required: true
+  cache:
+    description: The compiler cache family, one per compiler and build flavour
+    required: true
+  save-cache:
+    description: Save the compiler cache when this commit has none
+    default: "false"
+runs:
+  using: composite
+  steps:
+    - name: Restore the compiler cache
+      id: compiler-cache
+      uses: actions/cache/restore@v6
+      with:
+        path: .ccache
+        key: ccache-${{ inputs.cache }}-${{ github.sha }}
+        restore-keys: ccache-${{ inputs.cache }}-
+
+    - name: Run ${{ inputs.mode }}
+      shell: bash
+      env:
+        MODE: ${{ inputs.mode }}
+      run: docker run --rm -v "$GITHUB_WORKSPACE:/src" -w /src archlinux:base-devel tests/ci/run.sh "$MODE"
+
+    - name: Save the compiler cache
+      if: ${{ !cancelled() && inputs.save-cache == 'true' && steps.compiler-cache.outputs.cache-hit != 'true' }}
+      uses: actions/cache/save@v6
+      with:
+        path: .ccache
+        key: ${{ steps.compiler-cache.outputs.cache-primary-key }}

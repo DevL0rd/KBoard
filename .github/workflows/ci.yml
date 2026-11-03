@@ -12,43 +12,106 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  checks:
-    name: Build, test and lint
+  changes:
+    name: Find out whether code changed
     runs-on: ubuntu-latest
-    container:
-      image: archlinux:base-devel
+    outputs:
+      code: ${{ steps.scope.outputs.code }}
     steps:
-      - name: Install the check tools
-        run: pacman -Syu --noconfirm --needed git cmake ninja clang llvm openmp dbus typos nodejs npm shellcheck
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
-      - name: Build xunused
+      - name: Treat documentation-only changes as no code change
+        id: scope
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: |
-          git clone https://github.com/mgehre/xunused.git /tmp/xunused
-          git -C /tmp/xunused checkout b81e0ef
-          if [[ ! -f /usr/include/clang/Driver/Options.h ]]; then
-            sed -i 's|#include "clang/Driver/Options.h"|#include "clang/Options/Options.h"|' /tmp/xunused/main.cpp
+          code=true
+          if [[ -n $BASE && $BASE != 0000000000000000000000000000000000000000 ]] && git cat-file -e "$BASE^{commit}" 2>/dev/null; then
+            if ! git diff --name-only "$BASE" "$GITHUB_SHA" | grep -qvE '^(docs/|LICENSE$)|\.md$'; then
+              code=false
+            fi
           fi
-          if [[ ! -f /usr/include/clang/Index/USRGeneration.h ]]; then
-            sed -i 's|#include "clang/Index/USRGeneration.h"|#include "clang/UnifiedSymbolResolution/USRGeneration.h"|' /tmp/xunused/main.cpp
-          fi
-          cmake -S /tmp/xunused -B /tmp/xunused/build -G Ninja -DCMAKE_BUILD_TYPE=Release
-          cmake --build /tmp/xunused/build
-          install -Dm755 /tmp/xunused/build/xunused /usr/local/bin/xunused
+          echo "code=$code" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/checkout@v4
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
 
-      - name: Mark checkout as safe
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Check the file lengths, shell, formatting, spelling and duplicate code
+        run: docker run --rm -v "$GITHUB_WORKSPACE:/src" -w /src archlinux:base-devel tests/ci/run.sh lint
 
-      - name: Install KBoard's dependencies
-        run: packaging/dependencies.sh
+  unit:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    name: Build, unit tests and qmllint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive
 
-      - name: Run the full check suite
-        run: ./tools/check.sh
+      - uses: ./.github/actions/container
+        with:
+          mode: unit
+          cache: unit
+          save-cache: "true"
+
+  install-script:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    name: Install and uninstall scripts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      - uses: ./.github/actions/container
+        with:
+          mode: install
+          cache: install
+          save-cache: "true"
+
+  tidy:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    name: clang-tidy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      - uses: ./.github/actions/container
+        with:
+          mode: tidy
+          cache: clang
+          save-cache: "true"
+
+  xunused:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    name: Unused functions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      - uses: ./.github/actions/container
+        with:
+          mode: xunused
+          cache: clang
 
   distros:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     name: Install dependencies${{ matrix.build && ' and build' || '' }} on ${{ matrix.name }}
     runs-on: ubuntu-latest
     strategy:
@@ -56,11 +119,15 @@ jobs:
       matrix:
         include:
           - name: Fedora 44
+            cache: fedora
+            ccache: dnf install -y ccache
             image: fedora:44
             plasma: dnf install -y git plasma-desktop
             bundled-whisper: 'ON'
             build: true
           - name: openSUSE Tumbleweed
+            cache: tumbleweed
+            ccache: zypper --non-interactive install ccache
             image: opensuse/tumbleweed
             plasma: zypper --non-interactive dup --allow-downgrade && zypper --non-interactive install --force-resolution git plasma6-desktop
             bundled-whisper: 'ON'
@@ -70,11 +137,15 @@ jobs:
             plasma: apt-get update && apt-get install -y git plasma-desktop
             build: false
           - name: Debian unstable
+            cache: debian-unstable
+            ccache: apt-get install -y ccache
             image: debian:unstable
             plasma: apt-get update && apt-get install -y git plasma-desktop
             bundled-whisper: 'OFF'
             build: true
           - name: SteamOS 3.9
+            cache: steamos
+            ccache: pacman -S --noconfirm --needed ccache
             image: archlinux:latest
             plasma: |
               repos="jupiter-3.9 holo-3.9 core-3.9 extra-3.9 multilib-3.9"
@@ -99,12 +170,25 @@ jobs:
       - name: Install Plasma
         run: ${{ matrix.plasma }}
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
 
       - name: Install KBoard's dependencies
         run: packaging/dependencies.sh
+
+      - name: Install the compiler cache
+        if: matrix.build
+        run: ${{ matrix.ccache }}
+
+      - name: Restore the compiler cache
+        if: matrix.build
+        id: compiler-cache
+        uses: actions/cache/restore@v6
+        with:
+          path: .ccache
+          key: ccache-${{ matrix.cache }}-${{ github.sha }}
+          restore-keys: ccache-${{ matrix.cache }}-
 
       - name: Check the build dependencies
         if: matrix.build
@@ -112,7 +196,12 @@ jobs:
 
       - name: Build and install
         if: matrix.build
+        env:
+          CCACHE_MAXSIZE: 2G
+          CMAKE_C_COMPILER_LAUNCHER: ccache
+          CMAKE_CXX_COMPILER_LAUNCHER: ccache
         run: |
+          export CCACHE_DIR="$PWD/.ccache"
           cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DKDE_INSTALL_USE_QT_SYS_PATHS=ON -DBUILD_TESTING=OFF -DKBOARD_WERROR=OFF
           grep -qx 'KBOARD_BUNDLED_WHISPER:BOOL=${{ matrix.bundled-whisper }}' build/CMakeCache.txt
           cmake --build build
@@ -123,29 +212,55 @@ jobs:
             exit 1
           fi
 
+      - name: Save the compiler cache
+        if: ${{ !cancelled() && matrix.build && steps.compiler-cache.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v6
+        with:
+          path: .ccache
+          key: ${{ steps.compiler-cache.outputs.cache-primary-key }}
+
   install:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     name: Install, check and uninstall on Arch Linux
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
+
+      - name: Restore the compiler cache
+        id: compiler-cache
+        uses: actions/cache/restore@v6
+        with:
+          path: .ccache
+          key: ccache-plasma-${{ github.sha }}
+          restore-keys: ccache-plasma-
 
       - name: Give KWin a vgem render node, so it composites with OpenGL on Mesa's llvmpipe
         run: tests/install/vgem.sh
 
       - name: Install, check and uninstall KBoard in a Plasma session
+        env:
+          KBOARD_TEST_CCACHE: .ccache
         run: tests/install/run.sh
+
+      - name: Save the compiler cache
+        if: ${{ !cancelled() && steps.compiler-cache.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v6
+        with:
+          path: .ccache
+          key: ${{ steps.compiler-cache.outputs.cache-primary-key }}
 
   release:
     name: Release
-    needs: checks
+    needs: [lint, unit, install-script, tidy, xunused, distros, install]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           submodules: recursive
