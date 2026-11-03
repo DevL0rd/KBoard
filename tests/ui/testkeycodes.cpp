@@ -27,9 +27,10 @@ private Q_SLOTS:
 
     void modifiersReleaseInReverseOrder()
     {
-        const uint all = InputContext::ControlModifier | InputContext::ShiftModifier | InputContext::AltModifier | InputContext::SuperModifier;
-        const QList<KeyEvent> expected {{KEY_LEFTCTRL, true}, {KEY_LEFTSHIFT, true}, {KEY_LEFTALT, true}, {KEY_LEFTMETA, true}, {KEY_Z, true},
-            {KEY_Z, false}, {KEY_LEFTMETA, false}, {KEY_LEFTALT, false}, {KEY_LEFTSHIFT, false}, {KEY_LEFTCTRL, false}};
+        const uint all
+            = InputContext::ControlModifier | InputContext::ShiftModifier | InputContext::AltModifier | InputContext::SuperModifier;
+        const QList<KeyEvent> expected {{KEY_LEFTCTRL, true}, {KEY_LEFTSHIFT, true}, {KEY_LEFTALT, true}, {KEY_LEFTMETA, true},
+            {KEY_Z, true}, {KEY_Z, false}, {KEY_LEFTMETA, false}, {KEY_LEFTALT, false}, {KEY_LEFTSHIFT, false}, {KEY_LEFTCTRL, false}};
         QCOMPARE(KeyCodes::chord(all, KEY_Z), expected);
     }
 
