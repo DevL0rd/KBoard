@@ -14,7 +14,7 @@ if [[ $mode == lint ]]; then
     exit
 fi
 
-pacman -Syu --noconfirm --needed git cmake ninja ccache clang llvm openmp dbus
+pacman -Syu --noconfirm --needed git cmake ninja ccache clang llvm openmp dbus python
 if [[ $mode == xunused ]]; then
     git clone https://github.com/mgehre/xunused.git /tmp/xunused
     git -C /tmp/xunused checkout b81e0ef
