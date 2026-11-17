@@ -18,7 +18,6 @@ public:
 
     static QByteArray fingerprint(const QImage &image);
 
-    QString directory() const;
     void insert(const QString &id, const QImage &image);
     bool restore(const QString &id);
     QImage image(const QString &id, bool thumbnail) const;
@@ -28,6 +27,8 @@ public:
     void waitForWrites();
 
 private:
+    friend struct ClipboardImageStoreProbe;
+
     struct Record
     {
         QImage thumbnail;

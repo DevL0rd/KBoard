@@ -108,8 +108,3 @@ void SpeechSegmenter::setEndSilenceMs(int ms)
 {
     m_detector.setEndSilenceMs(ms);
 }
-
-bool SpeechSegmenter::inSpeech() const
-{
-    return m_detector.inSpeech();
-}

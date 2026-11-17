@@ -177,11 +177,6 @@ QString nameForSdlButton(int sdlButton)
     return order.at(sdlButton);
 }
 
-int sdlButtonForName(const QString &name)
-{
-    return sdlOrder().indexOf(name);
-}
-
 QString canonicalName(const QString &nameOrAlias)
 {
     const QString key = nameOrAlias.trimmed().toLower();

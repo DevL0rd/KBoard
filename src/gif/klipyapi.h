@@ -84,7 +84,6 @@ QUrl trendingUrl(const RequestContext &context, MediaType type, int page, int pe
 QUrl searchUrl(const RequestContext &context, MediaType type, const QString &query, int page, int perPage = defaultPerPage);
 QUrl categoriesUrl(const RequestContext &context, MediaType type);
 QUrl autocompleteUrl(const RequestContext &context, const QString &query, int limit = 10);
-QUrl searchSuggestionsUrl(const RequestContext &context, const QString &query, int limit = 10);
 QUrl shareUrl(const RequestContext &context, MediaType type, const QString &slug);
 QByteArray shareBody(const RequestContext &context, const QString &query);
 

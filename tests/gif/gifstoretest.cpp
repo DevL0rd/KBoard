@@ -2,6 +2,7 @@
 #include "fixtures.h"
 #include "gifmodel.h"
 #include "gifpaste.h"
+#include "gifprobes.h"
 #include "klipyclient.h"
 
 #include <QDateTime>
@@ -48,10 +49,10 @@ private Q_SLOTS:
         QVERIFY(store.errorString().isEmpty());
         QCOMPARE(store.searchPlaceholder(), QStringLiteral("Search KLIPY"));
         QCOMPARE(GifStore::debounceInterval(), 250);
-        const QString id = store.client()->customerId();
+        const QString id = GifStoreProbe::client(store)->customerId();
         QVERIFY(!QUuid::fromString(id).isNull());
         GifStore again(options(dir, QStringLiteral("key")));
-        QCOMPARE(again.client()->customerId(), id);
+        QCOMPARE(GifStoreProbe::client(again)->customerId(), id);
     }
 
     void fixturesFavoritesAndRecents()

@@ -31,9 +31,10 @@ public:
     Output flush();
     void reset();
     void setEndSilenceMs(int ms);
-    bool inSpeech() const;
 
 private:
+    friend struct SpeechSegmenterProbe;
+
     void processWindow(const float *frame, int window, QList<Output> &outputs);
     void continueSpeech(const float *frame, int window, QList<Output> &outputs);
     void keepPreroll(const float *frame, int window);

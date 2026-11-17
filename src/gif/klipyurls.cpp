@@ -109,11 +109,6 @@ QUrl autocompleteUrl(const RequestContext &context, const QString &query, int li
     return termUrl(context, QStringLiteral("autocomplete"), query, limit);
 }
 
-QUrl searchSuggestionsUrl(const RequestContext &context, const QString &query, int limit)
-{
-    return termUrl(context, QStringLiteral("search-suggestions"), query, limit);
-}
-
 QUrl shareUrl(const RequestContext &context, MediaType type, const QString &slug)
 {
     return endpoint(context, mediaPath(type) + QStringLiteral("/share/") + encodeSegment(slug));

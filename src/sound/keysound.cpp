@@ -358,19 +358,3 @@ bool KeySound::hapticsAvailable() const
 {
     return m_haptics->available();
 }
-
-std::vector<float> KeySound::renderOffline(int frames, int channels)
-{
-    if (m_output != Output::Offline) {
-        qCWarning(lcSound) << "renderOffline needs a KeySound created with Output::Offline";
-        return {};
-    }
-    std::vector<float> buffer(static_cast<size_t>(frames) * static_cast<size_t>(channels));
-    m_mixer.render(buffer, channels);
-    return buffer;
-}
-
-SoundMixer &KeySound::mixer()
-{
-    return m_mixer;
-}

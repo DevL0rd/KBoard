@@ -49,7 +49,6 @@ public:
     ~ClipboardHistory() override;
 
     static ClipboardHistory *instance();
-    static void setInstance(ClipboardHistory *history);
     static ClipboardHistory *create(QQmlEngine *engine, QJSEngine *);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;

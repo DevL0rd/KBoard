@@ -1,4 +1,5 @@
 #include "keysound.h"
+#include "soundprobes.h"
 
 #include "kboardpaths.h"
 #include "kboardsettings.h"
@@ -52,7 +53,8 @@ int main(int argc, char **argv)
             timer->stop();
             QTimer::singleShot(400, &app, [&] {
                 out << "latencyMs=" << sound.latencyMs() << " bufferFrames=" << sound.bufferFrames()
-                    << " queueDelayMs=" << sound.mixer().queueDelayMs() << " blockMs=" << sound.mixer().blockMs() << Qt::endl;
+                    << " queueDelayMs=" << KeySoundProbe::mixer(sound).queueDelayMs()
+                    << " blockMs=" << KeySoundProbe::mixer(sound).blockMs() << Qt::endl;
                 QCoreApplication::quit();
             });
         }

@@ -44,15 +44,6 @@ bool SoundPackLoader::kindFromString(const QString &name, SoundKind *kind)
     return false;
 }
 
-QStringList SoundPackLoader::requiredFiles()
-{
-    QStringList files {QStringLiteral("pack.json"), QStringLiteral("key1.wav")};
-    for (size_t i = 1; i < kindNames.size(); ++i) {
-        files << QString::fromLatin1(kindNames[i]) + QStringLiteral(".wav");
-    }
-    return files;
-}
-
 bool SoundPackLoader::readWav(const QString &path, SoundSample *sample, QString *error)
 {
     QFile file(path);

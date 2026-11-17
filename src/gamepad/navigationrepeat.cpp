@@ -73,21 +73,6 @@ QPoint NavigationRepeater::direction() const
     return m_current;
 }
 
-int NavigationRepeater::step() const
-{
-    return m_step;
-}
-
-bool NavigationRepeater::isRepeating() const
-{
-    return m_timer.isActive();
-}
-
-int NavigationRepeater::pendingDelay() const
-{
-    return m_timer.isActive() ? m_timer.interval() : -1;
-}
-
 void NavigationRepeater::stop()
 {
     m_dpad = {};

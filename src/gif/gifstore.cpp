@@ -213,11 +213,6 @@ int GifStore::debounceInterval()
     return 250;
 }
 
-KlipyClient *GifStore::client() const
-{
-    return m_client;
-}
-
 void GifStore::setContentFilter(Klipy::ContentFilter filter)
 {
     if (m_client->contentFilter() != filter) {

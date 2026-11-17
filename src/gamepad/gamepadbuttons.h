@@ -7,7 +7,6 @@ namespace GamepadButtons
 {
 QStringList names();
 QString nameForSdlButton(int sdlButton);
-int sdlButtonForName(const QString &name);
 QString canonicalName(const QString &nameOrAlias);
 bool isKnown(const QString &name);
 QStringList controllerTypes();

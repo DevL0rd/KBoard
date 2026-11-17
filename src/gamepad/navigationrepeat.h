@@ -39,15 +39,14 @@ public:
     void setSpeed(double speed);
     void setDirection(Source source, QPoint direction);
     QPoint direction() const;
-    int step() const;
-    bool isRepeating() const;
-    int pendingDelay() const;
     void stop();
 
 Q_SIGNALS:
     void navigate(int dx, int dy);
 
 private:
+    friend struct NavigationRepeaterProbe;
+
     void apply();
     void fire();
 

@@ -45,7 +45,6 @@ public:
     static constexpr int MaxKeyVariants = 8;
 
     static bool kindFromString(const QString &name, SoundKind *kind);
-    static QStringList requiredFiles();
 
     static bool readWav(const QString &path, SoundSample *sample, QString *error);
     static std::shared_ptr<const SoundPack> loadPack(const QString &directory, QString *error);

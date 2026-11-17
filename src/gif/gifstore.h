@@ -83,7 +83,6 @@ public:
     QString attribution() const;
 
     static int debounceInterval();
-    KlipyClient *client() const;
     void setContentFilter(Klipy::ContentFilter filter);
     const Klipy::Item *findItem(const QString &id) const;
 
@@ -112,6 +111,8 @@ Q_SIGNALS:
     void insertFailed(const QString &id, const QString &error);
 
 private:
+    friend struct GifStoreProbe;
+
     void followSettings();
     void setError(const QString &error);
     void search();

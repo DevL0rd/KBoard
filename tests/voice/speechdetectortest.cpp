@@ -1,5 +1,6 @@
 #include "speechdetector.h"
 #include "audiocapture.h"
+#include "voiceprobes.h"
 #include "voicetestutils.h"
 
 #include <QTest>
@@ -154,11 +155,11 @@ private Q_SLOTS:
         SpeechSegmenter segmenter(vad.get());
         const QList<float> speech = foxSpeech();
         segmenter.feed(speech.constData(), speech.size() / 2);
-        QVERIFY(segmenter.inSpeech());
+        QVERIFY(SpeechSegmenterProbe::inSpeech(segmenter));
         const SpeechSegmenter::Output output = segmenter.flush();
         QCOMPARE(output.kind, SpeechSegmenter::Output::Ended);
         QVERIFY(output.samples.size() > 8000);
-        QVERIFY(!segmenter.inSpeech());
+        QVERIFY(!SpeechSegmenterProbe::inSpeech(segmenter));
     }
 
     void missingVadModelIsAnError()

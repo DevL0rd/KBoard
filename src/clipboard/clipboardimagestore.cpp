@@ -62,11 +62,6 @@ QByteArray ClipboardImageStore::fingerprint(const QImage &image)
     return hash.result().toHex();
 }
 
-QString ClipboardImageStore::directory() const
-{
-    return m_directory;
-}
-
 QString ClipboardImageStore::pathFor(const QString &id, bool thumbnail) const
 {
     return m_directory + QLatin1Char('/') + id + (thumbnail ? QStringLiteral("-thumb.png") : QStringLiteral(".png"));

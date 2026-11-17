@@ -48,11 +48,6 @@ bool SteamDedupe::isIgnored(quint32 id) const
     return isPairedPhysical(id);
 }
 
-quint32 SteamDedupe::physicalFor(quint32 virtualId) const
-{
-    return m_virtualToPhysical.value(virtualId, 0);
-}
-
 quint32 SteamDedupe::virtualFor(quint32 physicalId) const
 {
     for (auto it = m_virtualToPhysical.cbegin(); it != m_virtualToPhysical.cend(); ++it) {
@@ -61,16 +56,6 @@ quint32 SteamDedupe::virtualFor(quint32 physicalId) const
         }
     }
     return 0;
-}
-
-bool SteamDedupe::hasUnpairedVirtual() const
-{
-    for (const Device &device : m_devices) {
-        if (device.steamVirtual && !isPairedVirtual(device.id)) {
-            return true;
-        }
-    }
-    return false;
 }
 
 QString SteamDedupe::reasonIgnored(quint32 id) const

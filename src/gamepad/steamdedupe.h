@@ -32,14 +32,14 @@ public:
     void clear();
 
     bool isIgnored(quint32 id) const;
-    quint32 physicalFor(quint32 virtualId) const;
     quint32 virtualFor(quint32 physicalId) const;
-    bool hasUnpairedVirtual() const;
     QString reasonIgnored(quint32 id) const;
 
     PressResult press(quint32 id, const QString &button, qint64 timestampMs);
 
 private:
+    friend struct SteamDedupeProbe;
+
     struct RecentPress
     {
         QString button;

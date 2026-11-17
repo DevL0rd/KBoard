@@ -29,15 +29,12 @@ public:
     Sweep sweep(const QList<ClipboardEntry> &entries) const;
     void schedule(const QList<ClipboardEntry> &entries);
 
-    QDateTime nextEventTime() const;
-    bool isActive() const;
-    int interval() const;
-
 Q_SIGNALS:
     void due();
 
 private:
+    friend struct ClipboardExpiryProbe;
+
     Clock m_clock;
     QTimer m_timer;
-    QDateTime m_next;
 };

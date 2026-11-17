@@ -18,7 +18,6 @@ public:
 
     void setControlDescriptors(int wakeFd, int hotplugFd);
     void setDeviceDescriptors(const QList<int> &descriptors);
-    QList<int> deviceDescriptors() const;
 
     Result wait(int timeoutMs) const;
 

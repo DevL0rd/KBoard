@@ -25,7 +25,6 @@ private Q_SLOTS:
         QCOMPARE(GamepadButtons::nameForSdlButton(SDL_GAMEPAD_BUTTON_MISC6), QStringLiteral("misc6"));
         QCOMPARE(GamepadButtons::nameForSdlButton(SDL_GAMEPAD_BUTTON_COUNT), QString());
         QCOMPARE(GamepadButtons::nameForSdlButton(-1), QString());
-        QCOMPARE(GamepadButtons::sdlButtonForName(QStringLiteral("dpleft")), int(SDL_GAMEPAD_BUTTON_DPAD_LEFT));
     }
 
     void contractNamesKnown()

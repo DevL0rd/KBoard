@@ -78,15 +78,13 @@ void SoundMixer::render(std::span<float> interleaved, int channels)
     drainQueue();
     std::fill(interleaved.begin(), interleaved.end(), 0.0f);
 
-    int active = 0;
     for (Voice &voice : m_voices) {
-        if (voice.data && mixVoice(voice, interleaved, frames, channels)) {
-            ++active;
+        if (voice.data) {
+            mixVoice(voice, interleaved, frames, channels);
         }
     }
     applyMasterGain(interleaved, frames, channels);
 
-    m_activeVoices.store(active, std::memory_order_relaxed);
     m_renderedBlocks.fetch_add(1, std::memory_order_relaxed);
 }
 
@@ -117,20 +115,19 @@ void SoundMixer::drainQueue()
     }
 }
 
-bool SoundMixer::mixVoice(Voice &voice, std::span<float> interleaved, qsizetype frames, int channels)
+void SoundMixer::mixVoice(Voice &voice, std::span<float> interleaved, qsizetype frames, int channels)
 {
     for (qsizetype frame = 0; frame < frames; ++frame) {
         const auto index = static_cast<qsizetype>(voice.position);
         if (index + 1 >= voice.length) {
             voice.data = nullptr;
-            return false;
+            return;
         }
         const auto fraction = static_cast<float>(voice.position - static_cast<double>(index));
         const float value = voice.data[index] + (voice.data[index + 1] - voice.data[index]) * fraction;
         interleaved[frame * channels] += value * voice.gain;
         voice.position += voice.step;
     }
-    return true;
 }
 
 void SoundMixer::applyMasterGain(std::span<float> interleaved, qsizetype frames, int channels)
@@ -159,11 +156,6 @@ void SoundMixer::setOutputRate(int rate)
 void SoundMixer::setMasterGain(float gain)
 {
     m_masterGain.store(gain, std::memory_order_relaxed);
-}
-
-int SoundMixer::activeVoices() const
-{
-    return m_activeVoices.load(std::memory_order_relaxed);
 }
 
 double SoundMixer::queueDelayMs() const

@@ -76,26 +76,10 @@ void ClipboardExpiry::schedule(const QList<ClipboardEntry> &entries)
             next = candidate;
         }
     }
-    m_next = next;
     if (!next.isValid()) {
         m_timer.stop();
         return;
     }
     const qint64 delay = std::clamp<qint64>(now().msecsTo(next), 0, std::numeric_limits<int>::max());
     m_timer.start(int(delay));
-}
-
-QDateTime ClipboardExpiry::nextEventTime() const
-{
-    return m_next;
-}
-
-bool ClipboardExpiry::isActive() const
-{
-    return m_timer.isActive();
-}
-
-int ClipboardExpiry::interval() const
-{
-    return m_timer.interval();
 }

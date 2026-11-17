@@ -1,4 +1,5 @@
 #include "navigationrepeat.h"
+#include "gamepadprobes.h"
 
 #include <QElapsedTimer>
 #include <QSignalSpy>
@@ -74,18 +75,19 @@ private Q_SLOTS:
         QCOMPARE(spy.count(), 1);
         QCOMPARE(spy.at(0).at(0).toInt(), 1);
         QCOMPARE(spy.at(0).at(1).toInt(), 0);
-        QCOMPARE(repeater.pendingDelay(), RepeatSchedule::delayForStep(0, 3.0));
+        QCOMPARE(NavigationRepeaterProbe::pendingDelay(repeater), RepeatSchedule::delayForStep(0, 3.0));
 
         QTRY_COMPARE_WITH_TIMEOUT(spy.count(), 2, 2000);
         QVERIFY(clock.elapsed() >= RepeatSchedule::delayForStep(0, 3.0) - 2);
-        QCOMPARE(repeater.pendingDelay(), RepeatSchedule::delayForStep(1, 3.0));
+        QCOMPARE(NavigationRepeaterProbe::pendingDelay(repeater), RepeatSchedule::delayForStep(1, 3.0));
 
         QTRY_VERIFY_WITH_TIMEOUT(spy.count() >= 12, 3000);
-        QCOMPARE(repeater.pendingDelay(), RepeatSchedule::delayForStep(repeater.step(), 3.0));
-        QVERIFY(repeater.pendingDelay() < RepeatSchedule::delayForStep(1, 3.0));
+        QCOMPARE(
+            NavigationRepeaterProbe::pendingDelay(repeater), RepeatSchedule::delayForStep(NavigationRepeaterProbe::step(repeater), 3.0));
+        QVERIFY(NavigationRepeaterProbe::pendingDelay(repeater) < RepeatSchedule::delayForStep(1, 3.0));
 
         repeater.setDirection(NavigationRepeater::Source::Stick, QPoint());
-        QVERIFY(!repeater.isRepeating());
+        QVERIFY(!NavigationRepeaterProbe::isRepeating(repeater));
         const int count = spy.count();
         QTest::qWait(150);
         QCOMPARE(spy.count(), count);
@@ -99,14 +101,14 @@ private Q_SLOTS:
         repeater.setDirection(NavigationRepeater::Source::Dpad, QPoint(0, -1));
         QCOMPARE(spy.count(), 2);
         QCOMPARE(spy.at(1).at(1).toInt(), -1);
-        QCOMPARE(repeater.step(), 0);
+        QCOMPARE(NavigationRepeaterProbe::step(repeater), 0);
         repeater.setDirection(NavigationRepeater::Source::Stick, QPoint(-1, 0));
         QCOMPARE(spy.count(), 2);
         repeater.setDirection(NavigationRepeater::Source::Dpad, QPoint());
         QCOMPARE(spy.count(), 3);
         QCOMPARE(spy.at(2).at(0).toInt(), -1);
         repeater.stop();
-        QVERIFY(!repeater.isRepeating());
+        QVERIFY(!NavigationRepeaterProbe::isRepeating(repeater));
     }
 
     void sameDirectionDoesNotRestart()

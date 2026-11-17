@@ -1,4 +1,5 @@
 #include "steamdedupe.h"
+#include "gamepadprobes.h"
 
 #include <QTest>
 
@@ -38,7 +39,7 @@ private Q_SLOTS:
         QVERIFY(dedupe.isIgnored(1));
         QVERIFY(!dedupe.isIgnored(2));
         QVERIFY(!dedupe.isIgnored(3));
-        QCOMPARE(dedupe.physicalFor(3), quint32(1));
+        QCOMPARE(SteamDedupeProbe::physicalFor(dedupe, 3), quint32(1));
         QCOMPARE(dedupe.virtualFor(1), quint32(3));
         QVERIFY(!dedupe.reasonIgnored(1).isEmpty());
         QVERIFY(!dedupe.press(1, QStringLiteral("a"), 10).forward);
@@ -67,7 +68,7 @@ private Q_SLOTS:
         dedupe.addDevice({4, 0x045e, 0x0b12, true});
         QVERIFY(dedupe.isIgnored(1));
         QVERIFY(dedupe.isIgnored(2));
-        QVERIFY(dedupe.physicalFor(3) != dedupe.physicalFor(4));
+        QVERIFY(SteamDedupeProbe::physicalFor(dedupe, 3) != SteamDedupeProbe::physicalFor(dedupe, 4));
     }
 
     void correlationPhysicalFirst()
@@ -78,7 +79,7 @@ private Q_SLOTS:
         dedupe.addDevice({3, SteamDedupe::ValveVendor, SteamDedupe::SteamVirtualProduct, true});
         QVERIFY(!dedupe.isIgnored(1));
         QVERIFY(!dedupe.isIgnored(2));
-        QVERIFY(dedupe.hasUnpairedVirtual());
+        QVERIFY(SteamDedupeProbe::hasUnpairedVirtual(dedupe));
 
         const auto physical = dedupe.press(2, QStringLiteral("x"), 1000);
         QVERIFY(physical.forward);
@@ -87,7 +88,7 @@ private Q_SLOTS:
         QCOMPARE(virtualPress.replacedPhysical, quint32(2));
         QVERIFY(dedupe.isIgnored(2));
         QVERIFY(!dedupe.isIgnored(1));
-        QVERIFY(!dedupe.hasUnpairedVirtual());
+        QVERIFY(!SteamDedupeProbe::hasUnpairedVirtual(dedupe));
         QVERIFY(dedupe.press(3, QStringLiteral("a"), 2000).forward);
         QVERIFY(!dedupe.press(2, QStringLiteral("a"), 2001).forward);
         QVERIFY(dedupe.press(1, QStringLiteral("a"), 2002).forward);
@@ -103,7 +104,7 @@ private Q_SLOTS:
         QVERIFY(!physical.forward);
         QCOMPARE(physical.replacedPhysical, quint32(0));
         QVERIFY(dedupe.isIgnored(1));
-        QCOMPARE(dedupe.physicalFor(3), quint32(1));
+        QCOMPARE(SteamDedupeProbe::physicalFor(dedupe, 3), quint32(1));
     }
 
     void correlationNeedsSameButtonInWindow()
@@ -140,8 +141,8 @@ private Q_SLOTS:
         dedupe.press(3, QStringLiteral("a"), 2);
         QVERIFY(dedupe.isIgnored(1));
         dedupe.removeDevice(1);
-        QCOMPARE(dedupe.physicalFor(3), quint32(0));
-        QVERIFY(dedupe.hasUnpairedVirtual());
+        QCOMPARE(SteamDedupeProbe::physicalFor(dedupe, 3), quint32(0));
+        QVERIFY(SteamDedupeProbe::hasUnpairedVirtual(dedupe));
     }
 };
 

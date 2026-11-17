@@ -1,6 +1,7 @@
 #include "keysound.h"
 #include "soundmixer.h"
 #include "soundpack.h"
+#include "soundprobes.h"
 
 #include "kboardsettings.h"
 
@@ -84,7 +85,10 @@ private Q_SLOTS:
     {
         QFETCH(QString, packId);
         const QDir dir(soundsDir() + QLatin1Char('/') + packId);
-        for (const QString &file : SoundPackLoader::requiredFiles()) {
+        const QStringList required {QStringLiteral("pack.json"), QStringLiteral("key1.wav"), QStringLiteral("space.wav"),
+            QStringLiteral("backspace.wav"), QStringLiteral("enter.wav"), QStringLiteral("modifier.wav"), QStringLiteral("popup.wav"),
+            QStringLiteral("open.wav"), QStringLiteral("close.wav")};
+        for (const QString &file : required) {
             QVERIFY2(QFile::exists(dir.filePath(file)), qPrintable(dir.filePath(file)));
         }
         for (int i = 1; i <= 4; ++i) {
@@ -143,24 +147,24 @@ private Q_SLOTS:
     void mixerRendersPlay()
     {
         KeySound sound(KeySound::Output::Offline, soundsDir());
-        QVERIFY(peak(sound.renderOffline(4800)) == 0.0f);
+        QVERIFY(peak(KeySoundProbe::render(sound, 4800)) == 0.0f);
 
         QSignalSpy played(&sound, &KeySound::played);
         sound.play(QStringLiteral("key"));
         QCOMPARE(played.size(), 1);
-        const auto mono = sound.renderOffline(4800);
+        const auto mono = KeySoundProbe::render(sound, 4800);
         QVERIFY(peak(mono) > 0.05f);
         QVERIFY(peak(mono) <= 1.0f);
 
         sound.play(QStringLiteral("enter"));
-        const auto stereo = sound.renderOffline(1024, 2);
+        const auto stereo = KeySoundProbe::render(sound, 1024, 2);
         QVERIFY(peak(stereo) > 0.05f);
         for (size_t i = 0; i + 1 < stereo.size(); i += 2) {
             QCOMPARE(stereo[i], stereo[i + 1]);
         }
-        sound.renderOffline(48000);
-        QCOMPARE(sound.mixer().activeVoices(), 0);
-        QVERIFY(peak(sound.renderOffline(4800)) == 0.0f);
+        KeySoundProbe::render(sound, 48000);
+        QCOMPARE(SoundMixerProbe::activeVoices(KeySoundProbe::mixer(sound)), 0);
+        QVERIFY(peak(KeySoundProbe::render(sound, 4800)) == 0.0f);
     }
 
     void respectsSettings()
@@ -169,31 +173,31 @@ private Q_SLOTS:
 
         KBoardSettings::setSoundEnabled(false);
         sound.play(QStringLiteral("key"));
-        QVERIFY(peak(sound.renderOffline(4800)) == 0.0f);
+        QVERIFY(peak(KeySoundProbe::render(sound, 4800)) == 0.0f);
         KBoardSettings::setSoundEnabled(true);
 
         KBoardSettings::setSoundVolume(0.0);
         sound.play(QStringLiteral("key"));
-        sound.renderOffline(256);
-        QVERIFY(peak(sound.renderOffline(4800)) == 0.0f);
+        KeySoundProbe::render(sound, 256);
+        QVERIFY(peak(KeySoundProbe::render(sound, 4800)) == 0.0f);
         KBoardSettings::setSoundVolume(1.0);
-        sound.renderOffline(48000);
+        KeySoundProbe::render(sound, 48000);
 
         QSignalSpy packChanged(&sound, &KeySound::currentPackChanged);
         KBoardSettings::setSoundPack(QStringLiteral("glass"));
         QCOMPARE(packChanged.size(), 1);
         QCOMPARE(sound.currentPack(), QStringLiteral("glass"));
         sound.play(QStringLiteral("space"));
-        QVERIFY(peak(sound.renderOffline(4800)) > 0.05f);
+        QVERIFY(peak(KeySoundProbe::render(sound, 4800)) > 0.05f);
 
         QSignalSpy errorChanged(&sound, &KeySound::errorStringChanged);
         KBoardSettings::setSoundPack(QStringLiteral("does-not-exist"));
         QCOMPARE(errorChanged.size(), 1);
         QVERIFY(sound.errorString().contains(QStringLiteral("does-not-exist")));
         QVERIFY(sound.currentPack().isEmpty());
-        sound.renderOffline(48000);
+        KeySoundProbe::render(sound, 48000);
         sound.play(QStringLiteral("key"));
-        QVERIFY(peak(sound.renderOffline(4800)) == 0.0f);
+        QVERIFY(peak(KeySoundProbe::render(sound, 4800)) == 0.0f);
 
         KBoardSettings::setSoundPack(QStringLiteral("soft"));
         QVERIFY(sound.errorString().isEmpty());
@@ -205,15 +209,15 @@ private Q_SLOTS:
         for (int i = 0; i < 12; ++i) {
             sound.play(QStringLiteral("key"));
         }
-        const auto buffer = sound.renderOffline(512);
-        QCOMPARE(sound.mixer().activeVoices(), 12);
+        const auto buffer = KeySoundProbe::render(sound, 512);
+        QCOMPARE(SoundMixerProbe::activeVoices(KeySoundProbe::mixer(sound)), 12);
         QVERIFY(peak(buffer) <= 1.0f);
 
         for (int i = 0; i < SoundMixer::MaxVoices + 8; ++i) {
             sound.play(QStringLiteral("space"));
         }
-        sound.renderOffline(64);
-        QCOMPARE(sound.mixer().activeVoices(), SoundMixer::MaxVoices);
+        KeySoundProbe::render(sound, 64);
+        QCOMPARE(SoundMixerProbe::activeVoices(KeySoundProbe::mixer(sound)), SoundMixer::MaxVoices);
     }
 
     void pitchResamples()
@@ -230,7 +234,7 @@ private Q_SLOTS:
             do {
                 mixer.render(block, 1);
                 ++frames;
-            } while (mixer.activeVoices() > 0 && frames < 100000);
+            } while (SoundMixerProbe::activeVoices(mixer) > 0 && frames < 100000);
             const double expected = sample.frames.size() / pitch;
             QVERIFY2(
                 std::abs(frames - expected) <= 2.0, qPrintable(QStringLiteral("pitch %1: %2 vs %3").arg(pitch).arg(frames).arg(expected)));
@@ -289,7 +293,7 @@ private Q_SLOTS:
         KeySound sound(KeySound::Output::Offline, soundsDir());
         QTest::ignoreMessage(QtWarningMsg, QRegularExpression(QStringLiteral("Unknown sound kind")));
         sound.play(QStringLiteral("bogus"));
-        QVERIFY(peak(sound.renderOffline(4800)) == 0.0f);
+        QVERIFY(peak(KeySoundProbe::render(sound, 4800)) == 0.0f);
     }
 };
 

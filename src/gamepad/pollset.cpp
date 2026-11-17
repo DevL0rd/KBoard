@@ -29,11 +29,6 @@ void PollSet::setDeviceDescriptors(const QList<int> &descriptors)
     m_devices = descriptors;
 }
 
-QList<int> PollSet::deviceDescriptors() const
-{
-    return m_devices;
-}
-
 PollSet::Result PollSet::wait(int timeoutMs) const
 {
     std::vector<pollfd> fds;

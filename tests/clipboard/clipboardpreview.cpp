@@ -1,4 +1,5 @@
 #include "clipboardhistory.h"
+#include "kboardpaths.h"
 #include "kboardsettings.h"
 
 #include <KLocalizedQmlContext>
@@ -71,19 +72,24 @@ QList<Sample> samples()
     };
 }
 
-void populate(ClipboardHistory *history, QDateTime &clock, const QDateTime &base)
+void populate()
 {
+    const QDateTime base = QDateTime::currentDateTimeUtc();
+    QDateTime clock = base;
     const bool wasPaused = KBoardSettings::clipboardPaused();
     KBoardSettings::setClipboardPaused(false);
+    ClipboardHistory::Options options {KBoardPaths::userDataFile(QStringLiteral("clipboard")),
+        KBoardPaths::cacheDirectory() + QStringLiteral("/clipboard"), false, {}, [&clock] { return clock; }};
+    ClipboardHistory history(options);
     for (const Sample &sample : samples()) {
         clock = base.addSecs(-sample.secondsAgo);
-        const bool added = sample.image.isNull() ? history->addText(sample.text) : history->addImage(sample.image);
+        const bool added = sample.image.isNull() ? history.addText(sample.text) : history.addImage(sample.image);
         if (added && sample.pin) {
-            history->pin(0, true);
+            history.pin(0, true);
         }
     }
     clock = base;
-    history->expireDue();
+    history.expireDue();
     KBoardSettings::setClipboardPaused(wasPaused);
 }
 
@@ -127,15 +133,13 @@ int main(int argc, char **argv)
     KBoardSettings::setClipboardEnabled(scenario != QLatin1String("disabled"));
 
     QTemporaryDir directory;
-    const QDateTime base = QDateTime::currentDateTimeUtc();
-    QDateTime clock = base;
-    ClipboardHistory::Options options {
-        directory.filePath(QStringLiteral("data")), directory.filePath(QStringLiteral("cache")), false, {}, [&clock] { return clock; }};
-    auto history = new ClipboardHistory(options, &app);
+    qputenv("XDG_DATA_HOME", directory.filePath(QStringLiteral("data")).toUtf8());
+    qputenv("XDG_CACHE_HOME", directory.filePath(QStringLiteral("cache")).toUtf8());
+    KBoardSettings::setClipboardPersist(true);
+    KBoardSettings::setClipboardImportKlipper(false);
     if (scenario != QLatin1String("empty") && scenario != QLatin1String("disabled")) {
-        populate(history, clock, base);
+        populate();
     }
-    ClipboardHistory::setInstance(history);
 
     QCursor::setPos(-1000, -1000);
     QQmlApplicationEngine engine;

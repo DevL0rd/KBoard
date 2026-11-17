@@ -76,8 +76,6 @@ public:
 
     const SoundPack *pack(const QString &id) const;
     bool playKind(SoundKind kind, const SoundPack *soundPack, bool vary);
-    std::vector<float> renderOffline(int frames, int channels = 1);
-    SoundMixer &mixer();
 
 Q_SIGNALS:
     void packsChanged();
@@ -90,6 +88,8 @@ Q_SIGNALS:
     void played(const QString &kind);
 
 private:
+    friend struct KeySoundProbe;
+
     void loadPacks();
     void applyPack();
     void applyVolume();

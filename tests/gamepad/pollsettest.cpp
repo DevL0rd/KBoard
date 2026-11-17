@@ -74,7 +74,6 @@ private Q_SLOTS:
         PollSet set;
         set.setControlDescriptors(wake, hotplug.readEnd());
         set.setDeviceDescriptors({first.readEnd(), second.readEnd()});
-        QCOMPARE(set.deviceDescriptors(), (QList<int> {first.readEnd(), second.readEnd()}));
 
         const quint64 one = 1;
         QCOMPARE(::write(wake, &one, sizeof(one)), ssize_t(sizeof(one)));

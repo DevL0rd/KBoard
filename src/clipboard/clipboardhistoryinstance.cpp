@@ -10,11 +10,6 @@ namespace
 ClipboardHistory *s_instance = nullptr;
 }
 
-void ClipboardHistory::setInstance(ClipboardHistory *history)
-{
-    s_instance = history;
-}
-
 ClipboardHistory *ClipboardHistory::instance()
 {
     if (!s_instance) {

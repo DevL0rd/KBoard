@@ -24,12 +24,13 @@ public:
     void setOutputRate(int rate);
     void setMasterGain(float gain);
 
-    int activeVoices() const;
     double queueDelayMs() const;
     double blockMs() const;
     quint64 renderedBlocks() const;
 
 private:
+    friend struct SoundMixerProbe;
+
     struct Trigger
     {
         const float *data = nullptr;
@@ -51,7 +52,7 @@ private:
 
     void startVoice(const Trigger &trigger);
     void drainQueue();
-    static bool mixVoice(Voice &voice, std::span<float> interleaved, qsizetype frames, int channels);
+    static void mixVoice(Voice &voice, std::span<float> interleaved, qsizetype frames, int channels);
     void applyMasterGain(std::span<float> interleaved, qsizetype frames, int channels);
 
     QMutex m_producerLock;
@@ -66,7 +67,6 @@ private:
     std::atomic<std::int64_t> m_streamStartNs {0};
     std::atomic<int> m_outputRate {48000};
     std::atomic<float> m_masterGain {1.0f};
-    std::atomic<int> m_activeVoices {0};
     std::atomic<double> m_queueDelayMs {0.0};
     std::atomic<double> m_blockMs {0.0};
     std::atomic<quint64> m_renderedBlocks {0};

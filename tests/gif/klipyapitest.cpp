@@ -60,8 +60,6 @@ private Q_SLOTS:
         const QUrl autocomplete = Klipy::autocompleteUrl(context(), QStringLiteral("good morn"), 8);
         QCOMPARE(autocomplete.path(QUrl::FullyEncoded), QStringLiteral("/api/v1/test-key/autocomplete/good%20morn"));
         QCOMPARE(QUrlQuery(autocomplete).queryItemValue(QStringLiteral("limit")), QStringLiteral("8"));
-        const QUrl suggestions = Klipy::searchSuggestionsUrl(context(), QStringLiteral("a/b"));
-        QCOMPARE(suggestions.path(QUrl::FullyEncoded), QStringLiteral("/api/v1/test-key/search-suggestions/a%2Fb"));
     }
 
     void shareRequest()

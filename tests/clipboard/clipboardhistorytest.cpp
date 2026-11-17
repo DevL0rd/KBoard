@@ -1,5 +1,6 @@
 #include "clipboardhistory.h"
 #include "clipboarddetect.h"
+#include "clipboardprobes.h"
 #include "clipboardroles.h"
 #include "kboardsettings.h"
 
@@ -181,19 +182,19 @@ private Q_SLOTS:
         KBoardSettings::setClipboardExpiryMinutes(10);
         auto history = makeHistory();
         const QDateTime start = m_now;
-        QVERIFY(!history->expiry().isActive());
+        QVERIFY(!ClipboardExpiryProbe::isActive(history->expiry()));
         QVERIFY(history->addText(QStringLiteral("temporary")));
         QVERIFY(history->addText(QStringLiteral("keeper")));
         history->pin(0, true);
-        QVERIFY(history->expiry().isActive());
-        QCOMPARE(history->expiry().nextEventTime(), start.addSecs(9 * s_minute));
-        QCOMPARE(qint64(history->expiry().interval()), 9 * s_minute * 1000);
+        QVERIFY(ClipboardExpiryProbe::isActive(history->expiry()));
+        QCOMPARE(ClipboardExpiryProbe::nextEventTime(history->expiry()), start.addSecs(9 * s_minute));
+        QCOMPARE(qint64(ClipboardExpiryProbe::interval(history->expiry())), 9 * s_minute * 1000);
 
         m_now = start.addSecs(9 * s_minute + 1);
         history->expireDue();
         QCOMPARE(history->count(), 2);
         QVERIFY(history->data(history->index(1), ClipboardRoles::ExpiringRole).toBool());
-        QCOMPARE(history->expiry().nextEventTime(), start.addSecs(10 * s_minute));
+        QCOMPARE(ClipboardExpiryProbe::nextEventTime(history->expiry()), start.addSecs(10 * s_minute));
 
         m_now = start.addSecs(10 * s_minute + 1);
         QSignalSpy removed(history.get(), &QAbstractItemModel::rowsRemoved);
@@ -201,8 +202,8 @@ private Q_SLOTS:
         QCOMPARE(removed.count(), 1);
         QCOMPARE(history->count(), 1);
         QVERIFY(history->entryAt(0).pinned);
-        QVERIFY(!history->expiry().isActive());
-        QVERIFY(!history->expiry().nextEventTime().isValid());
+        QVERIFY(!ClipboardExpiryProbe::isActive(history->expiry()));
+        QVERIFY(!ClipboardExpiryProbe::nextEventTime(history->expiry()).isValid());
 
         history->mergeKlipperHistory({QStringLiteral("temporary")}, false);
         QCOMPARE(history->count(), 1);
@@ -216,7 +217,7 @@ private Q_SLOTS:
         m_now = m_now.addSecs(60 * s_minute);
         QVERIFY(history->addText(QStringLiteral("fresh copy")));
         QCOMPARE(history->count(), 2);
-        QCOMPARE(history->expiry().interval(), 0);
+        QCOMPARE(ClipboardExpiryProbe::interval(history->expiry()), 0);
         QSignalSpy removed(history.get(), &QAbstractItemModel::rowsRemoved);
         QVERIFY(removed.wait(1000));
         QCOMPARE(history->count(), 1);
@@ -229,15 +230,15 @@ private Q_SLOTS:
         auto history = makeHistory();
         QVERIFY(history->addText(QStringLiteral("pinned")));
         history->pin(0, true);
-        QVERIFY(!history->expiry().isActive());
+        QVERIFY(!ClipboardExpiryProbe::isActive(history->expiry()));
         m_now = m_now.addSecs(120 * s_minute);
         history->pin(0, false);
         QCOMPARE(history->entryAt(0).timestamp, m_now);
-        QCOMPARE(history->expiry().nextEventTime(), m_now.addSecs(9 * s_minute));
+        QCOMPARE(ClipboardExpiryProbe::nextEventTime(history->expiry()), m_now.addSecs(9 * s_minute));
 
         KBoardSettings::setClipboardExpiryMinutes(0);
         Q_EMIT KBoardSettings::self()->clipboardExpiryMinutesChanged();
-        QVERIFY(!history->expiry().isActive());
+        QVERIFY(!ClipboardExpiryProbe::isActive(history->expiry()));
     }
 
     void maxItems()
@@ -302,7 +303,8 @@ private Q_SLOTS:
             QVERIFY(history->addImage(sampleImage(Qt::yellow)));
             history->saveNow();
             history->waitForPendingWrites();
-            QVERIFY(QFile::exists(history->images().directory() + QLatin1Char('/') + pinnedImageId + QStringLiteral(".png")));
+            QVERIFY(QFile::exists(
+                ClipboardImageStoreProbe::directory(history->images()) + QLatin1Char('/') + pinnedImageId + QStringLiteral(".png")));
             QCOMPARE(QFile(history->historyFile()).permissions() & (QFileDevice::ReadGroup | QFileDevice::ReadOther),
                 QFileDevice::Permissions());
         }
@@ -313,7 +315,7 @@ private Q_SLOTS:
         QCOMPARE(reloaded->entryAt(1).text, QStringLiteral("remember me"));
         QVERIFY(!reloaded->images().image(pinnedImageId, true).isNull());
         QCOMPARE(reloaded->images().image(pinnedImageId, false).size(), QSize(640, 360));
-        QCOMPARE(QDir(reloaded->images().directory()).entryList({QStringLiteral("*.png")}, QDir::Files).size(), 2);
+        QCOMPARE(QDir(ClipboardImageStoreProbe::directory(reloaded->images())).entryList({QStringLiteral("*.png")}, QDir::Files).size(), 2);
 
         reloaded->clear();
         QCOMPARE(reloaded->count(), 2);
@@ -321,7 +323,7 @@ private Q_SLOTS:
         QCOMPARE(reloaded->count(), 0);
         reloaded->saveNow();
         reloaded->waitForPendingWrites();
-        QCOMPARE(QDir(reloaded->images().directory()).entryList({QStringLiteral("*.png")}, QDir::Files).size(), 0);
+        QCOMPARE(QDir(ClipboardImageStoreProbe::directory(reloaded->images())).entryList({QStringLiteral("*.png")}, QDir::Files).size(), 0);
     }
 
     void jsonRoundTrip()
